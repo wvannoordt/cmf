@@ -10,7 +10,7 @@ namespace gTree
 
     void ReadInput(std::string filename)
     {
-
+        mainInput.ReadInputFileToTreeData(filename);
     }
 
     void Finalize(void)

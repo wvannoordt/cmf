@@ -3,7 +3,7 @@
 
 #include <string>
 #include "PropTreeLib.h"
-
+#include "RefinementBlock.h"
 namespace gTree
 {
     extern PropTreeLib::PropertyTree mainInput;
