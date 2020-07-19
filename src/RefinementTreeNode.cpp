@@ -2,7 +2,7 @@
 #include <iostream>
 #include "PropTreeLib.h"
 #include "gTree.h"
-#include "RefinementTreeNodeNode.h"
+#include "RefinementTreeNode.h"
 #include "Config.hx"
 
 namespace gTree
@@ -20,5 +20,10 @@ namespace gTree
     void RefinementTreeNode::Print(void)
     {
 
+    }
+
+    void RefinementTreeNode::Destroy(void)
+    {
+        
     }
 }

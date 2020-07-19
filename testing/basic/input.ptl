@@ -1,0 +1,5 @@
+Domain
+{
+	blockDim = [5, 4]
+	blockBounds = [0,1,0,1]
+}

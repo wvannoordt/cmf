@@ -3,6 +3,7 @@
 
 #include <string>
 #include "PropTreeLib.h"
+#include "RefinementTreeNode.h"
 
 namespace gTree
 {
@@ -12,11 +13,15 @@ namespace gTree
             RefinementBlock(std::string title);
             ~RefinementBlock(void);
             void Print(void);
+            void Destroy(void);
         private:
+            void Allocate(void);
             PropTreeLib::PropertyTree localInput;
             int* blockDim;
-            int blockElemSize;
+            int totalNumTrunks;
             double* blockBounds;
+            RefinementTreeNode** trunks;
+            bool deallocTrunks;
 
     };
 }

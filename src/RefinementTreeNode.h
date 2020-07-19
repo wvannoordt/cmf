@@ -12,6 +12,7 @@ namespace gTree
             RefinementTreeNode(void);
             ~RefinementTreeNode(void);
             void Print(void);
+            void Destroy(void);
         private:
             PropTreeLib::PropertyTree localInput;
             int* blockDim;
