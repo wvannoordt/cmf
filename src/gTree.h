@@ -4,6 +4,7 @@
 #include <string>
 #include "PropTreeLib.h"
 #include "RefinementBlock.h"
+#include "RefinementTreeNode.h"
 namespace gTree
 {
     extern PropTreeLib::PropertyTree mainInput;
