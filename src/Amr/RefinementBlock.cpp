@@ -5,6 +5,7 @@
 #include "RefinementBlock.h"
 #include "RefinementTreeNode.h"
 #include "Config.hx"
+#include "TikzObject.h"
 
 namespace gTree
 {
@@ -47,5 +48,13 @@ namespace gTree
     void RefinementBlock::Print(void)
     {
         localInput.DebugPrint();
+    }
+
+    void RefinementBlock::Render(std::string filename)
+    {
+        TikzObject picture;
+        picture.Open(filename);
+        picture.DrawGrid(blockBounds[0], blockBounds[2], blockBounds[1], blockBounds[3]);
+        picture.Close();
     }
 }

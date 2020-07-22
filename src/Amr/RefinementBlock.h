@@ -14,6 +14,7 @@ namespace gTree
             ~RefinementBlock(void);
             void Print(void);
             void Destroy(void);
+            void Render(std::string filename);
         private:
             void Allocate(void);
             PropTreeLib::PropertyTree localInput;

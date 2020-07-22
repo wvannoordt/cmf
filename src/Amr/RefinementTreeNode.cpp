@@ -17,13 +17,8 @@ namespace gTree
 
     }
 
-    void RefinementTreeNode::Print(void)
-    {
-
-    }
-
     void RefinementTreeNode::Destroy(void)
     {
-        
+
     }
 }
