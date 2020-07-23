@@ -12,6 +12,7 @@ namespace gTree
     TikzObject::TikzObject(void)
     {
         imageScale = 1.0;
+        PushLineType(TikzLineType::solid, 1.0, TikzColor::black);
     }
 
     TikzObject::~TikzObject(void)
@@ -35,30 +36,57 @@ namespace gTree
         myfile.close();
     }
 
-    void TikzObject::DrawLine(double x1, double y1, double x2, double y2)
-    {DrawLine(x1, y1, x2, y2, "black", 1.0, "solid");}
+    void TikzObject::PushLineType(TikzLineType::TikzLineType style, double thickness, TikzColor::TikzColor color)
+    {PushLineType(TikzTypeStr(style), thickness, TikzColorStr(color));}
 
-    void TikzObject::DrawLine(double x1, double y1, double x2, double y2, TikzColor::TikzColor lineColor)
-    {DrawLine(x1, y1, x2, y2, TikzColorStr(lineColor), 1.0, "solid");}
+    void TikzObject::PushLineType(TikzLineType::TikzLineType style, double thickness, std::string color)
+    {PushLineType(TikzTypeStr(style), thickness, color);}
 
-    void TikzObject::DrawLine(double x1, double y1, double x2, double y2, TikzColor::TikzColor lineColor, double lineThickness)
-    {DrawLine(x1, y1, x2, y2, lineColor, lineThickness, "solid");}
+    void TikzObject::PushLineType(std::string style, double thickness, TikzColor::TikzColor color)
+    {PushLineType(style, thickness, TikzColorStr(color));}
 
-    void TikzObject::DrawLine(double x1, double y1, double x2, double y2, std::string lineColor, double lineThickness, TikzLineType::TikzLineType lineType)
-    {DrawLine(x1, y1, x2, y2, lineColor, lineThickness, TikzTypeStr(lineType));}
-
-    void TikzObject::DrawLine(double x1, double y1, double x2, double y2, TikzColor::TikzColor lineColor, double lineThickness, std::string lineType)
-    {DrawLine(x1, y1, x2, y2, TikzColorStr(lineColor), lineThickness, lineType);}
-
-    void TikzObject::DrawLine(double x1, double y1, double x2, double y2, TikzColor::TikzColor lineColor, double lineThickness, TikzLineType::TikzLineType lineType)
-    {DrawLine(x1, y1, x2, y2, TikzColorStr(lineColor), lineThickness, TikzTypeStr(lineType));}
-
-    void TikzObject::DrawLine(double x1, double y1, double x2, double y2, std::string lineColor, double lineThickness, std::string lineType)
+    void TikzObject::PushLineType(std::string style, double thickness, std::string color)
     {
-        myfile << "\\draw[" << lineColor << ", " << lineType << ", line width=" << std::to_string(lineThickness) << "] ";
+        lineStyleStack.push(style);
+        lineColorStack.push(color);
+        lineThicknessStack.push(thickness);
+    }
+
+    void TikzObject::PopLineType(void)
+    {
+        if (lineStyleStack.size()>1)
+        {
+            lineStyleStack.pop();
+            lineColorStack.pop();
+            lineThicknessStack.pop();
+        }
+    }
+
+    void TikzObject::DrawLine(double x1, double y1, double x2, double y2)
+    {
+        myfile << "\\draw[" << lineColorStack.top() << ", " << lineStyleStack.top() << ", line width=" << std::to_string(lineThicknessStack.top()) << "] ";
         myfile << "(" << std::to_string(imageScale*x1) << "," << std::to_string(imageScale*y1) << ")";
         myfile << " -- ";
         myfile << "(" << std::to_string(imageScale*x2) << "," << std::to_string(imageScale*y2) << ");";
         myfile << std::endl;
+    }
+
+    void TikzObject::DrawGrid(double x1, double y1, double x2, double y2, int nx, int ny)
+    {
+        double dx = (x2-x1)/(nx);
+        double dy = (y2-y1)/(ny);
+        for (int i = 0; i < nx+1; i++)
+        {
+            DrawLine(x1+i*dx, y1, x1+i*dx, y2);
+        }
+        for (int j = 0; j < ny+1; j++)
+        {
+            DrawLine(x1, y1+j*dy, x2, y1+j*dy);
+        }
+    }
+
+    void TikzObject::DrawBox(double x1, double y1, double x2, double y2)
+    {
+        DrawGrid(x1, y1, x2, y2, 1, 1);
     }
 }

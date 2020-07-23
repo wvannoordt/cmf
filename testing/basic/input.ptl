@@ -1,5 +1,5 @@
 Domain
 {
-	blockDim = [5, 4]
-	blockBounds = [0,1,0,1]
+	blockDim = [7, 4]
+	blockBounds = [0,5,0,4]
 }
