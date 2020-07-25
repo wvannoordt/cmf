@@ -31,7 +31,7 @@ namespace gTree
         };
     }
 
-    inline static std::string TikzColorStr(const int color)
+    inline static std::string TikzColorStr(int color)
     {
         switch (color)
         {
@@ -55,7 +55,7 @@ namespace gTree
             case TikzColor::violet: return "violet";
             case TikzColor::white: return "white";
         }
-        return "??????????????????";
+        return "";
     }
 }
 #endif

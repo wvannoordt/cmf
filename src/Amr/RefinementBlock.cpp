@@ -7,6 +7,7 @@
 #include "Config.h"
 #include "TikzObject.h"
 #include "Utils.hx"
+#include "RefinementConstraint.h"
 
 namespace gTree
 {
@@ -16,6 +17,7 @@ namespace gTree
         localInput.SetAsSubtree(mainInput[title]);
         localInput["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(DIM, "Base block dimensions");
         localInput["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*DIM, "Base block bounds");
+        localInput["refinementConstraintType"].MapTo(&refinementConstraintType) = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
         localInput.StrictParse();
         totalNumTrunks = 1;
         for (int i = 0; i < DIM; i++) totalNumTrunks*=blockDim[i];

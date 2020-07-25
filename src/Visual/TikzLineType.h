@@ -21,7 +21,7 @@ namespace gTree
             looselyDashDotDotted
         };
 
-        inline static std::string TikzTypeStr(const int lineType)
+        inline static std::string TikzTypeStr(int lineType)
         {
             switch (lineType)
             {
@@ -39,7 +39,7 @@ namespace gTree
                 case TikzLineType::denselyDashDotDotted: return "densely dashdotdotted";
                 case TikzLineType::looselyDashDotDotted: return "loosely dashdotdotted";
             }
-            return "???????????????????";
+            return "";
         }
     }
 }

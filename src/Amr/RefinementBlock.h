@@ -4,6 +4,7 @@
 #include <string>
 #include "PropTreeLib.h"
 #include "RefinementTreeNode.h"
+#include "RefinementConstraint.h"
 
 namespace gTree
 {
@@ -25,6 +26,7 @@ namespace gTree
             double* blockBounds;
             RefinementTreeNode** trunks;
             bool deallocTrunks;
+            RefinementConstraint::RefinementConstraint refinementConstraintType;
 
     };
 }
