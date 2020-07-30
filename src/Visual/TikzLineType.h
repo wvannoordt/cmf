@@ -1,5 +1,8 @@
 #ifndef TIKZLINE_H
 #define TIKZLINE_H
+
+#include "Config.h"
+
 namespace gTree
 {
     namespace TikzLineType
@@ -39,7 +42,7 @@ namespace gTree
                 case TikzLineType::denselyDashDotDotted: return "densely dashdotdotted";
                 case TikzLineType::looselyDashDotDotted: return "loosely dashdotdotted";
             }
-            return "";
+            return PTL_AUTO_ENUM_TERMINATOR;
         }
     }
 }

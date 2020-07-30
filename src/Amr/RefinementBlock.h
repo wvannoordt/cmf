@@ -18,12 +18,15 @@ namespace gTree
             void Render(std::string filename);
             void RefineAll(char refinementType);
             void RefineRandom();
+            void RefineAt(double coords[DIM], char refinementType);
         private:
             void Allocate(void);
+            void HandleRefinementQueryOutsideDomain(double coords[DIM]);
             PropTreeLib::PropertyTree localInput;
             int* blockDim;
             int totalNumTrunks;
             double* blockBounds;
+            double dx[DIM];
             RefinementTreeNode** trunks;
             bool deallocTrunks;
             RefinementConstraint::RefinementConstraint refinementConstraintType;

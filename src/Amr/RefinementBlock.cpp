@@ -17,10 +17,11 @@ namespace gTree
         localInput.SetAsSubtree(mainInput[title]);
         localInput["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(DIM, "Base block dimensions");
         localInput["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*DIM, "Base block bounds");
-        localInput["refinementConstraintType"].MapTo(&refinementConstraintType) = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
+        localInput["refinementConstraintType"].MapTo((int*)&refinementConstraintType) = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
         localInput.StrictParse();
         totalNumTrunks = 1;
         for (int i = 0; i < DIM; i++) totalNumTrunks*=blockDim[i];
+        for (int d = 0; d < DIM; d++) dx[d] = (blockBounds[2*d+1]-blockBounds[2*d])/blockDim[d];
         Allocate();
     }
 
@@ -34,9 +35,7 @@ namespace gTree
         deallocTrunks = true;
         trunks = new RefinementTreeNode* [totalNumTrunks];
         double localBounds[2*DIM];
-        double dx[DIM];
         int idx[DIM];
-        for (int d = 0; d < DIM; d++) dx[d] = (blockBounds[2*d+1]-blockBounds[2*d])/blockDim[d];
         for (int i = 0; i < totalNumTrunks; i++)
         {
             Dim2Idx(i, blockDim, idx);
@@ -45,8 +44,26 @@ namespace gTree
                 localBounds[2*d] = blockBounds[2*d]+idx[d]*dx[d];
                 localBounds[2*d+1] = blockBounds[2*d]+(idx[d]+1)*dx[d];
             }
-            trunks[i] = new RefinementTreeNode(localBounds, 0, 0);
+            trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0);
         }
+    }
+    
+    void RefinementBlock::RefineAt(double coords[DIM], char refinementType)
+    {
+        int idx[DIM];
+        bool queryOutsideDomain = false;
+        for (int d = 0; d < DIM; d++) 
+        {
+            idx[d] = (coords[d] - blockBounds[2*d])/(dx[d]);
+            queryOutsideDomain = queryOutsideDomain  || (coords[d]<blockBounds[2*d]) || (coords[d]>=blockBounds[2*d+1]);
+        }
+        if (!queryOutsideDomain) trunks[Idx2Dim(blockDim, idx)]->RecursiveRefineAt(coords, refinementType);
+        else HandleRefinementQueryOutsideDomain(coords);
+    }
+    
+    void RefinementBlock::HandleRefinementQueryOutsideDomain(double coords[DIM])
+    {
+        //Extend domain? crash? ignore?
     }
 
     void RefinementBlock::RefineAll(char refinementType)

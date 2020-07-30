@@ -2,6 +2,7 @@
 #define TIKZCOLOR_H
 
 #include <string>
+#include "Config.h"
 
 namespace gTree
 {
@@ -55,7 +56,7 @@ namespace gTree
             case TikzColor::violet: return "violet";
             case TikzColor::white: return "white";
         }
-        return "";
+        return PTL_AUTO_ENUM_TERMINATOR;
     }
 }
 #endif

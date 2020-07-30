@@ -11,4 +11,8 @@
 #define IS3D 1
 #endif
 
+#ifndef PTL_AUTO_ENUM_TERMINATOR
+#define PTL_AUTO_ENUM_TERMINATOR ""
+#endif
+
 #endif

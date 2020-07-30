@@ -6,10 +6,11 @@
 #include "Config.h"
 #include <cstdlib>
 #include "Utils.hx"
+#include "DebugTools.hx"
 
 namespace gTree
 {
-    RefinementTreeNode::RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in)
+    RefinementTreeNode::RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in, int level_in)
     {
         isTerminal = true;
         refineType = refineType_in;
@@ -17,6 +18,7 @@ namespace gTree
         DefineBounds(hostBounds, refineType_in, refineOrientation_in);
         numSubNodes = 0;
         deallocSubTrees = false;
+        level = level_in;
     }
 
     void RefinementTreeNode::DefineBounds(double* hostBounds, char refineType_in, char refineOrientation_in)
@@ -28,6 +30,25 @@ namespace gTree
             blockBounds[2*d]   = hostBounds[2*d]   * (1-(iRefined&iShift))  + (iRefined&iShift) *(0.5*(hostBounds[2*d]+hostBounds[2*d+1]));
             blockBounds[2*d+1] = hostBounds[2*d+1] * (1-(iRefined&~iShift)) + (iRefined&~iShift)*(0.5*(hostBounds[2*d]+hostBounds[2*d+1]));
         }
+    }
+    
+    void RefinementTreeNode::RecursiveRefineAt(double coords[DIM], char refinementType)
+    {
+        if (isTerminal) RefineLocal(refinementType);
+        else
+        {
+            char location = GetOctant(blockBounds, coords);
+            int index = GetIndexFromOctantAndRefineType(location, refinementType);
+            subNodes[index]->RecursiveRefineAt(coords, refinementType);
+        }
+    }
+    
+    int RefinementTreeNode::GetIndexFromOctantAndRefineType(char location, char refinementType)
+    {
+        int basis = GetInvCoordBasis(refinementType);
+        char vec = refinementType&location;        
+        int output = (int)((vec&1)*((basis&0x00ff0000)>>16) + ((vec&2)>>1)*((basis&0x0000ff00)>>8) + ((vec&4)>>2)*((basis&0x000000ff)));
+        return output;
     }
 
     void RefinementTreeNode::Refine(char newRefinementType)
@@ -67,28 +88,51 @@ namespace gTree
         if (!IS3D) effective = newRefinementType&3;
         isTerminal = false;
         deallocSubTrees = true;
-        numSubNodes = 1<<(((effective&1)?1:0) + ((effective&2)?1:0) + ((IS3D*(effective&4))?1:0));
+        numSubNodes = NumberOfNewSubNodes(effective);
         subNodes = new RefinementTreeNode* [numSubNodes];
         char newRefinementOrientation = 0;
+        int basis = GetCoordBasis(effective);
+        for (int i = 0; i < numSubNodes; i++)
+        {
+            newRefinementOrientation = (char)((i&1)*((basis&0x00ff0000)>>16) + ((i&2)>>1)*((basis&0x0000ff00)>>8) + ((i&4)>>2)*((basis&0x000000ff)));
+            subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1);
+        }
+    }
+    
+    int RefinementTreeNode::GetCoordBasis(char refinementType)
+    {
         int permOrders = 0x01220100;
-        char permutationOrder = (permOrders>>(4*effective))&0x0000000f;
+        char permutationOrder = (permOrders>>(4*refinementType))&0x0000000f;
         int basis = 0x04010204;
         for (char n = 0; n < permutationOrder; n++)
         {
             basis = (basis << 8) + ((basis&0x00ff0000) >> 16);
         }
-        for (int i = 0; i < numSubNodes; i++)
+        return basis;
+    }
+    int RefinementTreeNode::GetInvCoordBasis(char refinementType)
+    {
+        int permOrders = 0x01220100;
+        char permutationOrder = (permOrders>>(4*refinementType))&0x0000000f;
+        permutationOrder = 2*permutationOrder;
+        int basis = 0x04010204;
+        for (char n = 0; n < permutationOrder; n++)
         {
-            newRefinementOrientation = (char)((i&1)*((basis&0x00ff0000)>>16) + ((i&2)>>1)*((basis&0x0000ff00)>>8) + ((i&4)>>2)*((basis&0x000000ff)));
-            subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation);
+            basis = (basis << 8) + ((basis&0x00ff0000) >> 16);
         }
+        return basis;
+    }
+    int RefinementTreeNode::NumberOfNewSubNodes(char refinementType)
+    {
+        return 1<<(((refinementType&1)?1:0) + ((refinementType&2)?1:0) + ((IS3D*(refinementType&4))?1:0));
     }
 
     void RefinementTreeNode::DrawToObject(TikzObject* picture)
     {
+        double shrink = 0.0;
         if (isTerminal)
         {
-            picture->DrawBox(blockBounds[0], blockBounds[2], blockBounds[1], blockBounds[3]);
+            picture->DrawBox(blockBounds[0]+shrink, blockBounds[2]+shrink, blockBounds[1]-shrink, blockBounds[3]-shrink);
         }
         else
         {
