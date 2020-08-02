@@ -22,7 +22,7 @@ namespace gTree
         totalNumTrunks = 1;
         for (int i = 0; i < DIM; i++) totalNumTrunks*=blockDim[i];
         for (int d = 0; d < DIM; d++) dx[d] = (blockBounds[2*d+1]-blockBounds[2*d])/blockDim[d];
-        Allocate();
+        DefineTrunks();
     }
 
     RefinementBlock::~RefinementBlock(void)
@@ -30,7 +30,7 @@ namespace gTree
         this->Destroy();
     }
 
-    void RefinementBlock::Allocate(void)
+    void RefinementBlock::DefineTrunks(void)
     {
         deallocTrunks = true;
         trunks = new RefinementTreeNode* [totalNumTrunks];
@@ -44,21 +44,65 @@ namespace gTree
                 localBounds[2*d] = blockBounds[2*d]+idx[d]*dx[d];
                 localBounds[2*d+1] = blockBounds[2*d]+(idx[d]+1)*dx[d];
             }
-            trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0);
+            trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL);
+        }
+        for (int i = 0; i < totalNumTrunks; i++)
+        {
+            Dim2Idx(i, blockDim, idx);
+            for (int d = 0; d < DIM; d++)
+            {
+                int previousIndex = idx[d];
+                bool isDomainEdge = false;
+                char direction = (char)(2*d+1);
+                
+                idx[d] += 1;
+                if (idx[d]>=blockDim[d]) {idx[d]=0; isDomainEdge = true;}
+                trunks[i]->CreateNewNeighbor(trunks[Idx2Dim(blockDim, idx)], direction, isDomainEdge);
+                idx[d] = previousIndex;
+                isDomainEdge = false;
+                
+                direction = (char)(2*d);
+                idx[d] -= 1;
+                if (idx[d]<0) {idx[d]=blockDim[d]-1; isDomainEdge = true;}
+                trunks[i]->CreateNewNeighbor(trunks[Idx2Dim(blockDim, idx)], direction, isDomainEdge);
+            }
         }
     }
     
     void RefinementBlock::RefineAt(double coords[DIM], char refinementType)
     {
+        RefinementTreeNode* target = GetNodeAt(coords);
+        if (target)
+        {
+            target->Refine(refinementType);
+        }
+    }
+    
+    RefinementTreeNode* RefinementBlock::GetNodeAt(double coords[DIM])
+    {
         int idx[DIM];
+        if (!PointIsInDomain(coords, idx)) return trunks[Idx2Dim(blockDim, idx)]->RecursiveGetNodeAt(coords);
+        else
+        {
+            HandleRefinementQueryOutsideDomain(coords);
+            return NULL;
+        }
+    }
+    
+    bool RefinementBlock::PointIsInDomain(double coords[DIM], int* idx)
+    {
         bool queryOutsideDomain = false;
         for (int d = 0; d < DIM; d++) 
         {
             idx[d] = (coords[d] - blockBounds[2*d])/(dx[d]);
             queryOutsideDomain = queryOutsideDomain  || (coords[d]<blockBounds[2*d]) || (coords[d]>=blockBounds[2*d+1]);
         }
-        if (!queryOutsideDomain) trunks[Idx2Dim(blockDim, idx)]->RecursiveRefineAt(coords, refinementType);
-        else HandleRefinementQueryOutsideDomain(coords);
+    }
+    
+    bool RefinementBlock::PointIsInDomain(double coords[DIM])
+    {
+        int idx[DIM];
+        return PointIsInDomain(coords, idx);
     }
     
     void RefinementBlock::HandleRefinementQueryOutsideDomain(double coords[DIM])

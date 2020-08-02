@@ -14,6 +14,11 @@ static inline void Dim2Idx(int idx, int* dims, int* ijk)
 #endif
 }
 
+static inline int CharBit(char v, int dim)
+{
+    return 1&(v>>dim);
+}
+
 static inline int Idx2Dim(int* dims, int* ijk)
 {
 #if(IS3D)

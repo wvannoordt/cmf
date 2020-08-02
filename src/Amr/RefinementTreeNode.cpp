@@ -10,7 +10,7 @@
 
 namespace gTree
 {
-    RefinementTreeNode::RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in, int level_in)
+    RefinementTreeNode::RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in, int level_in, RefinementTreeNode* host_in)
     {
         isTerminal = true;
         refineType = refineType_in;
@@ -19,6 +19,31 @@ namespace gTree
         numSubNodes = 0;
         deallocSubTrees = false;
         level = level_in;
+        host = host_in;
+        subNodeRefinementType = 0;
+        for (int d = 0; d < 2*DIM; d++) isOnBoundary[d] = false;
+        DefineDirectionLevels();
+        InheritDomainBoundaryInfo();
+    }
+    
+    void RefinementTreeNode::InheritDomainBoundaryInfo(void)
+    {
+        if (host)
+        {
+            for (int d = 0; d < 2*DIM; d++)
+            {
+                int xyz = (d-(d%2))/2;
+                bool currentNodeOnDomainRelativeToHost = !((refineType>>xyz)&1);
+                currentNodeOnDomainRelativeToHost = currentNodeOnDomainRelativeToHost || (((refineOrientation>>xyz)&1)==(d&1));
+                isOnBoundary[d] = currentNodeOnDomainRelativeToHost&&host->isOnBoundary[d];
+            }
+        }
+    }
+    
+    void RefinementTreeNode::DefineDirectionLevels(void)
+    {
+        if (host) {for (int d = 0; d<DIM; d++) directionLevels[d] = host->directionLevels[d] + CharBit(refineType, d);}
+        else {for (int d = 0; d<DIM; d++) directionLevels[d] = 0;}
     }
 
     void RefinementTreeNode::DefineBounds(double* hostBounds, char refineType_in, char refineOrientation_in)
@@ -32,14 +57,28 @@ namespace gTree
         }
     }
     
-    void RefinementTreeNode::RecursiveRefineAt(double coords[DIM], char refinementType)
+    void RefinementTreeNode::CreateNewNeighbor(RefinementTreeNode* target, char edgeDirection, bool isDomainEdge)
     {
-        if (isTerminal) RefineLocal(refinementType);
+        NodeEdge edgeData;
+        edgeData.edgeDirection = edgeDirection;
+        edgeData.isDomainEdge = isDomainEdge;
+        neighbors.insert({target, edgeData});
+        if (isDomainEdge) isOnBoundary[edgeDirection] = true;
+    }
+    
+    void RefinementTreeNode::ResolveNewRefinementWithNeighbor(RefinementTreeNode* issuer)
+    {
+        
+    }
+    
+    RefinementTreeNode* RefinementTreeNode::RecursiveGetNodeAt(double coords[DIM])
+    {
+        if (isTerminal) return this;
         else
         {
             char location = GetOctant(blockBounds, coords);
-            int index = GetIndexFromOctantAndRefineType(location, refinementType);
-            subNodes[index]->RecursiveRefineAt(coords, refinementType);
+            int index = GetIndexFromOctantAndRefineType(location, subNodeRefinementType);
+            return subNodes[index]->RecursiveGetNodeAt(coords);
         }
     }
     
@@ -51,40 +90,26 @@ namespace gTree
         return output;
     }
 
-    void RefinementTreeNode::Refine(char newRefinementType)
-    {
-        if (isTerminal)
-        {
-            RefineLocal(newRefinementType);
-        }
-        else
-        {
-            for (int i = 0; i < numSubNodes; i++)
-            {
-                subNodes[i]->Refine(newRefinementType);
-            }
-        }
-    }
     void RefinementTreeNode::RefineRandom()
     {
         if (isTerminal)
         {
             char t = (char)(1+RandomInt(7));
-            RefineLocal(t);
+            Refine(t);
         }
         else
         {
             for (int i = 0; i < numSubNodes; i++)
             {
-                char t = (char)(1+RandomInt(7));
-                subNodes[i]->Refine(t);
+                subNodes[i]->RefineRandom();
             }
         }
     }
 
-    void RefinementTreeNode::RefineLocal(char newRefinementType)
+    void RefinementTreeNode::Refine(char newRefinementType)
     {
         char effective = newRefinementType;
+        subNodeRefinementType = effective;
         if (!IS3D) effective = newRefinementType&3;
         isTerminal = false;
         deallocSubTrees = true;
@@ -95,7 +120,7 @@ namespace gTree
         for (int i = 0; i < numSubNodes; i++)
         {
             newRefinementOrientation = (char)((i&1)*((basis&0x00ff0000)>>16) + ((i&2)>>1)*((basis&0x0000ff00)>>8) + ((i&4)>>2)*((basis&0x000000ff)));
-            subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1);
+            subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this);
         }
     }
     
@@ -130,9 +155,14 @@ namespace gTree
     void RefinementTreeNode::DrawToObject(TikzObject* picture)
     {
         double shrink = 0.0;
+        double x1 = blockBounds[0]+shrink;
+        double y1 = blockBounds[2]+shrink;
+        double x2 = blockBounds[1]-shrink;
+        double y2 = blockBounds[3]-shrink;
         if (isTerminal)
         {
-            picture->DrawBox(blockBounds[0]+shrink, blockBounds[2]+shrink, blockBounds[1]-shrink, blockBounds[3]-shrink);
+            if (IsAnyDomainBoundary()) picture->FillBox(x1, y1, x2, y2);
+            picture->DrawBox(x1, y1, x2, y2);
         }
         else
         {
@@ -141,6 +171,15 @@ namespace gTree
                 subNodes[i]->DrawToObject(picture);
             }
         }
+    }
+    
+    
+    
+    bool RefinementTreeNode::IsAnyDomainBoundary(void)
+    {
+        bool output = false;
+        for (int d = 0; d < 2*DIM; d++) output = output | isOnBoundary[d];
+        return output;
     }
 
     RefinementTreeNode::~RefinementTreeNode(void)
@@ -159,6 +198,7 @@ namespace gTree
                 delete subNodes[i];
             }
             delete [] subNodes;
+            neighbors.clear();
         }
     }
 }

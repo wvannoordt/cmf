@@ -4,31 +4,48 @@
 #include <string>
 #include "Config.h"
 #include "TikzObject.h"
+#include <vector>
+#include <utility>
 
 namespace gTree
 {
+    struct NodeEdge
+    {
+        char edgeDirection;
+        bool isDomainEdge;
+    };
+    
     class RefinementTreeNode
     {
         public:
-            RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in, int level_in);
+            RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in, int level_in, RefinementTreeNode* host_in);
             ~RefinementTreeNode(void);
             void Destroy(void);
-            void Refine(char newRefinementType);
             void RefineRandom();
             void DrawToObject(TikzObject* picture);
-            void RecursiveRefineAt(double coords[DIM], char refinementType);
+            void ResolveNewRefinementWithNeighbor(RefinementTreeNode* issuer);
+            void CreateNewNeighbor(RefinementTreeNode* target, char edgeDirection, bool isDomainEdge);
+            bool IsAnyDomainBoundary(void);
+            RefinementTreeNode* RecursiveGetNodeAt(double coords[DIM]);
+            void Refine(char newRefinementType);
         private:
+            void InheritDomainBoundaryInfo(void);
+            void DefineDirectionLevels(void);
             int GetIndexFromOctantAndRefineType(char location, char refinementType);
             int NumberOfNewSubNodes(char refinementType);
             int GetCoordBasis(char refinementType);
             int GetInvCoordBasis(char refinementType);
-            void RefineLocal(char newRefinementType);
             void DefineBounds(double* hostBounds, char refineType_in, char refineOrientation_in);
             char refineType, refineOrientation;
             bool isTerminal, deallocSubTrees;
+            char subNodeRefinementType;
             double blockBounds[2*DIM];
             RefinementTreeNode** subNodes;
+            RefinementTreeNode* host;
             int numSubNodes, level;
+            int directionLevels[DIM];
+            std::map<RefinementTreeNode*, NodeEdge> neighbors;
+            bool isOnBoundary[2*DIM];
 
     };
 }

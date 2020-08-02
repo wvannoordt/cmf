@@ -19,8 +19,11 @@ namespace gTree
             void RefineAll(char refinementType);
             void RefineRandom();
             void RefineAt(double coords[DIM], char refinementType);
+            RefinementTreeNode* GetNodeAt(double coords[DIM]);
+            bool PointIsInDomain(double coords[DIM], int* idx);
+            bool PointIsInDomain(double coords[DIM]);
         private:
-            void Allocate(void);
+            void DefineTrunks(void);
             void HandleRefinementQueryOutsideDomain(double coords[DIM]);
             PropTreeLib::PropertyTree localInput;
             int* blockDim;

@@ -13,6 +13,7 @@ namespace gTree
     {
         imageScale = 1.0;
         PushLineType(TikzLineType::solid, 1.0, TikzColor::black);
+        PushFillType(TikzColor::lightgray);
     }
 
     TikzObject::~TikzObject(void)
@@ -51,6 +52,14 @@ namespace gTree
         lineColorStack.push(color);
         lineThicknessStack.push(thickness);
     }
+    
+    void TikzObject::PushFillType(TikzColor::TikzColor color)
+    {PushFillType(TikzColorStr(color));}
+    
+    void TikzObject::PushFillType(std::string color)
+    {
+        fillColorStack.push(color);
+    }
 
     void TikzObject::PopLineType(void)
     {
@@ -62,12 +71,20 @@ namespace gTree
         }
     }
 
+    void TikzObject::PopFillType(void)
+    {
+        if (fillColorStack.size()>1)
+        {
+            fillColorStack.pop();
+        }
+    }
+
     void TikzObject::DrawLine(double x1, double y1, double x2, double y2)
     {
         myfile << "\\draw[" << lineColorStack.top() << ", " << lineStyleStack.top() << ", line width=" << std::to_string(lineThicknessStack.top()) << "] ";
-        myfile << "(" << std::to_string(imageScale*x1) << "," << std::to_string(imageScale*y1) << ")";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y1)) << ")";
         myfile << " -- ";
-        myfile << "(" << std::to_string(imageScale*x2) << "," << std::to_string(imageScale*y2) << ");";
+        myfile << "(" << std::to_string(CoordX(x2)) << "," << std::to_string(CoordY(y2)) << ");";
         myfile << std::endl;
     }
 
@@ -87,6 +104,41 @@ namespace gTree
 
     void TikzObject::DrawBox(double x1, double y1, double x2, double y2)
     {
-        DrawGrid(x1, y1, x2, y2, 1, 1);
+        myfile << "\\draw[" << lineColorStack.top() << ", " << lineStyleStack.top() << ", line width=" << std::to_string(lineThicknessStack.top()) << "] ";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y1)) << ")";
+        myfile << " -- ";
+        myfile << "(" << std::to_string(CoordX(x2)) << "," << std::to_string(CoordY(y1)) << ")";
+        myfile << " -- ";
+        myfile << "(" << std::to_string(CoordX(x2)) << "," << std::to_string(CoordY(y2)) << ")";
+        myfile << " -- ";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y2)) << ");";
+        myfile << " -- ";
+        myfile << "cycle;";
+        myfile << std::endl;
+    }
+    
+    void TikzObject::FillBox(double x1, double y1, double x2, double y2)
+    {
+        myfile << "\\draw[fill=" << fillColorStack.top() << ", line width=0.0] ";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y1)) << ")";
+        myfile << " -- ";
+        myfile << "(" << std::to_string(CoordX(x2)) << "," << std::to_string(CoordY(y1)) << ")";
+        myfile << " -- ";
+        myfile << "(" << std::to_string(CoordX(x2)) << "," << std::to_string(CoordY(y2)) << ")";
+        myfile << " -- ";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y2)) << ");";
+        myfile << " -- ";
+        myfile << "cycle;";
+        myfile << std::endl;
+    }
+    
+    double TikzObject::CoordX(double x)
+    {
+        return imageScale*x;
+    }
+    
+    double TikzObject::CoordY(double y)
+    {
+        return imageScale*y;
     }
 }
