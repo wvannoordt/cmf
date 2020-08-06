@@ -57,13 +57,23 @@ namespace gTree
         }
     }
     
-    void RefinementTreeNode::CreateNewNeighbor(RefinementTreeNode* target, char edgeDirection, bool isDomainEdge)
+    void RefinementTreeNode::CreateNewNeighbor(RefinementTreeNode* target, int* deltaijk, char isDomainEdge)
     {
         NodeEdge edgeData;
-        edgeData.edgeDirection = edgeDirection;
         edgeData.isDomainEdge = isDomainEdge;
+        for (int d = 0; d < DIM; d++) edgeData.edgeVector[d] = deltaijk[d];
         neighbors.insert({target, edgeData});
-        if (isDomainEdge) isOnBoundary[edgeDirection] = true;
+        if (isDomainEdge)
+        {
+            for (int d = 0; d < DIM; d++)
+            {
+                if ((deltaijk[d]!=0) && CharBit(isDomainEdge, d))
+                {
+                    int directionOfEdge = (deltaijk[d]<0)?(2*d):(2*d+1);
+                    isOnBoundary[directionOfEdge] = true;
+                }
+            }
+        }
     }
     
     void RefinementTreeNode::ResolveNewRefinementWithNeighbor(RefinementTreeNode* issuer)
@@ -85,7 +95,8 @@ namespace gTree
     int RefinementTreeNode::GetIndexFromOctantAndRefineType(char location, char refinementType)
     {
         int basis = GetInvCoordBasis(refinementType);
-        char vec = refinementType&location;        
+        basis = GetCoordBasis(refinementType);
+        char vec = refinementType&location;
         int output = (int)((vec&1)*((basis&0x00ff0000)>>16) + ((vec&2)>>1)*((basis&0x0000ff00)>>8) + ((vec&4)>>2)*((basis&0x000000ff)));
         return output;
     }
@@ -109,8 +120,8 @@ namespace gTree
     void RefinementTreeNode::Refine(char newRefinementType)
     {
         char effective = newRefinementType;
-        subNodeRefinementType = effective;
         if (!IS3D) effective = newRefinementType&3;
+        subNodeRefinementType = effective;
         isTerminal = false;
         deallocSubTrees = true;
         numSubNodes = NumberOfNewSubNodes(effective);
@@ -121,6 +132,24 @@ namespace gTree
         {
             newRefinementOrientation = (char)((i&1)*((basis&0x00ff0000)>>16) + ((i&2)>>1)*((basis&0x0000ff00)>>8) + ((i&4)>>2)*((basis&0x000000ff)));
             subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this);
+        }
+        GenerateNeighborsOfChildAllNodes();
+        UpdateNeighborsOfNeighborsToChildNodes();
+    }
+    
+    void RefinementTreeNode::GenerateNeighborsOfChildAllNodes(void)
+    {
+        for (int i = 0; i < numSubNodes; i++)
+        {
+            //Do stuff with subNodes[i].
+        }
+    }
+    
+    void RefinementTreeNode::UpdateNeighborsOfNeighborsToChildNodes(void)
+    {
+        for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
+        {
+            //do stuff with it->first based on it->second.
         }
     }
     

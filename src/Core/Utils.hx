@@ -4,6 +4,9 @@
 #include "Config.h"
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+
+#define __dloop(mycode) for(int d = 0; d < DIM; d++) {mycode;}
 
 static inline void Dim2Idx(int idx, int* dims, int* ijk)
 {
@@ -25,6 +28,22 @@ static inline int Idx2Dim(int* dims, int* ijk)
     return ijk[0] + ijk[1]*dims[0] + ijk[2]*dims[1]*dims[0];
 #else
     return ijk[0] + ijk[1]*dims[0];
+#endif
+}
+
+static inline int Idx2DimPeriodic(int* dims, int* ijk, char* wasPeriodic)
+{
+    char output = 0;
+    int delta[DIM];
+    for (int d = 0; d < DIM; d++) delta[d] = 0;
+    for (int d = 0; d < DIM; d++) delta[d] = (ijk[d]<0)?dims[d]:delta[d];
+    for (int d = 0; d < DIM; d++) delta[d] = (ijk[d]>=dims[d])?-dims[d]:delta[d];
+    for (int d = 0; d < DIM; d++) output += (delta[d]==0)?0:(1<<d);
+    *wasPeriodic = output;
+#if(IS3D)
+    return (ijk[0]+delta[0]) + (ijk[1]+delta[1])*dims[0] + (ijk[2]+delta[2])*dims[1]*dims[0];
+#else
+    return (ijk[0]+delta[0]) + (ijk[1]+delta[1])*dims[0];
 #endif
 }
 

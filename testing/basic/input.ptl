@@ -1,6 +1,6 @@
 Domain
 {
-	blockDim = [10, 10]
+	blockDim = [4, 4]
 	blockBounds = [0,4,0,4]
 	refinementConstraintType = free
 }

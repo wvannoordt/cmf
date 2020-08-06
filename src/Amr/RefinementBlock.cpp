@@ -47,24 +47,28 @@ namespace gTree
             trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL);
         }
         for (int i = 0; i < totalNumTrunks; i++)
-        {
-            Dim2Idx(i, blockDim, idx);
-            for (int d = 0; d < DIM; d++)
+        {            
+            int blockIndex[DIM];
+            Dim2Idx(i, blockDim, blockIndex);
+            int totalNumNeighbors = IS3D?27:9;
+            int boxdim[DIM];
+            __dloop(boxdim[d] = 3);
+            int neighborBlockIndex[DIM];
+            __dloop(neighborBlockIndex[d] = 0);
+            for (int k = 0; k < totalNumNeighbors; k++)
             {
-                int previousIndex = idx[d];
-                bool isDomainEdge = false;
-                char direction = (char)(2*d+1);
-                
-                idx[d] += 1;
-                if (idx[d]>=blockDim[d]) {idx[d]=0; isDomainEdge = true;}
-                trunks[i]->CreateNewNeighbor(trunks[Idx2Dim(blockDim, idx)], direction, isDomainEdge);
-                idx[d] = previousIndex;
-                isDomainEdge = false;
-                
-                direction = (char)(2*d);
-                idx[d] -= 1;
-                if (idx[d]<0) {idx[d]=blockDim[d]-1; isDomainEdge = true;}
-                trunks[i]->CreateNewNeighbor(trunks[Idx2Dim(blockDim, idx)], direction, isDomainEdge);
+                int deltaijk[DIM];
+                Dim2Idx(k, boxdim, deltaijk);
+                __dloop(deltaijk[d] -= 1);
+                __dloop(neighborBlockIndex[d] = blockIndex[d]+deltaijk[d]);
+                bool targetIsSelf = true;
+                __dloop(targetIsSelf = targetIsSelf&&(deltaijk[d]==0));
+                if (!targetIsSelf)
+                {
+                    char wasPeriodic = 0;
+                    int newNeighborIndex = Idx2DimPeriodic(blockDim, neighborBlockIndex, &wasPeriodic);
+                    trunks[i]->CreateNewNeighbor(trunks[newNeighborIndex], deltaijk, wasPeriodic);
+                }
             }
         }
     }

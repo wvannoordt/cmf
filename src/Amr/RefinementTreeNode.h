@@ -11,8 +11,8 @@ namespace gTree
 {
     struct NodeEdge
     {
-        char edgeDirection;
         bool isDomainEdge;
+        int edgeVector[DIM];
     };
     
     class RefinementTreeNode
@@ -24,11 +24,13 @@ namespace gTree
             void RefineRandom();
             void DrawToObject(TikzObject* picture);
             void ResolveNewRefinementWithNeighbor(RefinementTreeNode* issuer);
-            void CreateNewNeighbor(RefinementTreeNode* target, char edgeDirection, bool isDomainEdge);
+            void CreateNewNeighbor(RefinementTreeNode* target, int* deltaijk, char isDomainEdge);
             bool IsAnyDomainBoundary(void);
             RefinementTreeNode* RecursiveGetNodeAt(double coords[DIM]);
             void Refine(char newRefinementType);
         private:
+            void GenerateNeighborsOfChildAllNodes(void);
+            void UpdateNeighborsOfNeighborsToChildNodes(void);
             void InheritDomainBoundaryInfo(void);
             void DefineDirectionLevels(void);
             int GetIndexFromOctantAndRefineType(char location, char refinementType);
