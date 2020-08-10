@@ -12,7 +12,7 @@ namespace gTree
     TikzObject::TikzObject(void)
     {
         imageScale = 1.0;
-        PushLineType(TikzLineType::solid, 1.0, TikzColor::black);
+        PushLineType(TikzLineType::solid, 0.5, TikzColor::black);
         PushFillType(TikzColor::lightgray);
     }
 
@@ -111,7 +111,7 @@ namespace gTree
         myfile << " -- ";
         myfile << "(" << std::to_string(CoordX(x2)) << "," << std::to_string(CoordY(y2)) << ")";
         myfile << " -- ";
-        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y2)) << ");";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y2)) << ")";
         myfile << " -- ";
         myfile << "cycle;";
         myfile << std::endl;
@@ -126,7 +126,7 @@ namespace gTree
         myfile << " -- ";
         myfile << "(" << std::to_string(CoordX(x2)) << "," << std::to_string(CoordY(y2)) << ")";
         myfile << " -- ";
-        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y2)) << ");";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y2)) << ")";
         myfile << " -- ";
         myfile << "cycle;";
         myfile << std::endl;

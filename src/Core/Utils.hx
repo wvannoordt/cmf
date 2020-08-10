@@ -58,6 +58,15 @@ static inline char GetOctant(double* bounds, double* coords)
 #endif
 }
 
+static inline bool BoxContains(double* bounds, double* coords)
+{
+#if(IS3D)
+    return (coords[0]>bounds[0])&&(coords[0]<bounds[1])&&(coords[1]>bounds[2])&&(coords[1]<bounds[3])&&(coords[2]>bounds[4])&&(coords[2]<bounds[5]);
+#else    
+    return (coords[0]>bounds[0])&&(coords[0]<bounds[1])&&(coords[1]>bounds[2])&&(coords[1]<bounds[3]);
+#endif
+}
+
 static inline int RandomInt(int bound)
 {
     double r = (double)(rand()%0x000fffff)/((double)0x000fffff);

@@ -11,3 +11,4 @@ clean:
 
 test: clean main
 	./${TARGET}
+	${MAKE} -C output -f makefile

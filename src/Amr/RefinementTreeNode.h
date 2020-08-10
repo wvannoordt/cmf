@@ -25,14 +25,17 @@ namespace gTree
             void DrawToObject(TikzObject* picture);
             void ResolveNewRefinementWithNeighbor(RefinementTreeNode* issuer);
             void CreateNewNeighbor(RefinementTreeNode* target, int* deltaijk, char isDomainEdge);
+            void RemoveNeighbor(RefinementTreeNode* target);
             bool IsAnyDomainBoundary(void);
             RefinementTreeNode* RecursiveGetNodeAt(double coords[DIM]);
             void Refine(char newRefinementType);
         private:
+            void GenerateEdgeRelationshipFromOrientations(char refFrom, char refTo, char refineType, int* dispVector);
             void GenerateNeighborsOfChildAllNodes(void);
             void UpdateNeighborsOfNeighborsToChildNodes(void);
             void InheritDomainBoundaryInfo(void);
             void DefineDirectionLevels(void);
+            void DebugDraw(TikzObject* picture);
             int GetIndexFromOctantAndRefineType(char location, char refinementType);
             int NumberOfNewSubNodes(char refinementType);
             int GetCoordBasis(char refinementType);

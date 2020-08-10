@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include "gTree.h"
 int main(int argc, char** argv)
 {
@@ -6,18 +7,11 @@ int main(int argc, char** argv)
     gTree::ReadInput("input.ptl");
     gTree::RefinementBlock domain("Domain");
     double coords[2];
-    coords[0] = 2.213;
-    coords[1] = 1.546;
-    //domain.RefineRandom();
-    //domain.RefineRandom();
-    //domain.RefineRandom();
+    coords[0] = 0.5001;
+    coords[1] = 0.5001;
     domain.RefineAt(coords, 3);
     domain.RefineAt(coords, 3);
-    domain.RefineAt(coords, 3);
-    domain.RefineAt(coords, 3);
-    //domain.RefineAt(coords, 3);
-    //domain.RefineAt(coords, 3);
-    //domain.RefineAt(coords, 3);
+    
     domain.Render("output/main.tex");
     gTree::Finalize();
     return 0;

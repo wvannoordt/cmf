@@ -154,7 +154,7 @@ namespace gTree
     void RefinementBlock::Render(std::string filename)
     {
         TikzObject picture;
-        picture.PushLineType(TikzLineType::solid, 0.2, TikzColor::black);
+        picture.PushLineType(TikzLineType::solid, 0.1, TikzColor::black);
         picture.Open(filename);
         for (int i = 0; i < totalNumTrunks; i++)
         {
