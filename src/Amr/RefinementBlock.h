@@ -15,7 +15,7 @@ namespace gTree
             ~RefinementBlock(void);
             void Print(void);
             void Destroy(void);
-            void Render(std::string filename);
+            void Render(TikzObject* picture);
             void RefineAll(char refinementType);
             void RefineRandom();
             void RefineAt(double coords[DIM], char refinementType);

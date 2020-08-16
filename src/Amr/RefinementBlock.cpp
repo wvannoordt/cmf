@@ -151,15 +151,13 @@ namespace gTree
         localInput.DebugPrint();
     }
 
-    void RefinementBlock::Render(std::string filename)
+    void RefinementBlock::Render(TikzObject* picture)
     {
-        TikzObject picture;
-        picture.PushLineType(TikzLineType::solid, 0.1, TikzColor::black);
-        picture.Open(filename);
+        picture->PushLineType(TikzLineType::solid, 0.1, TikzColor::black);
         for (int i = 0; i < totalNumTrunks; i++)
         {
-            trunks[i]->DrawToObject(&picture);
+            trunks[i]->DrawToObject(picture);
         }
-        picture.Close();
+        picture->PopLineType();
     }
 }

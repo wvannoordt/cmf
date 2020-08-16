@@ -5,9 +5,11 @@ main: setup
 
 setup:
 	mkdir -p output
+	ln -sf ${CURRENT_BASEIDIR}/util/makefile.latex output/makefile
 
 clean:
 	-rm ${TARGET}
+	-rm -r output
 
 test: clean main
 	./${TARGET}

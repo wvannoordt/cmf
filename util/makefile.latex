@@ -1,0 +1,5 @@
+.PHONY: look
+look:
+	pdflatex -halt-on-error main.tex
+	pdflatex -halt-on-error main.tex
+	rm -f *.log *.aux *.nav *.out *.toc *.snm

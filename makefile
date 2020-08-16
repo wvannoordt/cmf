@@ -137,6 +137,7 @@ endif
 export CURRENT_ICONFIG=-I${CURRENT_HDR_DIR} ${ICUDA} ${IFLAGS_DEPENDENCIES}
 export CURRENT_LCONFIG= ${LCUDA} -L${CURRENT_LIB_DIR} -l${LIB_NAME} ${LFLAGS_DEPENDENCIES}
 export CC_HOST
+export CURRENT_BASEIDIR
 
 .PHONY: final
 
@@ -181,12 +182,19 @@ setup:
 		echo "Linking $${hdr}:";\
 		ln -s $${hdr} -t ${CURRENT_HDRHX_DIR};\
 	done
+	@for tdir in $(wildcard ${CURRENT_TST_DIR}/*) ; do\
+		ln -sf ${CURRENT_BASEIDIR}/util/makefile.testing $${tdir}/makefile;\
+	done
 
 clean:
 	-rm -r ${CURRENT_LIB_DIR}
 	-rm -r ${CURRENT_OBJ_DIR}
 	-rm -r ${CURRENT_HDR_DIR}
 	-rm -r ${CURRENT_HDRHX_DIR}
+	@for tdir in $(wildcard ${CURRENT_TST_DIR}/*) ; do\
+		${MAKE} -C $${tdir} -f makefile clean;\
+		unlink $${tdir}/makefile||echo"";\
+	done
 
 test: final
 	@for tdir in $(wildcard ${CURRENT_TST_DIR}/*) ; do\

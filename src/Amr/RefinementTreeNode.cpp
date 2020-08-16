@@ -249,6 +249,7 @@ namespace gTree
     
     void RefinementTreeNode::DebugDraw(TikzObject* picture)
     {
+        return;
         double rad = 0.008;
         double xProbe[DIM];
         xProbe[0] = 0.5001;
