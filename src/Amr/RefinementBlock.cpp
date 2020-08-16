@@ -8,16 +8,19 @@
 #include "TikzObject.h"
 #include "Utils.hx"
 #include "RefinementConstraint.h"
+#include "gTreeTypedef.h"
 
 namespace gTree
 {
     RefinementBlock::RefinementBlock(std::string title)
     {
+        refineLimiter = NULL;
         srand((unsigned int)time(NULL));
         localInput.SetAsSubtree(mainInput[title]);
         localInput["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(DIM, "Base block dimensions");
         localInput["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*DIM, "Base block bounds");
-        localInput["refinementConstraintType"].MapTo((int*)&refinementConstraintType) = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
+        localInput["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
+            = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
         localInput.StrictParse();
         totalNumTrunks = 1;
         for (int i = 0; i < DIM; i++) totalNumTrunks*=blockDim[i];
@@ -45,6 +48,7 @@ namespace gTree
                 localBounds[2*d+1] = blockBounds[2*d]+(idx[d]+1)*dx[d];
             }
             trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL);
+            trunks[i]->SetRefineLimiter(&refineLimiter);
         }
         for (int i = 0; i < totalNumTrunks; i++)
         {            

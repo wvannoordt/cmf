@@ -6,6 +6,7 @@
 #include "TikzObject.h"
 #include <vector>
 #include <utility>
+#include "gTreeTypedef.h"
 
 namespace gTree
 {
@@ -14,6 +15,9 @@ namespace gTree
         bool isDomainEdge;
         int edgeVector[DIM];
     };
+    
+    class RefinementTreeNode;
+    typedef bool(*RefinementLimit_t)(RefinementTreeNode*);
     
     class RefinementTreeNode
     {
@@ -29,6 +33,7 @@ namespace gTree
             bool IsAnyDomainBoundary(void);
             RefinementTreeNode* RecursiveGetNodeAt(double coords[DIM]);
             void Refine(char newRefinementType);
+            void SetRefineLimiter(RefinementLimit_t* limiter_in);
         private:
             void GenerateEdgeRelationshipFromOrientations(char refFrom, char refTo, char refineType, int* dispVector);
             void GenerateNeighborsOfChildAllNodes(void);
@@ -51,6 +56,7 @@ namespace gTree
             int directionLevels[DIM];
             std::map<RefinementTreeNode*, NodeEdge> neighbors;
             bool isOnBoundary[2*DIM];
+            RefinementLimit_t* refineLimiter;
 
     };
 }

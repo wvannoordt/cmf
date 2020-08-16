@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include "Utils.hx"
 #include "DebugTools.hx"
+#include "gTreeTypedef.h"
 
 namespace gTree
 {
@@ -24,6 +25,14 @@ namespace gTree
         for (int d = 0; d < 2*DIM; d++) isOnBoundary[d] = false;
         DefineDirectionLevels();
         InheritDomainBoundaryInfo();
+        if (host)
+        {
+            refineLimiter = host->refineLimiter;
+        }
+        else
+        {
+            refineLimiter = NULL;
+        }
     }
     
     void RefinementTreeNode::InheritDomainBoundaryInfo(void)
@@ -55,6 +64,11 @@ namespace gTree
             blockBounds[2*d]   = hostBounds[2*d]   * (1-(iRefined&iShift))  + (iRefined&iShift) *(0.5*(hostBounds[2*d]+hostBounds[2*d+1]));
             blockBounds[2*d+1] = hostBounds[2*d+1] * (1-(iRefined&~iShift)) + (iRefined&~iShift)*(0.5*(hostBounds[2*d]+hostBounds[2*d+1]));
         }
+    }
+    
+    void RefinementTreeNode::SetRefineLimiter(RefinementLimit_t* limiter_in)
+    {
+        refineLimiter = limiter_in;
     }
     
     void RefinementTreeNode::CreateNewNeighbor(RefinementTreeNode* target, int* deltaijk, char isDomainEdge)
@@ -129,6 +143,11 @@ namespace gTree
 
     void RefinementTreeNode::Refine(char newRefinementType)
     {
+        if ((refineLimiter!=NULL) && (*refineLimiter!=NULL))
+        {
+            RefinementLimit_t isLimited = *refineLimiter;
+            if (isLimited(this)) return;
+        }
         char effective = newRefinementType;
         if (!IS3D) effective = newRefinementType&3;
         subNodeRefinementType = effective;
