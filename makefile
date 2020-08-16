@@ -54,6 +54,12 @@ SRC_FILES_CUDA          := $(shell find ${CURRENT_SRC_DIR} -name *.cu)
 HEADER_FILES    := $(shell find ${CURRENT_SRC_DIR} -name *.h)
 HEADER_FILES_HX := $(shell find ${CURRENT_SRC_DIR} -name *.hx)
 
+ifndef TESTS
+TESTS := $(wildcard ${CURRENT_TST_DIR}/*)
+else
+TESTS := $(addprefix ${CURRENT_TST_DIR}/, ${TESTS})
+endif
+
 
 TARGET := ${CURRENT_LIB_DIR}/lib${LIB_NAME}.a
 
@@ -182,7 +188,7 @@ setup:
 		echo "Linking $${hdr}:";\
 		ln -s $${hdr} -t ${CURRENT_HDRHX_DIR};\
 	done
-	@for tdir in $(wildcard ${CURRENT_TST_DIR}/*) ; do\
+	@for tdir in ${TESTS} ; do\
 		ln -sf ${CURRENT_BASEIDIR}/util/makefile.testing $${tdir}/makefile;\
 	done
 
@@ -191,12 +197,12 @@ clean:
 	-rm -r ${CURRENT_OBJ_DIR}
 	-rm -r ${CURRENT_HDR_DIR}
 	-rm -r ${CURRENT_HDRHX_DIR}
-	@for tdir in $(wildcard ${CURRENT_TST_DIR}/*) ; do\
+	@for tdir in ${TESTS} ; do\
 		${MAKE} -C $${tdir} -f makefile clean;\
 		unlink $${tdir}/makefile||echo"";\
 	done
 
 test: final
-	@for tdir in $(wildcard ${CURRENT_TST_DIR}/*) ; do\
+	@for tdir in ${TESTS} ; do\
 		${MAKE} -C $${tdir} -f makefile test;\
 	done

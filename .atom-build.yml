@@ -1,1 +1,1 @@
-cmd: 'make test'
+cmd: 'TESTS=refinementLimiter make test'
