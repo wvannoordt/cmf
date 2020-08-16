@@ -8,7 +8,6 @@
 #include "TikzObject.h"
 #include "Utils.hx"
 #include "RefinementConstraint.h"
-#include "gTreeTypedef.h"
 
 namespace gTree
 {
@@ -75,6 +74,11 @@ namespace gTree
                 }
             }
         }
+    }
+    
+    void RefinementBlock::SetRefineLimitCriterion(RefinementLimit_t limiter_in)
+    {
+        refineLimiter = limiter_in;
     }
     
     void RefinementBlock::RefineAt(double coords[DIM], char refinementType)
@@ -157,7 +161,7 @@ namespace gTree
 
     void RefinementBlock::Render(TikzObject* picture)
     {
-        picture->PushLineType(TikzLineType::solid, 0.1, TikzColor::black);
+        picture->PushLineType(TikzLineType::solid, 0.03, TikzColor::black);
         for (int i = 0; i < totalNumTrunks; i++)
         {
             trunks[i]->DrawToObject(picture);

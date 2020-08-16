@@ -132,6 +132,29 @@ namespace gTree
         myfile << std::endl;
     }
     
+    void TikzObject::FillCircle(double x1, double y1, double r)
+    {
+        myfile << "\\draw[fill=" << fillColorStack.top() << ", line width=0.0] ";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y1)) << ")";
+        myfile << " circle ";
+        myfile << "(" << std::to_string(CoordR(r)) << ");";
+        myfile << std::endl;
+    }
+    
+    void TikzObject::DrawCircle(double x1, double y1, double r)
+    {
+        myfile << "\\draw[" << lineColorStack.top() << ", " << lineStyleStack.top() << ", line width=" << std::to_string(lineThicknessStack.top()) << "] ";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y1)) << ")";
+        myfile << " circle ";
+        myfile << "(" << std::to_string(CoordR(r)) << ");";
+        myfile << std::endl;
+    }
+    
+    double TikzObject::CoordR(double r)
+    {
+        return imageScale*r;
+    }
+    
     double TikzObject::CoordX(double x)
     {
         return imageScale*x;

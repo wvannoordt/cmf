@@ -6,7 +6,6 @@
 #include "TikzObject.h"
 #include <vector>
 #include <utility>
-#include "gTreeTypedef.h"
 
 namespace gTree
 {
@@ -34,6 +33,7 @@ namespace gTree
             RefinementTreeNode* RecursiveGetNodeAt(double coords[DIM]);
             void Refine(char newRefinementType);
             void SetRefineLimiter(RefinementLimit_t* limiter_in);
+            int GetLevel(void);
         private:
             void GenerateEdgeRelationshipFromOrientations(char refFrom, char refTo, char refineType, int* dispVector);
             void GenerateNeighborsOfChildAllNodes(void);

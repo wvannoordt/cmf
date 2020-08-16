@@ -9,8 +9,7 @@ setup:
 
 clean:
 	-rm ${TARGET}
-	-rm -r output
 
 test: clean main
-	./${TARGET}
+	${VALG} ./${TARGET}
 	${MAKE} -C output -f makefile

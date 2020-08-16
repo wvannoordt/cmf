@@ -24,6 +24,10 @@ ifndef DEBUG_LEVEL
 DEBUG_LEVEL := 0
 endif
 
+ifndef MEMCHECK
+MEMCHECK := 0
+endif
+
 CURRENT_BASEIDIR   = $(shell pwd)
 CURRENT_SRC_DIR   := ${CURRENT_BASEIDIR}/src
 CURRENT_LIB_DIR   := ${CURRENT_BASEIDIR}/lib
@@ -86,6 +90,14 @@ CU_O_TARGET :=
 ICUDA :=
 LCUDA :=
 endif
+
+ifeq (${MEMCHECK}, 1)
+VALG := $(shell which valgrind)
+else
+VALG := 
+endif
+export VALG
+
 
 COMPILE_TIME_OPT += -DCUDA_ENABLE=${CUDA_ENABLE}
 COMPILE_TIME_OPT += -DPROBLEM_DIMENSION=${PROBLEM_DIMENSION}

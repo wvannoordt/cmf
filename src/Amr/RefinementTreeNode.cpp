@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include "Utils.hx"
 #include "DebugTools.hx"
-#include "gTreeTypedef.h"
 
 namespace gTree
 {
@@ -88,6 +87,11 @@ namespace gTree
                 }
             }
         }
+    }
+    
+    int RefinementTreeNode::GetLevel(void)
+    {
+        return level;
     }
     
     void RefinementTreeNode::RemoveNeighbor(RefinementTreeNode* target)

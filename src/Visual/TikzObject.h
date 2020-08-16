@@ -26,6 +26,8 @@ namespace gTree
             void DrawGrid(double x1, double y1, double x2, double y2, int nx, int ny);
             void DrawBox(double x1, double y1, double x2, double y2);
             void FillBox(double x1, double y1, double x2, double y2);
+            void FillCircle(double x1, double y1, double r);
+            void DrawCircle(double x1, double y1, double r);
 
             void PushLineType(TikzLineType::TikzLineType style, double thickness, TikzColor::TikzColor color);
             void PushLineType(TikzLineType::TikzLineType style, double thickness, std::string color);
@@ -39,6 +41,7 @@ namespace gTree
 
             void Close(void);
         private:
+            double CoordR(double r);
             double CoordX(double x);
             double CoordY(double y);
             std::ofstream myfile;

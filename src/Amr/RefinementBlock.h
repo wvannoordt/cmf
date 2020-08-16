@@ -5,7 +5,6 @@
 #include "PropTreeLib.h"
 #include "RefinementTreeNode.h"
 #include "RefinementConstraint.h"
-#include "gTreeTypedef.h"
 
 namespace gTree
 {
@@ -23,6 +22,7 @@ namespace gTree
             RefinementTreeNode* GetNodeAt(double coords[DIM]);
             bool PointIsInDomain(double coords[DIM], int* idx);
             bool PointIsInDomain(double coords[DIM]);
+            void SetRefineLimitCriterion(RefinementLimit_t limiter_in);
         private:
             void DefineTrunks(void);
             void HandleRefinementQueryOutsideDomain(double coords[DIM]);
