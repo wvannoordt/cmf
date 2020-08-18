@@ -28,6 +28,7 @@ namespace gTree
             void FillBox(double x1, double y1, double x2, double y2);
             void FillCircle(double x1, double y1, double r);
             void DrawCircle(double x1, double y1, double r);
+            void SetClip(double x1, double y1, double x2, double y2);
 
             void PushLineType(TikzLineType::TikzLineType style, double thickness, TikzColor::TikzColor color);
             void PushLineType(TikzLineType::TikzLineType style, double thickness, std::string color);

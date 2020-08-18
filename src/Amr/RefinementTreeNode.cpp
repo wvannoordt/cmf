@@ -272,17 +272,17 @@ namespace gTree
     
     void RefinementTreeNode::DebugDraw(TikzObject* picture)
     {
+        double rad = 0.0025;
+        double x1 = 0.5*(blockBounds[0]+blockBounds[1])-rad;
+        double y1 = 0.5*(blockBounds[2]+blockBounds[3])-rad;
+        double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
+        double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
         return;
-        double rad = 0.008;
         double xProbe[DIM];
         xProbe[0] = 0.5001;
         xProbe[1] = 0.5001;
         if (BoxContains(blockBounds, xProbe))
         {
-            double x1 = 0.5*(blockBounds[0]+blockBounds[1])-rad;
-            double y1 = 0.5*(blockBounds[2]+blockBounds[3])-rad;
-            double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
-            double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
             picture->PushFillType(TikzColor::teal);
             picture->FillBox(x1, y1, x2, y2);
             picture->PushFillType(TikzColor::red);

@@ -27,7 +27,7 @@ namespace gTree
         myfile << "\\documentclass[tikz,border=10pt]{standalone}" << std::endl;
         myfile << "\\usepackage{tikz}" << std::endl;
         myfile << "\\begin{document}" << std::endl;
-        myfile << "\\begin{tikzpicture}" << std::endl;
+        myfile << "\\begin{tikzpicture}[x=1cm,y=1cm]" << std::endl;
     }
 
     void TikzObject::Close(void)
@@ -147,6 +147,15 @@ namespace gTree
         myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y1)) << ")";
         myfile << " circle ";
         myfile << "(" << std::to_string(CoordR(r)) << ");";
+        myfile << std::endl;
+    }
+    
+    void TikzObject::SetClip(double x1, double y1, double x2, double y2)
+    {
+        myfile << "\\clip ";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y1)) << ")";
+        myfile << " rectangle ";
+        myfile << "(" << std::to_string(CoordX(x1+x2)) << "," << std::to_string(CoordY(y1+y2)) << ");";
         myfile << std::endl;
     }
     

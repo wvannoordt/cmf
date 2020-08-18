@@ -161,7 +161,7 @@ namespace gTree
 
     void RefinementBlock::Render(TikzObject* picture)
     {
-        picture->PushLineType(TikzLineType::solid, 0.03, TikzColor::black);
+        picture->PushLineType(TikzLineType::solid, 0.06, TikzColor::black);
         for (int i = 0; i < totalNumTrunks; i++)
         {
             trunks[i]->DrawToObject(picture);
