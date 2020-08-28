@@ -33,7 +33,7 @@ namespace gTree
             refineLimiter = NULL;
         }
     }
-    
+
     void RefinementTreeNode::InheritDomainBoundaryInfo(void)
     {
         if (host)
@@ -47,7 +47,7 @@ namespace gTree
             }
         }
     }
-    
+
     void RefinementTreeNode::DefineDirectionLevels(void)
     {
         if (host) {for (int d = 0; d<DIM; d++) directionLevels[d] = host->directionLevels[d] + CharBit(refineType, d);}
@@ -64,12 +64,12 @@ namespace gTree
             blockBounds[2*d+1] = hostBounds[2*d+1] * (1-(iRefined&~iShift)) + (iRefined&~iShift)*(0.5*(hostBounds[2*d]+hostBounds[2*d+1]));
         }
     }
-    
+
     void RefinementTreeNode::SetRefineLimiter(RefinementLimit_t* limiter_in)
     {
         refineLimiter = limiter_in;
     }
-    
+
     void RefinementTreeNode::CreateNewNeighbor(RefinementTreeNode* target, int* deltaijk, char isDomainEdge)
     {
         NodeEdge edgeData;
@@ -88,12 +88,12 @@ namespace gTree
             }
         }
     }
-    
+
     int RefinementTreeNode::GetLevel(void)
     {
         return level;
     }
-    
+
     void RefinementTreeNode::RemoveNeighbor(RefinementTreeNode* target)
     {
         std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.find(target);
@@ -102,12 +102,12 @@ namespace gTree
             neighbors.erase(target);
         }
     }
-    
+
     void RefinementTreeNode::ResolveNewRefinementWithNeighbor(RefinementTreeNode* issuer)
     {
-        
+
     }
-    
+
     RefinementTreeNode* RefinementTreeNode::RecursiveGetNodeAt(double coords[DIM])
     {
         if (isTerminal) return this;
@@ -119,7 +119,7 @@ namespace gTree
             return subNodes[index]->RecursiveGetNodeAt(coords);
         }
     }
-    
+
     int RefinementTreeNode::GetIndexFromOctantAndRefineType(char location, char refinementType)
     {
         int basis = GetInvCoordBasis(refinementType);
@@ -173,7 +173,7 @@ namespace gTree
             it->first->RemoveNeighbor(this);
         }
     }
-    
+
     void RefinementTreeNode::GenerateNeighborsOfChildAllNodes(void)
     {
         //All siblings share a neighboring relationship
@@ -196,7 +196,7 @@ namespace gTree
             //Do stuff with subNodes[i].
         }
     }
-    
+
     void RefinementTreeNode::GenerateEdgeRelationshipFromOrientations(char refFrom, char refTo, char refineType, int* dispVector)
     {
         int shuffledIndices[DIM];
@@ -211,7 +211,7 @@ namespace gTree
         }
         __dloop(dispVector[d] = shuffledIndices[(basis>>(8*d)&0x000000ff)]);
     }
-    
+
     void RefinementTreeNode::UpdateNeighborsOfNeighborsToChildNodes(void)
     {
         for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
@@ -219,7 +219,7 @@ namespace gTree
             //do stuff with it->first based on it->second.
         }
     }
-    
+
     int RefinementTreeNode::GetCoordBasis(char refinementType)
     {
         int permOrders = 0x01220100;
@@ -269,18 +269,17 @@ namespace gTree
             }
         }
     }
-    
+
     void RefinementTreeNode::DebugDraw(TikzObject* picture)
     {
-        double rad = 0.0025;
+        double rad = 0.01;
         double x1 = 0.5*(blockBounds[0]+blockBounds[1])-rad;
         double y1 = 0.5*(blockBounds[2]+blockBounds[3])-rad;
         double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
         double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
-        return;
         double xProbe[DIM];
-        xProbe[0] = 0.5001;
-        xProbe[1] = 0.5001;
+        xProbe[0] = 0.499;
+        xProbe[1] = 0.499;
         if (BoxContains(blockBounds, xProbe))
         {
             picture->PushFillType(TikzColor::teal);
@@ -298,7 +297,7 @@ namespace gTree
             picture->PopFillType();
         }
     }
-    
+
     bool RefinementTreeNode::IsAnyDomainBoundary(void)
     {
         bool output = false;
