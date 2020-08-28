@@ -8,7 +8,7 @@ bool limit(gTree::RefinementTreeNode* block)
 
 int main(int argc, char** argv)
 {
-    gTree::Initialize();    
+    gTree::Initialize();
     gTree::ReadInput("input.ptl");
     gTree::RefinementBlock domain("Domain");
     domain.SetRefineLimitCriterion(limit);
@@ -65,16 +65,16 @@ int main(int argc, char** argv)
         nvec[1] = sin(thetaMin);
         tvec[0] = cos(shockangle);
         tvec[1] = sin(shockangle);
-        coords[0] = xc + shockradius*cos(thetaMin)+shocklen*prog*tvec[0];;
+        coords[0] = xc + shockradius*cos(thetaMin)+shocklen*prog*tvec[0];
         coords[1] = yc + shockradius*sin(thetaMin)+shocklen*prog*tvec[1];
-        domain.RefineAt(coords, 3);
+        //domain.RefineAt(coords, 3);
         
         //line, lower
         nvec[0] = cos(thetaMax);
         nvec[1] = sin(thetaMax);
         tvec[0] = cos(-shockangle);
         tvec[1] = sin(-shockangle);
-        coords[0] = xc + shockradius*cos(thetaMax)+shocklen*prog*tvec[0];;
+        coords[0] = xc + shockradius*cos(thetaMax)+shocklen*prog*tvec[0];
         coords[1] = yc + shockradius*sin(thetaMax)+shocklen*prog*tvec[1];
         domain.RefineAt(coords, 3);
     }
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
     picture.Open(filename);
 	picture.SetClip(0,0,1,1);
     domain.Render(&picture);
-    picture.FillCircle(xc, yc, rmean-0.001);
+    //picture.FillCircle(xc, yc, rmean-0.001);
     picture.Close();
     gTree::Finalize();
     return 0;

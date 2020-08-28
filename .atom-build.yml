@@ -1,1 +1,1 @@
-cmd: 'TESTS=neighbors make test'
+cmd: 'TESTS=multiDomain make test'
