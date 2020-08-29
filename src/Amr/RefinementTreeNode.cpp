@@ -311,8 +311,8 @@ namespace gTree
         double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
         double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
         double xProbe[DIM];
-        xProbe[0] = 0.45;
-        xProbe[1] = 0.45;
+        xProbe[0] = 0.55;
+        xProbe[1] = 0.55;
         if (BoxContains(blockBounds, xProbe))
         {
             picture->PushFillType(TikzColor::teal);
