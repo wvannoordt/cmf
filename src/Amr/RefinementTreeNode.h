@@ -11,13 +11,13 @@ namespace gTree
 {
     struct NodeEdge
     {
-        bool isDomainEdge;
+        char isDomainEdge;
         int edgeVector[DIM];
     };
-    
+
     class RefinementTreeNode;
     typedef bool(*RefinementLimit_t)(RefinementTreeNode*);
-    
+
     class RefinementTreeNode
     {
         public:
@@ -37,7 +37,7 @@ namespace gTree
         private:
             void GenerateEdgeRelationshipFromOrientations(char refFrom, char refTo, char refineType, int* dispVector);
             void GenerateNeighborsOfChildAllNodes(void);
-            void UpdateNeighborsOfNeighborsToChildNodes(void);
+            void UpdateNeighborsOfNeighborsToChildNodes(char newRefinementType);
             void InheritDomainBoundaryInfo(void);
             void DefineDirectionLevels(void);
             void DebugDraw(TikzObject* picture);

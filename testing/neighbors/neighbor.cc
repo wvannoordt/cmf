@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     double coords[2];
     coords[0] = 0.432;
     coords[1] = 0.354;
-    domain.RefineAt(coords, 3);
+    domain.RefineAt(coords, 1);
     std::string filename = "output/main.tex";
     gTree::TikzObject picture;
     picture.Open(filename);

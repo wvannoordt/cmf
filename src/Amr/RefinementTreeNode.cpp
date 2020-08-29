@@ -167,7 +167,7 @@ namespace gTree
             subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this);
         }
         GenerateNeighborsOfChildAllNodes();
-        UpdateNeighborsOfNeighborsToChildNodes();
+        UpdateNeighborsOfNeighborsToChildNodes(subNodeRefinementType);
         for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
         {
             it->first->RemoveNeighbor(this);
@@ -212,13 +212,44 @@ namespace gTree
         __dloop(dispVector[d] = shuffledIndices[(basis>>(8*d)&0x000000ff)]);
     }
 
-    void RefinementTreeNode::UpdateNeighborsOfNeighborsToChildNodes(void)
+    void RefinementTreeNode::UpdateNeighborsOfNeighborsToChildNodes(char newRefinementType)
     {
         for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
         {
             //do stuff with it->first based on it->second
             RefinementTreeNode* neighbor = it->first;
-            
+            NodeEdge relationship = it->second;
+            int newEdgeVec[DIM];
+
+            //0 -> any bit value allowed
+            //1 -> bit value must have the value represented in orientationConstraintValues
+            char orientationConstraintMask = 0;
+            char orientationConstraintValues = 0;
+            __dloop(SetCharBit(orientationConstraintMask, d, relationship.edgeVector[d]!=0));
+            __dloop(SetCharBit(orientationConstraintValues, d, relationship.edgeVector[d]>0));
+            int numCandidateChildren = 1;
+            __dloop(numCandidateChildren = numCandidateChildren << CharBit(~orientationConstraintMask, d));
+            int indexingBasis = 0;
+            int currentBasisIndex = 0;
+            for (int d = 0; d < DIM; d++)
+            {
+                int currentBasisVector = 1<<d;
+                if (CharBit(~orientationConstraintMask, d))
+                {
+                    indexingBasis = indexingBasis + currentBasisVector<<(4*currentBasisIndex);
+                    currentBasisIndex++;
+                }
+            }
+            for (int i = 0; i < numCandidateChildren; i++)
+            {
+                //There will need to be changes here.
+                __dloop(newEdgeVec[d] = relationship.edgeVector[d]);
+                char orientationFromBasis = BasisEval(indexingBasis, (char)i);
+                char orientation = (orientationFromBasis&~orientationConstraintMask)|(orientationConstraintValues&orientationConstraintMask);
+                int orientationToIdxBasis = GetInvCoordBasis(newRefinementType);
+                int idx = GetIndexFromOctantAndRefineType(orientation, newRefinementType);
+                neighbor->CreateNewNeighbor(subNodes[idx], newEdgeVec, relationship.isDomainEdge);
+            }
         }
     }
 
@@ -259,7 +290,7 @@ namespace gTree
         double y2 = blockBounds[3]-shrink;
         if (isTerminal)
         {
-            if (IsAnyDomainBoundary()) picture->FillBox(x1, y1, x2, y2);
+            //if (IsAnyDomainBoundary()) picture->FillBox(x1, y1, x2, y2);
             picture->DrawBox(x1, y1, x2, y2);
             DebugDraw(picture);
         }
@@ -280,8 +311,8 @@ namespace gTree
         double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
         double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
         double xProbe[DIM];
-        xProbe[0] = 0.499;
-        xProbe[1] = 0.499;
+        xProbe[0] = 0.45;
+        xProbe[1] = 0.45;
         if (BoxContains(blockBounds, xProbe))
         {
             picture->PushFillType(TikzColor::teal);

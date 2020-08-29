@@ -22,6 +22,11 @@ static inline int CharBit(char v, int dim)
     return 1&(v>>dim);
 }
 
+static inline void SetCharBit(char& v, int dim, bool value)
+{
+    v = (v&(~(1<<dim))) | ((value?7:0)&(1<<dim));
+}
+
 static inline int Idx2Dim(int* dims, int* ijk)
 {
 #if(IS3D)
@@ -53,7 +58,7 @@ static inline char GetOctant(double* bounds, double* coords)
     return ((2.0*(coords[0]-bounds[0])>=(bounds[1]-bounds[0]))?1:0)
         +  ((2.0*(coords[1]-bounds[2])>=(bounds[3]-bounds[2]))?2:0)
         +  ((2.0*(coords[2]-bounds[4])>=(bounds[5]-bounds[4]))?4:0);
-#else    
+#else
     return ((2.0*(coords[0]-bounds[0])>=(bounds[1]-bounds[0]))?1:0)+((2.0*(coords[1]-bounds[2])>=(bounds[3]-bounds[2]))?2:0);
 #endif
 }
@@ -62,7 +67,7 @@ static inline bool BoxContains(double* bounds, double* coords)
 {
 #if(IS3D)
     return (coords[0]>bounds[0])&&(coords[0]<bounds[1])&&(coords[1]>bounds[2])&&(coords[1]<bounds[3])&&(coords[2]>bounds[4])&&(coords[2]<bounds[5]);
-#else    
+#else
     return (coords[0]>bounds[0])&&(coords[0]<bounds[1])&&(coords[1]>bounds[2])&&(coords[1]<bounds[3]);
 #endif
 }
@@ -71,6 +76,32 @@ static inline int RandomInt(int bound)
 {
     double r = (double)(rand()%0x000fffff)/((double)0x000fffff);
     return (int)(r*bound)%bound;
+}
+
+static inline char BasisEval(int basis, char coord)
+{
+    return (char)((coord&1)*((basis&0x000000ff)>>0) + ((coord&2)>>1)*((basis&0x0000ff00)>>8) + ((coord&4)>>2)*((basis&0x00ff0000)>>16));
+}
+
+static inline char BasisEvalReverse(int basis, char coord)
+{
+    return (char)((coord&1)*((basis&0x00ff0000)>>16) + ((coord&2)>>1)*((basis&0x0000ff00)>>8) + ((coord&4)>>2)*((basis&0x000000ff)>>0));
+}
+
+
+static inline void PrintIntAsVector(int p)
+{
+    std::cout << ((p&0xff000000)>>24) << ", ";
+    std::cout << ((p&0x00ff0000)>>16) << ", ";
+    std::cout << ((p&0x0000ff00)>>8 ) << ", ";
+    std::cout << ((p&0x000000ff)>>0 ) << std::endl;
+}
+
+static inline void PrintCharAsVector(char p)
+{
+    std::cout << ((p&4)>>2) << ", ";
+    std::cout << ((p&2)>>1) << ", ";
+    std::cout << ((p&1)>>0) << std::endl;
 }
 
 #endif
