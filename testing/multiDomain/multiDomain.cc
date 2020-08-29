@@ -18,7 +18,6 @@ int main(int argc, char** argv)
 	picture.SetClip(0,0,1,1);
     domain.Render(&picture);
     domain2.Render(&picture);
-    //picture.FillCircle(xc, yc, rmean-0.001);
     picture.Close();
     gTree::Finalize();
     return 0;

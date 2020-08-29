@@ -216,7 +216,9 @@ namespace gTree
     {
         for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
         {
-            //do stuff with it->first based on it->second.
+            //do stuff with it->first based on it->second
+            RefinementTreeNode* neighbor = it->first;
+            
         }
     }
 
