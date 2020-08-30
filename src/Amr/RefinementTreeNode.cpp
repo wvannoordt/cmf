@@ -204,12 +204,12 @@ namespace gTree
         __dloop(shuffledIndices[d] = (int)CharBit(refTo, d) - (int)CharBit(refFrom, d));
         int permOrders = 0x01220100;
         char permutationOrder = (permOrders>>(4*refineType))&0x0000000f;
-        int basis = 0x02000102;
+        int basis = IS3D?0x02000102:0x01000100;
         for (char n = 0; n < permutationOrder; n++)
         {
             basis = (basis << 8) + ((basis&0x00ff0000) >> 16);
         }
-        __dloop(dispVector[d] = shuffledIndices[(basis>>(8*d)&0x000000ff)]);
+        __dloop(dispVector[d] = shuffledIndices[((basis>>(8*d))&0x000000ff)]);
     }
 
     void RefinementTreeNode::UpdateNeighborsOfNeighborsToChildNodes(char newRefinementType)
@@ -243,7 +243,7 @@ namespace gTree
             for (int i = 0; i < numCandidateChildren; i++)
             {
                 //There will need to be changes here.
-                __dloop(newEdgeVec[d] = relationship.edgeVector[d]);
+                __dloop(newEdgeVec[d] = -relationship.edgeVector[d]);
                 char orientationFromBasis = BasisEval(indexingBasis, (char)i);
                 char orientation = (orientationFromBasis&~orientationConstraintMask)|(orientationConstraintValues&orientationConstraintMask);
                 int orientationToIdxBasis = GetInvCoordBasis(newRefinementType);
@@ -311,7 +311,7 @@ namespace gTree
         double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
         double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
         double xProbe[DIM];
-        xProbe[0] = 0.55;
+        xProbe[0] = 0.65;
         xProbe[1] = 0.55;
         if (BoxContains(blockBounds, xProbe))
         {
@@ -320,11 +320,15 @@ namespace gTree
             picture->PushFillType(TikzColor::red);
             for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
             {
+                double xm = 0.5*(it->first->blockBounds[0]+it->first->blockBounds[1]);
+                double ym = 0.5*(it->first->blockBounds[2]+it->first->blockBounds[3]);
                 double x1n = 0.5*(it->first->blockBounds[0]+it->first->blockBounds[1])-rad;
                 double y1n = 0.5*(it->first->blockBounds[2]+it->first->blockBounds[3])-rad;
                 double x2n = 0.5*(it->first->blockBounds[0]+it->first->blockBounds[1])+rad;
                 double y2n = 0.5*(it->first->blockBounds[2]+it->first->blockBounds[3])+rad;
+                double dx = 0.9*rad;
                 picture->FillBox(x1n, y1n, x2n, y2n);
+                picture->DrawLine(xm, ym, xm-it->second.edgeVector[0]*dx, ym-it->second.edgeVector[1]*dx);
             }
             picture->PopFillType();
             picture->PopFillType();

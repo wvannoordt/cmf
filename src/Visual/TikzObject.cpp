@@ -26,8 +26,9 @@ namespace gTree
         myfile.open(filename.c_str());
         myfile << "\\documentclass[tikz,border=10pt]{standalone}" << std::endl;
         myfile << "\\usepackage{tikz}" << std::endl;
+        myfile << "\\usetikzlibrary{arrows}" << std::endl;
         myfile << "\\begin{document}" << std::endl;
-        myfile << "\\begin{tikzpicture}[x=1cm,y=1cm]" << std::endl;
+        myfile << "\\begin{tikzpicture}[x=1cm,y=1cm,>=stealth']" << std::endl;
     }
 
     void TikzObject::Close(void)
@@ -52,10 +53,10 @@ namespace gTree
         lineColorStack.push(color);
         lineThicknessStack.push(thickness);
     }
-    
+
     void TikzObject::PushFillType(TikzColor::TikzColor color)
     {PushFillType(TikzColorStr(color));}
-    
+
     void TikzObject::PushFillType(std::string color)
     {
         fillColorStack.push(color);
@@ -82,6 +83,15 @@ namespace gTree
     void TikzObject::DrawLine(double x1, double y1, double x2, double y2)
     {
         myfile << "\\draw[" << lineColorStack.top() << ", " << lineStyleStack.top() << ", line width=" << std::to_string(lineThicknessStack.top()) << "] ";
+        myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y1)) << ")";
+        myfile << " -- ";
+        myfile << "(" << std::to_string(CoordX(x2)) << "," << std::to_string(CoordY(y2)) << ");";
+        myfile << std::endl;
+    }
+
+    void TikzObject::DrawArrow(double x1, double y1, double x2, double y2)
+    {
+        myfile << "\\draw[->," << lineColorStack.top() << ", " << lineStyleStack.top() << ", line width=" << std::to_string(lineThicknessStack.top()/9) << "] ";
         myfile << "(" << std::to_string(CoordX(x1)) << "," << std::to_string(CoordY(y1)) << ")";
         myfile << " -- ";
         myfile << "(" << std::to_string(CoordX(x2)) << "," << std::to_string(CoordY(y2)) << ");";
@@ -116,7 +126,7 @@ namespace gTree
         myfile << "cycle;";
         myfile << std::endl;
     }
-    
+
     void TikzObject::FillBox(double x1, double y1, double x2, double y2)
     {
         myfile << "\\draw[fill=" << fillColorStack.top() << ", line width=0.0] ";
@@ -131,7 +141,7 @@ namespace gTree
         myfile << "cycle;";
         myfile << std::endl;
     }
-    
+
     void TikzObject::FillCircle(double x1, double y1, double r)
     {
         myfile << "\\draw[fill=" << fillColorStack.top() << ", line width=0.0] ";
@@ -140,7 +150,7 @@ namespace gTree
         myfile << "(" << std::to_string(CoordR(r)) << ");";
         myfile << std::endl;
     }
-    
+
     void TikzObject::DrawCircle(double x1, double y1, double r)
     {
         myfile << "\\draw[" << lineColorStack.top() << ", " << lineStyleStack.top() << ", line width=" << std::to_string(lineThicknessStack.top()) << "] ";
@@ -149,7 +159,7 @@ namespace gTree
         myfile << "(" << std::to_string(CoordR(r)) << ");";
         myfile << std::endl;
     }
-    
+
     void TikzObject::SetClip(double x1, double y1, double x2, double y2)
     {
         myfile << "\\clip ";
@@ -158,17 +168,17 @@ namespace gTree
         myfile << "(" << std::to_string(CoordX(x1+x2)) << "," << std::to_string(CoordY(y1+y2)) << ");";
         myfile << std::endl;
     }
-    
+
     double TikzObject::CoordR(double r)
     {
         return imageScale*r;
     }
-    
+
     double TikzObject::CoordX(double x)
     {
         return imageScale*x;
     }
-    
+
     double TikzObject::CoordY(double y)
     {
         return imageScale*y;
