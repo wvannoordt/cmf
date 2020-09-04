@@ -193,7 +193,6 @@ namespace gTree
                     newChildNode->CreateNewNeighbor(newSiblingNode, deltaijk, 0);
                 }
             }
-            //Do stuff with subNodes[i].
         }
     }
 
@@ -248,9 +247,70 @@ namespace gTree
                 char orientation = (orientationFromBasis&~orientationConstraintMask)|(orientationConstraintValues&orientationConstraintMask);
                 int orientationToIdxBasis = GetInvCoordBasis(newRefinementType);
                 int idx = GetIndexFromOctantAndRefineType(orientation, newRefinementType);
-                neighbor->CreateNewNeighbor(subNodes[idx], newEdgeVec, relationship.isDomainEdge);
+                bool relationshipIsAnnihilated;
+                for (int d = 0; d < DIM; d++)
+                {
+                    bool isUpperOrientationInDirection = subNodes[idx]->SharesEdgeWithHost(2*d+1);
+                    bool relationshipStableFromOrientation = (relationship.edgeVector[d]==(isUpperOrientationInDirection?1:-1));
+                    bool edgeVectorMightBeReduced = (CharBit(newRefinementType, d)==1);
+                    edgeVectorMightBeReduced = edgeVectorMightBeReduced && (subNodes[idx]->directionLevels[d]<=neighbor->directionLevels[d]);
+                    edgeVectorMightBeReduced = edgeVectorMightBeReduced && (!relationshipStableFromOrientation);
+                    if (edgeVectorMightBeReduced)
+                    {                        
+                        relationshipIsAnnihilated = false;
+                        DetermineNeighborClassificationUpdate(neighbor, subNodes[idx], d, isUpperOrientationInDirection, newEdgeVec, &relationshipIsAnnihilated);
+                    }
+                }
+                if (!relationshipIsAnnihilated)
+                {
+                    neighbor->CreateNewNeighbor(subNodes[idx], newEdgeVec, relationship.isDomainEdge);
+                    __dloop(newEdgeVec[d]*=-1);
+                    subNodes[idx]->CreateNewNeighbor(neighbor, newEdgeVec, relationship.isDomainEdge);
+                }
             }
         }
+    }
+    
+    void RefinementTreeNode::DetermineNeighborClassificationUpdate(RefinementTreeNode* neighbor, RefinementTreeNode* child, int d, bool tangentUpperOrientation, int* newEdgeVec, bool* relationshipIsAnnihilated)
+    {
+        int edgeIndex = 2*d + (tangentUpperOrientation?1:0);
+        int directionComponentChange = tangentUpperOrientation?1:-1;
+        bool allEdgeConditionsSatisfied = true;
+        RefinementTreeNode* sameLevelNode;
+        if (!(host)) return;
+        for (RefinementTreeNode* currentNode = neighbor; (currentNode->directionLevels[d])>(child->directionLevels[d]); currentNode = currentNode->host)
+        {
+            if (!(currentNode->host)) __erkill("Error: neighbor classification reference null host.");
+            allEdgeConditionsSatisfied = allEdgeConditionsSatisfied && currentNode->SharesEdgeWithHost(edgeIndex);
+            sameLevelNode = currentNode;
+        }
+        bool matchedOnFinalLevel = sameLevelNode->SharesEdgeWithHost(edgeIndex);
+        if (matchedOnFinalLevel)
+        {
+            *relationshipIsAnnihilated = false;
+            return;
+        }
+        else
+        {
+            if (allEdgeConditionsSatisfied)
+            {
+                newEdgeVec[d] += directionComponentChange;
+            }
+            else
+            {
+                *relationshipIsAnnihilated = true;
+                return;
+            }
+        }
+    }
+    
+    bool RefinementTreeNode::SharesEdgeWithHost(int edgeIndex)
+    {
+        if (!host) return false;
+        int d = (edgeIndex - edgeIndex%2) / 2;
+        int upper = edgeIndex%2;
+        if (CharBit(~refineType, d)) return true;
+        return (CharBit(refineOrientation, d)==upper);
     }
 
     int RefinementTreeNode::GetCoordBasis(char refinementType)
@@ -290,7 +350,6 @@ namespace gTree
         double y2 = blockBounds[3]-shrink;
         if (isTerminal)
         {
-            //if (IsAnyDomainBoundary()) picture->FillBox(x1, y1, x2, y2);
             picture->DrawBox(x1, y1, x2, y2);
             DebugDraw(picture);
         }
@@ -311,8 +370,8 @@ namespace gTree
         double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
         double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
         double xProbe[DIM];
-        xProbe[0] = 0.65;
-        xProbe[1] = 0.55;
+        xProbe[0] = 0.61;
+        xProbe[1] = 0.56;
         if (BoxContains(blockBounds, xProbe))
         {
             picture->PushFillType(TikzColor::teal);
@@ -332,7 +391,7 @@ namespace gTree
             }
             picture->PopFillType();
             picture->PopFillType();
-        }
+        }        
     }
 
     bool RefinementTreeNode::IsAnyDomainBoundary(void)

@@ -34,6 +34,7 @@ namespace gTree
             void Refine(char newRefinementType);
             void SetRefineLimiter(RefinementLimit_t* limiter_in);
             int GetLevel(void);
+            bool SharesEdgeWithHost(int edgeIndex);
         private:
             void GenerateEdgeRelationshipFromOrientations(char refFrom, char refTo, char refineType, int* dispVector);
             void GenerateNeighborsOfChildAllNodes(void);
@@ -46,6 +47,7 @@ namespace gTree
             int GetCoordBasis(char refinementType);
             int GetInvCoordBasis(char refinementType);
             void DefineBounds(double* hostBounds, char refineType_in, char refineOrientation_in);
+            void DetermineNeighborClassificationUpdate(RefinementTreeNode* neighbor, RefinementTreeNode* child, int d, bool tangentUpperOrientation, int* newEdgeVec, bool* relationshipIsAnnihilated);
             char refineType, refineOrientation;
             bool isTerminal, deallocSubTrees;
             char subNodeRefinementType;
