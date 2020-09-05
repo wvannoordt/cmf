@@ -92,7 +92,7 @@ LCUDA :=
 endif
 
 ifeq (${MEMCHECK}, 1)
-VALG := $(shell which valgrind)
+VALG := $(shell which valgrind) --error-exitcode=188
 else
 VALG := 
 endif

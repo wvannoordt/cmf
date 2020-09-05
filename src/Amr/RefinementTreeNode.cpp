@@ -256,7 +256,7 @@ namespace gTree
                     edgeVectorMightBeReduced = edgeVectorMightBeReduced && (subNodes[idx]->directionLevels[d]<=neighbor->directionLevels[d]);
                     edgeVectorMightBeReduced = edgeVectorMightBeReduced && (!relationshipStableFromOrientation);
                     if (edgeVectorMightBeReduced)
-                    {                        
+                    {   
                         relationshipIsAnnihilated = false;
                         DetermineNeighborClassificationUpdate(neighbor, subNodes[idx], d, isUpperOrientationInDirection, newEdgeVec, &relationshipIsAnnihilated);
                     }
@@ -277,11 +277,14 @@ namespace gTree
         int directionComponentChange = tangentUpperOrientation?1:-1;
         bool allEdgeConditionsSatisfied = true;
         RefinementTreeNode* sameLevelNode;
-        if (!(host)) return;
-        for (RefinementTreeNode* currentNode = neighbor; (currentNode->directionLevels[d])>(child->directionLevels[d]); currentNode = currentNode->host)
+        
+        for (RefinementTreeNode* currentNode = neighbor; (currentNode->directionLevels[d])>=(child->directionLevels[d]); currentNode = currentNode->host)
         {
             if (!(currentNode->host)) __erkill("Error: neighbor classification reference null host.");
-            allEdgeConditionsSatisfied = allEdgeConditionsSatisfied && currentNode->SharesEdgeWithHost(edgeIndex);
+            if (currentNode->directionLevels[d]!=child->directionLevels[d])
+            {
+                allEdgeConditionsSatisfied = allEdgeConditionsSatisfied && currentNode->SharesEdgeWithHost(edgeIndex);
+            }
             sameLevelNode = currentNode;
         }
         bool matchedOnFinalLevel = sameLevelNode->SharesEdgeWithHost(edgeIndex);
@@ -298,7 +301,7 @@ namespace gTree
             }
             else
             {
-                *relationshipIsAnnihilated = true;
+                *relationshipIsAnnihilated = !matchedOnFinalLevel;
                 return;
             }
         }
@@ -370,8 +373,9 @@ namespace gTree
         double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
         double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
         double xProbe[DIM];
-        xProbe[0] = 0.61;
-        xProbe[1] = 0.56;
+        xProbe[0] = 0.51;
+        //xProbe[0] = 0.49;
+        xProbe[1] = 0.55;
         if (BoxContains(blockBounds, xProbe))
         {
             picture->PushFillType(TikzColor::teal);

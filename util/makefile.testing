@@ -1,7 +1,8 @@
 MAINCC := $(wildcard *.cc)
 TARGET := test_$(basename $(notdir ${MAINCC}))
+TEST_FLAGS := -g
 main: setup
-	${CC_HOST} ${CURRENT_ICONFIG} ${MAINCC} -o ${TARGET} ${CURRENT_LCONFIG}
+	${CC_HOST} ${TEST_FLAGS} ${CURRENT_ICONFIG} ${MAINCC} -o ${TARGET} ${CURRENT_LCONFIG}
 
 setup:
 	mkdir -p output
