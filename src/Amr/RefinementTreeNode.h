@@ -7,7 +7,7 @@
 #include <vector>
 #include <utility>
 
-namespace gTree
+namespace Anaptric
 {
     struct NodeEdge
     {

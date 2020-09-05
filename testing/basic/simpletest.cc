@@ -1,17 +1,17 @@
 #include <iostream>
 #include <cmath>
-#include "gTree.h"
+#include "Anaptric.h"
 int main(int argc, char** argv)
 {
-    gTree::Initialize();    
-    gTree::ReadInput("input.ptl");
-    gTree::RefinementBlock domain("Domain");   
-    
+    Anaptric::Initialize();
+    Anaptric::ReadInput("input.ptl");
+    Anaptric::RefinementBlock domain("Domain");
+
     std::string filename = "output/main.tex";
-    gTree::TikzObject picture;
+    Anaptric::TikzObject picture;
     picture.Open(filename);
     domain.Render(&picture);
     picture.Close();
-    gTree::Finalize();
+    Anaptric::Finalize();
     return 0;
 }

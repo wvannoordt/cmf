@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 #include "PropTreeLib.h"
-#include "gTree.h"
+#include "Anaptric.h"
 #include "RefinementBlock.h"
 #include "RefinementTreeNode.h"
 #include "Config.h"
@@ -9,7 +9,7 @@
 #include "Utils.hx"
 #include "RefinementConstraint.h"
 
-namespace gTree
+namespace Anaptric
 {
     RefinementBlock::RefinementBlock(std::string title)
     {
@@ -50,7 +50,7 @@ namespace gTree
             trunks[i]->SetRefineLimiter(&refineLimiter);
         }
         for (int i = 0; i < totalNumTrunks; i++)
-        {            
+        {
             int blockIndex[DIM];
             Dim2Idx(i, blockDim, blockIndex);
             int totalNumNeighbors = IS3D?27:9;
@@ -75,12 +75,12 @@ namespace gTree
             }
         }
     }
-    
+
     void RefinementBlock::SetRefineLimitCriterion(RefinementLimit_t limiter_in)
     {
         refineLimiter = limiter_in;
     }
-    
+
     void RefinementBlock::RefineAt(double coords[DIM], char refinementType)
     {
         RefinementTreeNode* target = GetNodeAt(coords);
@@ -89,7 +89,7 @@ namespace gTree
             target->Refine(refinementType);
         }
     }
-    
+
     RefinementTreeNode* RefinementBlock::GetNodeAt(double coords[DIM])
     {
         int idx[DIM];
@@ -100,23 +100,23 @@ namespace gTree
             return NULL;
         }
     }
-    
+
     bool RefinementBlock::PointIsInDomain(double coords[DIM], int* idx)
     {
         bool queryOutsideDomain = false;
-        for (int d = 0; d < DIM; d++) 
+        for (int d = 0; d < DIM; d++)
         {
             idx[d] = (coords[d] - blockBounds[2*d])/(dx[d]);
             queryOutsideDomain = queryOutsideDomain  || (coords[d]<blockBounds[2*d]) || (coords[d]>=blockBounds[2*d+1]);
         }
     }
-    
+
     bool RefinementBlock::PointIsInDomain(double coords[DIM])
     {
         int idx[DIM];
         return PointIsInDomain(coords, idx);
     }
-    
+
     void RefinementBlock::HandleRefinementQueryOutsideDomain(double coords[DIM])
     {
         //Extend domain? crash? ignore?

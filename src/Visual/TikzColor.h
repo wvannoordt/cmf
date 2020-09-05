@@ -4,7 +4,7 @@
 #include <string>
 #include "Config.h"
 
-namespace gTree
+namespace Anaptric
 {
     namespace TikzColor
     {

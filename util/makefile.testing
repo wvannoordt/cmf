@@ -1,8 +1,20 @@
 MAINCC := $(wildcard *.cc)
 TARGET := test_$(basename $(notdir ${MAINCC}))
 TEST_FLAGS := -g
+
+ifneq ("$(wildcard case.mk)","")
+include case.mk
+endif
+
+ifndef DIM
+DIM := 2
+endif
+
+COMPFLAGS :=
+COMPFLAGS += -DDIM=${DIM}
+
 main: setup
-	${CC_HOST} ${TEST_FLAGS} ${CURRENT_ICONFIG} ${MAINCC} -o ${TARGET} ${CURRENT_LCONFIG}
+	${CC_HOST} ${TEST_FLAGS} ${COMPFLAGS} ${CURRENT_ICONFIG} ${MAINCC} -o ${TARGET} ${CURRENT_LCONFIG}
 
 setup:
 	mkdir -p output

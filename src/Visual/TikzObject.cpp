@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <string>
 
-namespace gTree
+namespace Anaptric
 {
     TikzObject::TikzObject(void)
     {

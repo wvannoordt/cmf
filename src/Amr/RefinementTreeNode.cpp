@@ -1,14 +1,14 @@
 #include <string>
 #include <iostream>
 #include "PropTreeLib.h"
-#include "gTree.h"
+#include "Anaptric.h"
 #include "RefinementTreeNode.h"
 #include "Config.h"
 #include <cstdlib>
 #include "Utils.hx"
 #include "DebugTools.hx"
 
-namespace gTree
+namespace Anaptric
 {
     RefinementTreeNode::RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in, int level_in, RefinementTreeNode* host_in)
     {
@@ -201,14 +201,7 @@ namespace gTree
         int shuffledIndices[DIM];
         __dloop(dispVector[d] = 0);
         __dloop(shuffledIndices[d] = (int)CharBit(refTo, d) - (int)CharBit(refFrom, d));
-        int permOrders = 0x01220100;
-        char permutationOrder = (permOrders>>(4*refineType))&0x0000000f;
-        int basis = IS3D?0x02000102:0x01000100;
-        for (char n = 0; n < permutationOrder; n++)
-        {
-            basis = (basis << 8) + ((basis&0x00ff0000) >> 16);
-        }
-        __dloop(dispVector[d] = shuffledIndices[((basis>>(8*d))&0x000000ff)]);
+        __dloop(dispVector[d] = shuffledIndices[d]);
     }
 
     void RefinementTreeNode::UpdateNeighborsOfNeighborsToChildNodes(char newRefinementType)
@@ -256,7 +249,7 @@ namespace gTree
                     edgeVectorMightBeReduced = edgeVectorMightBeReduced && (subNodes[idx]->directionLevels[d]<=neighbor->directionLevels[d]);
                     edgeVectorMightBeReduced = edgeVectorMightBeReduced && (!relationshipStableFromOrientation);
                     if (edgeVectorMightBeReduced)
-                    {   
+                    {
                         relationshipIsAnnihilated = false;
                         DetermineNeighborClassificationUpdate(neighbor, subNodes[idx], d, isUpperOrientationInDirection, newEdgeVec, &relationshipIsAnnihilated);
                     }
@@ -270,14 +263,14 @@ namespace gTree
             }
         }
     }
-    
+
     void RefinementTreeNode::DetermineNeighborClassificationUpdate(RefinementTreeNode* neighbor, RefinementTreeNode* child, int d, bool tangentUpperOrientation, int* newEdgeVec, bool* relationshipIsAnnihilated)
     {
         int edgeIndex = 2*d + (tangentUpperOrientation?1:0);
         int directionComponentChange = tangentUpperOrientation?1:-1;
         bool allEdgeConditionsSatisfied = true;
         RefinementTreeNode* sameLevelNode;
-        
+
         for (RefinementTreeNode* currentNode = neighbor; (currentNode->directionLevels[d])>=(child->directionLevels[d]); currentNode = currentNode->host)
         {
             if (!(currentNode->host)) __erkill("Error: neighbor classification reference null host.");
@@ -306,7 +299,7 @@ namespace gTree
             }
         }
     }
-    
+
     bool RefinementTreeNode::SharesEdgeWithHost(int edgeIndex)
     {
         if (!host) return false;
@@ -354,7 +347,6 @@ namespace gTree
         if (isTerminal)
         {
             picture->DrawBox(x1, y1, x2, y2);
-            DebugDraw(picture);
         }
         else
         {
@@ -367,7 +359,7 @@ namespace gTree
 
     void RefinementTreeNode::DebugDraw(TikzObject* picture)
     {
-        double rad = 0.01;
+        double rad = 0.006;
         double x1 = 0.5*(blockBounds[0]+blockBounds[1])-rad;
         double y1 = 0.5*(blockBounds[2]+blockBounds[3])-rad;
         double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
@@ -375,7 +367,7 @@ namespace gTree
         double xProbe[DIM];
         xProbe[0] = 0.51;
         //xProbe[0] = 0.49;
-        xProbe[1] = 0.55;
+        xProbe[1] = 0.56;
         if (BoxContains(blockBounds, xProbe))
         {
             picture->PushFillType(TikzColor::teal);
@@ -395,7 +387,7 @@ namespace gTree
             }
             picture->PopFillType();
             picture->PopFillType();
-        }        
+        }
     }
 
     bool RefinementTreeNode::IsAnyDomainBoundary(void)

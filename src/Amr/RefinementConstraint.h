@@ -1,6 +1,6 @@
 #ifndef REFTYPE_H
 #define REFTYPE_H
-namespace gTree
+namespace Anaptric
 {
     namespace RefinementConstraint
     {

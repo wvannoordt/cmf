@@ -6,7 +6,7 @@
 #include "RefinementTreeNode.h"
 #include "RefinementConstraint.h"
 
-namespace gTree
+namespace Anaptric
 {
     class RefinementBlock
     {

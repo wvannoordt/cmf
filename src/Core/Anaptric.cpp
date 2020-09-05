@@ -1,6 +1,7 @@
 #include "PropTreeLib.h"
+#include "Anaptric.h"
 #include <string>
-namespace gTree
+namespace Anaptric
 {
     PropTreeLib::PropertyTree mainInput;
     void Initialize(void)

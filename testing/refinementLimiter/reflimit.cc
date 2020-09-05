@@ -1,16 +1,16 @@
 #include <iostream>
 #include <cmath>
-#include "gTree.h"
-bool limit(gTree::RefinementTreeNode* block)
+#include "Anaptric.h"
+bool limit(Anaptric::RefinementTreeNode* block)
 {
     return (block->GetLevel() > 2);
 }
 
 int main(int argc, char** argv)
 {
-    gTree::Initialize();
-    gTree::ReadInput("input.ptl");
-    gTree::RefinementBlock domain("Domain");
+    Anaptric::Initialize();
+    Anaptric::ReadInput("input.ptl");
+    Anaptric::RefinementBlock domain("Domain");
     domain.SetRefineLimitCriterion(limit);
     double coords[2];
     double nvec[2];
@@ -53,13 +53,13 @@ int main(int argc, char** argv)
         //circle
         double prog = ((double)i)/(Nline-1);
         double thetaCirc = thetaMin + (thetaMax-thetaMin)*prog;
-        
+
         coords[0] = xc + shockradius*cos(thetaCirc);
         coords[1] = yc + shockradius*sin(thetaCirc);
         nvec[0] = cos(thetaCirc);
         nvec[1] = sin(thetaCirc);
         domain.RefineAt(coords, 3);
-        
+
         //line, upper
         nvec[0] = cos(thetaMin);
         nvec[1] = sin(thetaMin);
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
         coords[0] = xc + shockradius*cos(thetaMin)+shocklen*prog*tvec[0];
         coords[1] = yc + shockradius*sin(thetaMin)+shocklen*prog*tvec[1];
         //domain.RefineAt(coords, 3);
-        
+
         //line, lower
         nvec[0] = cos(thetaMax);
         nvec[1] = sin(thetaMax);
@@ -79,12 +79,12 @@ int main(int argc, char** argv)
         domain.RefineAt(coords, 3);
     }
     std::string filename = "output/main.tex";
-    gTree::TikzObject picture;
+    Anaptric::TikzObject picture;
     picture.Open(filename);
 	picture.SetClip(0,0,1,1);
     domain.Render(&picture);
     //picture.FillCircle(xc, yc, rmean-0.001);
     picture.Close();
-    gTree::Finalize();
+    Anaptric::Finalize();
     return 0;
 }
