@@ -1,3 +1,11 @@
+IFFOUND :=
+ifneq ("$(wildcard main.tex)","")
+IFFOUND := look
+endif
+
+.PHONY: final
+final: ${IFFOUND}
+
 .PHONY: look
 look:
 	pdflatex -halt-on-error main.tex

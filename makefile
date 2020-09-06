@@ -16,6 +16,10 @@ ifndef MEMCHECK
 MEMCHECK := 0
 endif
 
+ifndef DIM
+DIM := 2
+endif
+
 CURRENT_BASEIDIR   = $(shell pwd)
 CURRENT_SRC_DIR   := ${CURRENT_BASEIDIR}/src
 CURRENT_LIB_DIR   := ${CURRENT_BASEIDIR}/lib
@@ -87,6 +91,7 @@ endif
 export VALG
 
 COMPILE_TIME_OPT += -DTRACK_OUTPUT_ORIGINS=0
+COMPILE_TIME_OPT += -DDIM=${DIM}
 
 
 DEVICE_FLAGS := -O${OPTLEVEL} -x cu -rdc=true -Xcompiler -fPIC ${COMPILE_TIME_OPT} -dc
@@ -192,7 +197,9 @@ clean:
 	-rm -r ${CURRENT_HDRHX_DIR}
 	@for tdir in ${TESTS} ; do\
 		${MAKE} -C $${tdir} -f makefile clean;\
+		echo "removing $${tdir}/output";\
 		unlink $${tdir}/makefile||echo"";\
+		rm -rf $${tdir}/output;\
 	done
 
 test: final
