@@ -159,11 +159,15 @@ namespace Anaptric
     {
         localInput.DebugPrint();
     }
-    
+
     void RefinementBlock::OutputDebugVtk(std::string filename)
     {
-        VtkFile output(filename, VtkFormatType::ascii, VtkTopologyType::polydata);
-        
+        VtkFile output(filename, VtkFormatType::ascii, VtkTopologyType::unstructuredGrid);
+        int totalNumBlocks = 0;
+        for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveCountTerminal(&totalNumBlocks);
+        output.SetPointCount(totalNumBlocks*(ANA_IS3D?8:4));
+        for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveWritePointsToVtk(&output);
+
         output.Write();
     }
 
@@ -171,7 +175,7 @@ namespace Anaptric
     {
         Render(picture, NULL);
     }
-    
+
     void RefinementBlock::Render(TikzObject* picture, DebugTikzDraw_t debugger)
     {
         picture->PushLineType(TikzLineType::solid, 0.06, TikzColor::black);
@@ -181,5 +185,5 @@ namespace Anaptric
         }
         picture->PopLineType();
     }
-    
+
 }

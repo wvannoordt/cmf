@@ -7,6 +7,7 @@
 #include <vector>
 #include <utility>
 #include "RefinementConstraint.h"
+#include "VtkFile.h"
 
 namespace Anaptric
 {
@@ -38,6 +39,8 @@ namespace Anaptric
             int GetLevel(void);
             bool SharesEdgeWithHost(int edgeIndex);
             double* GetBlockBounds(void);
+            void RecursiveCountTerminal(int* totalNumBlocks);
+            void RecursiveWritePointsToVtk(VtkFile* vtk);
         private:
             void Lock(void);
             void Unlock(void);
@@ -66,7 +69,7 @@ namespace Anaptric
             std::map<RefinementTreeNode*, NodeEdge> neighbors;
             bool isOnBoundary[2*ANA_DIM];
             RefinementLimit_t* refineLimiter;
-            
+
             friend class NeighborIterator;
     };
 }

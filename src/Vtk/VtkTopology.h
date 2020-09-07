@@ -22,7 +22,7 @@ namespace Anaptric
             field
         };
     }
-    
+
     inline static std::string VtkTopologyTypeStr(VtkTopologyType::VtkTopologyType ttype)
     {
         switch (ttype)
@@ -36,7 +36,7 @@ namespace Anaptric
         }
         return "NONE";
     }
-    
+
     class VtkTopology : public I_VtkElement
     {
         public:
@@ -45,8 +45,19 @@ namespace Anaptric
             ~VtkTopology(void);
             void WriteToFile(std::ofstream & myfile);
             void ReadFromFile(std::ofstream & myfile);
+            void SetPointCount(size_t pointNum);
+            void SetPointCount(size_t pointNumX, size_t pointNumY, size_t pointNumZ);
+            void AddPoint(double x, double y);
+            void AddPoint(double x, double y, double z);
         private:
             VtkTopologyType::VtkTopologyType topologyType;
+            double* pointBuf;
+            size_t* cellBuf;
+            size_t numPointsVec[3];
+            size_t pointSize;
+            bool deallocPointBuffer, deallocCellBuffer;
+            int pointIndex;
+            int edgeIndex;
     };
 }
 

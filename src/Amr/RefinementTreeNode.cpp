@@ -8,6 +8,7 @@
 #include "Utils.hx"
 #include "DebugTools.hx"
 #include <vector>
+#include "VtkFile.h"
 
 namespace Anaptric
 {
@@ -132,7 +133,7 @@ namespace Anaptric
         }
         this->Unlock();
     }
-    
+
     bool RefinementTreeNode::RefineRequiredFromRelationship(RefinementTreeNode* newChildNode, RefinementTreeNode* toBeRefined, NodeEdge relationship, char* newRefTypeOut)
     {
         *newRefTypeOut = 0;
@@ -166,17 +167,17 @@ namespace Anaptric
         }
         return false;
     }
-    
+
     bool RefinementTreeNode::NodeIsLocked(void)
     {
         return isLocked;
     }
-    
+
     void RefinementTreeNode::Lock(void)
     {
         isLocked = true;
     }
-    
+
     void RefinementTreeNode::Unlock(void)
     {
         isLocked = false;
@@ -337,6 +338,43 @@ namespace Anaptric
                     __dloop(newEdgeVec[d]*=-1);
                     subNodes[idx]->CreateNewNeighbor(neighbor, newEdgeVec, relationship.isDomainEdge);
                 }
+            }
+        }
+    }
+
+    void RefinementTreeNode::RecursiveWritePointsToVtk(VtkFile* vtk)
+    {
+        if (isTerminal)
+        {
+            for (char i = 0; i < (1<<ANA_DIM); i++)
+            {
+                double x = blockBounds[0+CharBit(i, 0)];
+                double y = blockBounds[2+CharBit(i, 1)];
+                double z = 0.0;
+                if (ANA_IS3D) z = blockBounds[4+CharBit(i, 2)];
+                vtk->AddPoint(x, y, z);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < numSubNodes; i++)
+            {
+                subNodes[i]->RecursiveWritePointsToVtk(vtk);
+            }
+        }
+    }
+
+    void RefinementTreeNode::RecursiveCountTerminal(int* totalNumBlocks)
+    {
+        if (isTerminal)
+        {
+            (*totalNumBlocks)++;
+        }
+        else
+        {
+            for (int i = 0; i < numSubNodes; i++)
+            {
+                subNodes[i]->RecursiveCountTerminal(totalNumBlocks);
             }
         }
     }

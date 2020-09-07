@@ -84,14 +84,14 @@ LCUDA :=
 endif
 
 ifeq (${MEMCHECK}, 1)
-VALG := $(shell which valgrind) --error-exitcode=188
+VALG := $(shell which valgrind) --error-exitcode=188 --leak-check=full
 else
-VALG := 
+VALG :=
 endif
 export VALG
 
 COMPILE_TIME_OPT += -DTRACK_OUTPUT_ORIGINS=0
-COMPILE_TIME_OPT += -DDIM=${DIM}
+COMPILE_TIME_OPT += -DANA_DIM=${DIM}
 
 
 DEVICE_FLAGS := -O${OPTLEVEL} -x cu -rdc=true -Xcompiler -fPIC ${COMPILE_TIME_OPT} -dc
