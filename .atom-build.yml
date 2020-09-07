@@ -1,1 +1,1 @@
-cmd: 'TESTS=constraint make test'
+cmd: 'DIM=3 TESTS=constraint make test'

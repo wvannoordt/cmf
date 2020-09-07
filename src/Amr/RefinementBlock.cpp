@@ -16,14 +16,14 @@ namespace Anaptric
         refineLimiter = NULL;
         srand((unsigned int)time(NULL));
         localInput.SetAsSubtree(mainInput[title]);
-        localInput["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(DIM, "Base block dimensions");
-        localInput["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*DIM, "Base block bounds");
+        localInput["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(ANA_DIM, "Base block dimensions");
+        localInput["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*ANA_DIM, "Base block bounds");
         localInput["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
             = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
         localInput.StrictParse();
         totalNumTrunks = 1;
-        for (int i = 0; i < DIM; i++) totalNumTrunks*=blockDim[i];
-        for (int d = 0; d < DIM; d++) dx[d] = (blockBounds[2*d+1]-blockBounds[2*d])/blockDim[d];
+        for (int i = 0; i < ANA_DIM; i++) totalNumTrunks*=blockDim[i];
+        for (int d = 0; d < ANA_DIM; d++) dx[d] = (blockBounds[2*d+1]-blockBounds[2*d])/blockDim[d];
         DefineTrunks();
     }
 
@@ -36,12 +36,12 @@ namespace Anaptric
     {
         deallocTrunks = true;
         trunks = new RefinementTreeNode* [totalNumTrunks];
-        double localBounds[2*DIM];
-        int idx[DIM];
+        double localBounds[2*ANA_DIM];
+        int idx[ANA_DIM];
         for (int i = 0; i < totalNumTrunks; i++)
         {
             Dim2Idx(i, blockDim, idx);
-            for (int d = 0; d < DIM; d++)
+            for (int d = 0; d < ANA_DIM; d++)
             {
                 localBounds[2*d] = blockBounds[2*d]+idx[d]*dx[d];
                 localBounds[2*d+1] = blockBounds[2*d]+(idx[d]+1)*dx[d];
@@ -51,16 +51,16 @@ namespace Anaptric
         }
         for (int i = 0; i < totalNumTrunks; i++)
         {
-            int blockIndex[DIM];
+            int blockIndex[ANA_DIM];
             Dim2Idx(i, blockDim, blockIndex);
-            int totalNumNeighbors = IS3D?27:9;
-            int boxdim[DIM];
+            int totalNumNeighbors = ANA_IS3D?27:9;
+            int boxdim[ANA_DIM];
             __dloop(boxdim[d] = 3);
-            int neighborBlockIndex[DIM];
+            int neighborBlockIndex[ANA_DIM];
             __dloop(neighborBlockIndex[d] = 0);
             for (int k = 0; k < totalNumNeighbors; k++)
             {
-                int deltaijk[DIM];
+                int deltaijk[ANA_DIM];
                 Dim2Idx(k, boxdim, deltaijk);
                 __dloop(deltaijk[d] -= 1);
                 __dloop(neighborBlockIndex[d] = blockIndex[d]+deltaijk[d]);
@@ -81,7 +81,7 @@ namespace Anaptric
         refineLimiter = limiter_in;
     }
 
-    void RefinementBlock::RefineAt(double coords[DIM], char refinementType)
+    void RefinementBlock::RefineAt(double coords[ANA_DIM], char refinementType)
     {
         RefinementTreeNode* target = GetNodeAt(coords);
         if (target)
@@ -90,9 +90,9 @@ namespace Anaptric
         }
     }
 
-    RefinementTreeNode* RefinementBlock::GetNodeAt(double coords[DIM])
+    RefinementTreeNode* RefinementBlock::GetNodeAt(double coords[ANA_DIM])
     {
-        int idx[DIM];
+        int idx[ANA_DIM];
         if (!PointIsInDomain(coords, idx)) return trunks[Idx2Dim(blockDim, idx)]->RecursiveGetNodeAt(coords);
         else
         {
@@ -101,23 +101,23 @@ namespace Anaptric
         }
     }
 
-    bool RefinementBlock::PointIsInDomain(double coords[DIM], int* idx)
+    bool RefinementBlock::PointIsInDomain(double coords[ANA_DIM], int* idx)
     {
         bool queryOutsideDomain = false;
-        for (int d = 0; d < DIM; d++)
+        for (int d = 0; d < ANA_DIM; d++)
         {
             idx[d] = (coords[d] - blockBounds[2*d])/(dx[d]);
             queryOutsideDomain = queryOutsideDomain  || (coords[d]<blockBounds[2*d]) || (coords[d]>=blockBounds[2*d+1]);
         }
     }
 
-    bool RefinementBlock::PointIsInDomain(double coords[DIM])
+    bool RefinementBlock::PointIsInDomain(double coords[ANA_DIM])
     {
-        int idx[DIM];
+        int idx[ANA_DIM];
         return PointIsInDomain(coords, idx);
     }
 
-    void RefinementBlock::HandleRefinementQueryOutsideDomain(double coords[DIM])
+    void RefinementBlock::HandleRefinementQueryOutsideDomain(double coords[ANA_DIM])
     {
         //Extend domain? crash? ignore?
     }

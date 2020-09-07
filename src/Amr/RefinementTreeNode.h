@@ -13,7 +13,7 @@ namespace Anaptric
     struct NodeEdge
     {
         char isDomainEdge;
-        int edgeVector[DIM];
+        int edgeVector[ANA_DIM];
     };
 
     class RefinementTreeNode;
@@ -32,7 +32,7 @@ namespace Anaptric
             void CreateNewNeighbor(RefinementTreeNode* target, int* deltaijk, char isDomainEdge);
             void RemoveNeighbor(RefinementTreeNode* target);
             bool IsAnyDomainBoundary(void);
-            RefinementTreeNode* RecursiveGetNodeAt(double coords[DIM]);
+            RefinementTreeNode* RecursiveGetNodeAt(double coords[ANA_DIM]);
             void Refine(char newRefinementType);
             void SetRefineLimiter(RefinementLimit_t* limiter_in);
             int GetLevel(void);
@@ -57,14 +57,14 @@ namespace Anaptric
             char refineType, refineOrientation;
             bool isTerminal, deallocSubTrees, isLocked;
             char subNodeRefinementType;
-            double blockBounds[2*DIM];
+            double blockBounds[2*ANA_DIM];
             RefinementConstraint::RefinementConstraint constraint;
             RefinementTreeNode** subNodes;
             RefinementTreeNode* host;
             int numSubNodes, level;
-            int directionLevels[DIM];
+            int directionLevels[ANA_DIM];
             std::map<RefinementTreeNode*, NodeEdge> neighbors;
-            bool isOnBoundary[2*DIM];
+            bool isOnBoundary[2*ANA_DIM];
             RefinementLimit_t* refineLimiter;
             
             friend class NeighborIterator;

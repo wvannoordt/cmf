@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include "Anaptric.h"
-#define RX 0.501201231
-#define RY 0.501201231
+#define RX 0.342
+#define RY 0.1231
 static inline bool BoxContains(double* bounds, double* coords)
 {
 #if(IS3D)
@@ -20,10 +20,17 @@ void DebugDraw(Anaptric::TikzObject* picture, Anaptric::RefinementTreeNode* node
     double y1 = 0.5*(blockBounds[2]+blockBounds[3])-rad;
     double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
     double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
-    double xProbe[DIM];
+    double xProbe[ANA_DIM];
     xProbe[0] = RX;
     xProbe[1] = RY;
-    if (BoxContains(blockBounds, xProbe))
+    bool neighs = true;
+    if (!neighs && node->IsAnyDomainBoundary())
+    {
+        picture->PushFillType(Anaptric::TikzColor::gray);
+        picture->FillBox(blockBounds[0], blockBounds[2], blockBounds[1], blockBounds[3]);
+        picture->PopFillType();
+    }
+    if (neighs && BoxContains(blockBounds, xProbe))
     {
         picture->PushFillType(Anaptric::TikzColor::teal);
         picture->FillBox(x1, y1, x2, y2);
@@ -71,10 +78,10 @@ int main(int argc, char** argv)
             double coords[2];
             coords[0] = RX+i*1.1;
             coords[1] = RY;
-            domains[i]->RefineAt(coords, 3);
-            domains[i]->RefineAt(coords, 3);
-            domains[i]->RefineAt(coords, 3);
-            domains[i]->RefineAt(coords, 3);
+            domains[i]->RefineRandom();
+            domains[i]->RefineRandom();
+            domains[i]->RefineRandom();
+            domains[i]->RefineRandom();
         }
         
         std::string filename = "output/main.tex";
@@ -83,7 +90,7 @@ int main(int argc, char** argv)
         Anaptric::DebugTikzDraw_t neighborDraw(DebugDraw);
         for (int i = 0; i < 2; i++)
         {
-            domains[i]->Render(&picture);
+            domains[i]->Render(&picture, neighborDraw);
         }
         picture.Close();
         Anaptric::Finalize();

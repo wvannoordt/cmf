@@ -142,6 +142,7 @@ export CURRENT_ICONFIG=-I${CURRENT_HDR_DIR} ${ICUDA} ${IFLAGS_DEPENDENCIES}
 export CURRENT_LCONFIG= ${LCUDA} -L${CURRENT_LIB_DIR} -l${LIB_NAME} ${LFLAGS_DEPENDENCIES}
 export CC_HOST
 export CURRENT_BASEIDIR
+export DIM
 
 .PHONY: final
 
@@ -206,3 +207,4 @@ test: final
 	@for tdir in ${TESTS} ; do\
 		${MAKE} -C $${tdir} -f makefile test || exit 4;\
 	done
+	@echo "ALL TESTS SUCCESSFUL"

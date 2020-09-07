@@ -19,19 +19,19 @@ namespace Anaptric
             void Render(TikzObject* picture, DebugTikzDraw_t debugger);
             void RefineAll(char refinementType);
             void RefineRandom();
-            void RefineAt(double coords[DIM], char refinementType);
-            RefinementTreeNode* GetNodeAt(double coords[DIM]);
-            bool PointIsInDomain(double coords[DIM], int* idx);
-            bool PointIsInDomain(double coords[DIM]);
+            void RefineAt(double coords[ANA_DIM], char refinementType);
+            RefinementTreeNode* GetNodeAt(double coords[ANA_DIM]);
+            bool PointIsInDomain(double coords[ANA_DIM], int* idx);
+            bool PointIsInDomain(double coords[ANA_DIM]);
             void SetRefineLimitCriterion(RefinementLimit_t limiter_in);
         private:
             void DefineTrunks(void);
-            void HandleRefinementQueryOutsideDomain(double coords[DIM]);
+            void HandleRefinementQueryOutsideDomain(double coords[ANA_DIM]);
             PropTreeLib::PropertyTree localInput;
             int* blockDim;
             int totalNumTrunks;
             double* blockBounds;
-            double dx[DIM];
+            double dx[ANA_DIM];
             RefinementTreeNode** trunks;
             bool deallocTrunks;
             RefinementConstraint::RefinementConstraint refinementConstraintType;

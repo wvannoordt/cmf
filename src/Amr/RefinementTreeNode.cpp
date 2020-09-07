@@ -24,7 +24,7 @@ namespace Anaptric
         level = level_in;
         host = host_in;
         subNodeRefinementType = 0;
-        for (int d = 0; d < 2*DIM; d++) isOnBoundary[d] = false;
+        for (int d = 0; d < 2*ANA_DIM; d++) isOnBoundary[d] = false;
         DefineDirectionLevels();
         InheritDomainBoundaryInfo();
         if (host)
@@ -41,7 +41,7 @@ namespace Anaptric
     {
         if (host)
         {
-            for (int d = 0; d < 2*DIM; d++)
+            for (int d = 0; d < 2*ANA_DIM; d++)
             {
                 int xyz = (d-(d%2))/2;
                 bool currentNodeOnDomainRelativeToHost = !((refineType>>xyz)&1);
@@ -53,13 +53,13 @@ namespace Anaptric
 
     void RefinementTreeNode::DefineDirectionLevels(void)
     {
-        if (host) {for (int d = 0; d<DIM; d++) directionLevels[d] = host->directionLevels[d] + CharBit(refineType, d);}
-        else {for (int d = 0; d<DIM; d++) directionLevels[d] = 0;}
+        if (host) {for (int d = 0; d<ANA_DIM; d++) directionLevels[d] = host->directionLevels[d] + CharBit(refineType, d);}
+        else {for (int d = 0; d<ANA_DIM; d++) directionLevels[d] = 0;}
     }
 
     void RefinementTreeNode::DefineBounds(double* hostBounds, char refineType_in, char refineOrientation_in)
     {
-        for (int d = 0; d < DIM; d++)
+        for (int d = 0; d < ANA_DIM; d++)
         {
             char iRefined = (refineType_in>>d)&1;
             char iShift   = (refineOrientation_in>>d)&1;
@@ -81,7 +81,7 @@ namespace Anaptric
         neighbors.insert({target, edgeData});
         if (isDomainEdge)
         {
-            for (int d = 0; d < DIM; d++)
+            for (int d = 0; d < ANA_DIM; d++)
             {
                 if ((deltaijk[d]!=0) && CharBit(isDomainEdge, d))
                 {
@@ -147,7 +147,7 @@ namespace Anaptric
             {
                 char output = 0;
                 bool anyFactorTwo = false;
-                for (int d = 0; d < DIM; d++)
+                for (int d = 0; d < ANA_DIM; d++)
                 {
                     if (__d_abs(newChildNode->directionLevels[d] - toBeRefined->directionLevels[d])>1)
                     {
@@ -160,6 +160,7 @@ namespace Anaptric
             }
             case RefinementConstraint::factor2PartiallyConstrained:
             {
+                __erkill("RefinementConstraint::factor2PartiallyConstrained not implemented");
                 return false;
             }
         }
@@ -181,7 +182,7 @@ namespace Anaptric
         isLocked = false;
     }
 
-    RefinementTreeNode* RefinementTreeNode::RecursiveGetNodeAt(double coords[DIM])
+    RefinementTreeNode* RefinementTreeNode::RecursiveGetNodeAt(double coords[ANA_DIM])
     {
         if (isTerminal) return this;
         else
@@ -225,7 +226,7 @@ namespace Anaptric
             if (isLimited(this)) return;
         }
         char effective = newRefinementType;
-        if (!IS3D) effective = newRefinementType&3;
+        if (!ANA_IS3D) effective = newRefinementType&3;
         subNodeRefinementType = effective;
         isTerminal = false;
         deallocSubTrees = true;
@@ -264,7 +265,7 @@ namespace Anaptric
                     char childOrientation = newChildNode->refineOrientation;
                     char siblingOrientation = newSiblingNode->refineOrientation;
                     char newRefinementType = subNodeRefinementType;
-                    int deltaijk[DIM];
+                    int deltaijk[ANA_DIM];
                     GenerateEdgeRelationshipFromOrientations(childOrientation, siblingOrientation, newRefinementType, deltaijk);
                     newChildNode->CreateNewNeighbor(newSiblingNode, deltaijk, 0);
                 }
@@ -274,7 +275,7 @@ namespace Anaptric
 
     void RefinementTreeNode::GenerateEdgeRelationshipFromOrientations(char refFrom, char refTo, char refineType, int* dispVector)
     {
-        int shuffledIndices[DIM];
+        int shuffledIndices[ANA_DIM];
         __dloop(dispVector[d] = 0);
         __dloop(shuffledIndices[d] = (int)CharBit(refTo, d) - (int)CharBit(refFrom, d));
         __dloop(dispVector[d] = shuffledIndices[d]);
@@ -287,7 +288,7 @@ namespace Anaptric
             //do stuff with it->first based on it->second
             RefinementTreeNode* neighbor = it->first;
             NodeEdge relationship = it->second;
-            int newEdgeVec[DIM];
+            int newEdgeVec[ANA_DIM];
 
             //0 -> any bit value allowed
             //1 -> bit value must have the value represented in orientationConstraintValues
@@ -299,7 +300,7 @@ namespace Anaptric
             __dloop(numCandidateChildren = numCandidateChildren << CharBit(~orientationConstraintMask, d));
             int indexingBasis = 0;
             int currentBasisIndex = 0;
-            for (int d = 0; d < DIM; d++)
+            for (int d = 0; d < ANA_DIM; d++)
             {
                 int currentBasisVector = 1<<d;
                 if (CharBit(~orientationConstraintMask, d))
@@ -317,7 +318,7 @@ namespace Anaptric
                 int orientationToIdxBasis = GetInvCoordBasis(newRefinementType);
                 int idx = GetIndexFromOctantAndRefineType(orientation, newRefinementType);
                 bool relationshipIsAnnihilated;
-                for (int d = 0; d < DIM; d++)
+                for (int d = 0; d < ANA_DIM; d++)
                 {
                     bool isUpperOrientationInDirection = subNodes[idx]->SharesEdgeWithHost(2*d+1);
                     bool relationshipStableFromOrientation = (relationship.edgeVector[d]==(isUpperOrientationInDirection?1:-1));
@@ -410,7 +411,7 @@ namespace Anaptric
     }
     int RefinementTreeNode::NumberOfNewSubNodes(char refinementType)
     {
-        return 1<<(((refinementType&1)?1:0) + ((refinementType&2)?1:0) + ((IS3D*(refinementType&4))?1:0));
+        return 1<<(((refinementType&1)?1:0) + ((refinementType&2)?1:0) + ((ANA_IS3D*(refinementType&4))?1:0));
     }
 
     void RefinementTreeNode::DrawToObject(TikzObject* picture, DebugTikzDraw_t debugger)
@@ -440,7 +441,7 @@ namespace Anaptric
     bool RefinementTreeNode::IsAnyDomainBoundary(void)
     {
         bool output = false;
-        for (int d = 0; d < 2*DIM; d++) output = output | isOnBoundary[d];
+        for (int d = 0; d < 2*ANA_DIM; d++) output = output | isOnBoundary[d];
         return output;
     }
 
