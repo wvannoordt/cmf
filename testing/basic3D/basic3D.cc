@@ -9,6 +9,7 @@ int main(int argc, char** argv)
         Anaptric::ReadInput("input.ptl");
         Anaptric::RefinementBlock domain("Domain");
         std::string filename = "output/domain.vtk";
+        domain.OutputDebugVtk(filename);
         Anaptric::Finalize();
     )
     return 0;

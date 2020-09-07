@@ -2,7 +2,6 @@
 #include "TikzObject.h"
 #include <iostream>
 #include <fstream>
-#include <fstream>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string>

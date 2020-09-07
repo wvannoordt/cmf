@@ -8,6 +8,7 @@
 #include "TikzObject.h"
 #include "Utils.hx"
 #include "RefinementConstraint.h"
+#include "VtkFile.h"
 
 namespace Anaptric
 {
@@ -157,6 +158,11 @@ namespace Anaptric
     void RefinementBlock::Print(void)
     {
         localInput.DebugPrint();
+    }
+    
+    void RefinementBlock::OutputDebugVtk(std::string filename)
+    {
+        VtkFile output(filename);
     }
 
     void RefinementBlock::Render(TikzObject* picture)

@@ -24,6 +24,7 @@ namespace Anaptric
             bool PointIsInDomain(double coords[ANA_DIM], int* idx);
             bool PointIsInDomain(double coords[ANA_DIM]);
             void SetRefineLimitCriterion(RefinementLimit_t limiter_in);
+            void OutputDebugVtk(std::string filename);
         private:
             void DefineTrunks(void);
             void HandleRefinementQueryOutsideDomain(double coords[ANA_DIM]);
