@@ -3,17 +3,12 @@
 #include "Anaptric.h"
 int main(int argc, char** argv)
 {
-    __only2d
+    __only3d
     (
         Anaptric::Initialize();
         Anaptric::ReadInput("input.ptl");
         Anaptric::RefinementBlock domain("Domain");
-
-        std::string filename = "output/main.tex";
-        Anaptric::TikzObject picture;
-        picture.Open(filename);
-        domain.Render(&picture);
-        picture.Close();
+        std::string filename = "output/domain.vtk";
         Anaptric::Finalize();
     )
     return 0;
