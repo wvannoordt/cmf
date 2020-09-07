@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include "Utils.hx"
 #include "DebugTools.hx"
+#include <vector>
 
 namespace Anaptric
 {
@@ -107,16 +108,26 @@ namespace Anaptric
 
     void RefinementTreeNode::ResolveNewRefinementWithNeighbors(void)
     {
+        std::vector<RefinementTreeNode*> nodes;
+        std::vector<bool> refineRequired;
+        std::vector<char> refineTypes;
         this->Lock();
         for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
         {
             char newNeighborRefinementType;
-            if (RefineRequiredFromRelationship(this, it->first, it->second, &newNeighborRefinementType))
+            if (!it->first->NodeIsLocked())
             {
-                if (!it->first->NodeIsLocked())
-                {
-                    it->first->Refine(newNeighborRefinementType);
-                }
+                refineRequired.push_back(RefineRequiredFromRelationship(this, it->first, it->second, &newNeighborRefinementType));
+                refineTypes.push_back(newNeighborRefinementType);
+                nodes.push_back(it->first);
+            }
+        }
+        //Manually enumerate neighbors since contents of the std::map change with refinements
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+            if (refineRequired[i])
+            {
+                nodes[i]->Refine(refineTypes[i]);
             }
         }
         this->Unlock();

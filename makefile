@@ -204,5 +204,5 @@ clean:
 
 test: final
 	@for tdir in ${TESTS} ; do\
-		${MAKE} -C $${tdir} -f makefile test;\
+		${MAKE} -C $${tdir} -f makefile test || exit 4;\
 	done

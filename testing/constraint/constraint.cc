@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include "Anaptric.h"
-#define RX 0.51
-#define RY 0.51
+#define RX 0.501201231
+#define RY 0.501201231
 static inline bool BoxContains(double* bounds, double* coords)
 {
 #if(IS3D)
@@ -58,20 +58,33 @@ int main(int argc, char** argv)
     (
         Anaptric::Initialize();
         Anaptric::ReadInput("input.ptl");
-        Anaptric::RefinementBlock domain("Domain");
-        double coords[2];
-        coords[0] = RX;
-        coords[1] = RY;
-        domain.RefineAt(coords, 1);
-        domain.RefineAt(coords, 2);
-        domain.RefineAt(coords, 1);
+        Anaptric::RefinementBlock domainA("DomainA");
+        Anaptric::RefinementBlock domainB("DomainB");
+        
+        Anaptric::RefinementBlock* domains[2];
+        domains[0] = &domainA;
+        domains[1] = &domainB;
+        
+        
+        for (int i = 0; i < 2; i++)
+        {
+            double coords[2];
+            coords[0] = RX+i*1.1;
+            coords[1] = RY;
+            domains[i]->RefineAt(coords, 3);
+            domains[i]->RefineAt(coords, 3);
+            domains[i]->RefineAt(coords, 3);
+            domains[i]->RefineAt(coords, 3);
+        }
         
         std::string filename = "output/main.tex";
         Anaptric::TikzObject picture;
         picture.Open(filename);
-    	picture.SetClip(0,0,1,1);
         Anaptric::DebugTikzDraw_t neighborDraw(DebugDraw);
-        domain.Render(&picture, neighborDraw);
+        for (int i = 0; i < 2; i++)
+        {
+            domains[i]->Render(&picture);
+        }
         picture.Close();
         Anaptric::Finalize();
     )

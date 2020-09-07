@@ -1,6 +1,12 @@
-Domain
+DomainA
 {
-	blockDim = [6, 6]
+	blockDim = [5, 5]
 	blockBounds = [0,1,0,1]
 	refinementConstraintType = factor2CompletelyConstrained
+}
+DomainB
+{
+	blockDim = [5, 5]
+	blockBounds = [1.1,2.1,0,1]
+	refinementConstraintType = free
 }
