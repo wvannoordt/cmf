@@ -122,7 +122,7 @@ namespace Anaptric
         this->Unlock();
     }
     
-    static bool RefinementTreeNode::RefineRequiredFromRelationship(RefinementTreeNode* newChildNode, RefinementTreeNode* toBeRefined, NodeEdge relationship, char* newRefTypeOut)
+    bool RefinementTreeNode::RefineRequiredFromRelationship(RefinementTreeNode* newChildNode, RefinementTreeNode* toBeRefined, NodeEdge relationship, char* newRefTypeOut)
     {
         *newRefTypeOut = 0;
         switch (newChildNode->constraint)
