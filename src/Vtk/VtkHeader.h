@@ -14,9 +14,12 @@ namespace Anaptric
     {
         public:
             VtkHeader(void);
+            VtkHeader(std::string headerValue_in);
             ~VtkHeader(void);
             void WriteToFile(std::ofstream & myfile);
-            void ReadFromFile(std::ofstream & myfile);        
+            void ReadFromFile(std::ofstream & myfile);
+        private:
+            std::string headerValue;
     };
 }
 

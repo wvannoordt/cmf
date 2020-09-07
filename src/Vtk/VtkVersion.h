@@ -14,9 +14,12 @@ namespace Anaptric
     {
         public:
             VtkVersion(void);
+            VtkVersion(int major_in, int minor_in);            
             ~VtkVersion(void);
             void WriteToFile(std::ofstream & myfile);
             void ReadFromFile(std::ofstream & myfile);
+        private:
+            int major, minor;
     };
 }
 

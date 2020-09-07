@@ -162,7 +162,9 @@ namespace Anaptric
     
     void RefinementBlock::OutputDebugVtk(std::string filename)
     {
-        VtkFile output(filename);
+        VtkFile output(filename, VtkFormatType::ascii, VtkTopologyType::polydata);
+        
+        output.Write();
     }
 
     void RefinementBlock::Render(TikzObject* picture)

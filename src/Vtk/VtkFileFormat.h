@@ -10,13 +10,25 @@
 
 namespace Anaptric
 {
+    namespace VtkFormatType
+    {
+        enum VtkFormatType
+        {
+            ascii,
+            binary
+        };
+    }
+    
     class VtkFileFormat : public I_VtkElement
     {
         public:
+            VtkFileFormat(VtkFormatType::VtkFormatType formType_in);
             VtkFileFormat(void);
             ~VtkFileFormat(void);
             void WriteToFile(std::ofstream & myfile);
             void ReadFromFile(std::ofstream & myfile);        
+        private:
+            VtkFormatType::VtkFormatType formType;
     };
 }
 

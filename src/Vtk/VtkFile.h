@@ -3,16 +3,27 @@
 
 #include <string>
 #include <vector>
+#include "VtkFileFormat.h"
+#include "VtkData.h"
+#include "VtkHeader.h"
+#include "VtkTopology.h"
+#include "VtkVersion.h"
 
 namespace Anaptric
-{
+{    
     class VtkFile
     {
         public:
-            VtkFile(std::string filename_in);
+            VtkFile(std::string filename_in, VtkFormatType::VtkFormatType formType, VtkTopologyType::VtkTopologyType topType);
             ~VtkFile(void);
+            void Write(void);
         private:
             std::string filename;
+            VtkVersion version;
+            VtkFileFormat format;
+            VtkHeader header;
+            VtkTopology topology;
+            std::vector<VtkData*> data;
     };
 }
 

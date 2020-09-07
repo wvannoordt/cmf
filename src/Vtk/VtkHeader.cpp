@@ -1,9 +1,16 @@
 #include "VtkHeader.h"
 namespace Anaptric
 {
+    VtkHeader::VtkHeader(std::string headerValue_in)
+    {
+        elementType = "header";
+        headerValue = headerValue_in;
+    }
+    
     VtkHeader::VtkHeader(void)
     {
         elementType = "header";
+        headerValue = "NOHEADERVALUE";
     }
     
     VtkHeader::~VtkHeader(void)
@@ -13,7 +20,7 @@ namespace Anaptric
     
     void VtkHeader::WriteToFile(std::ofstream & myfile)
     {
-        
+        myfile << headerValue << std::endl;
     }
     
     void VtkHeader::ReadFromFile(std::ofstream & myfile)
