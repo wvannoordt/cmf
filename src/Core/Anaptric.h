@@ -6,6 +6,7 @@
 #include "PropTreeLib.h"
 #include "RefinementBlock.h"
 #include "RefinementTreeNode.h"
+#include "NeighborIterator.h"
 namespace Anaptric
 {
     extern PropTreeLib::PropertyTree mainInput;

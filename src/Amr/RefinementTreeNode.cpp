@@ -10,8 +10,10 @@
 
 namespace Anaptric
 {
-    RefinementTreeNode::RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in, int level_in, RefinementTreeNode* host_in)
+    RefinementTreeNode::RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in, int level_in, RefinementTreeNode* host_in, RefinementConstraint::RefinementConstraint constraint_in)
     {
+        constraint = constraint_in;
+        isLocked = false;
         isTerminal = true;
         refineType = refineType_in;
         refineOrientation = refineOrientation_in;
@@ -103,9 +105,69 @@ namespace Anaptric
         }
     }
 
-    void RefinementTreeNode::ResolveNewRefinementWithNeighbor(RefinementTreeNode* issuer)
+    void RefinementTreeNode::ResolveNewRefinementWithNeighbors(void)
     {
-
+        this->Lock();
+        for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
+        {
+            char newNeighborRefinementType;
+            if (RefineRequiredFromRelationship(this, it->first, it->second, &newNeighborRefinementType))
+            {
+                if (!it->first->NodeIsLocked())
+                {
+                    it->first->Refine(newNeighborRefinementType);
+                }
+            }
+        }
+        this->Unlock();
+    }
+    
+    static bool RefinementTreeNode::RefineRequiredFromRelationship(RefinementTreeNode* newChildNode, RefinementTreeNode* toBeRefined, NodeEdge relationship, char* newRefTypeOut)
+    {
+        *newRefTypeOut = 0;
+        switch (newChildNode->constraint)
+        {
+            case RefinementConstraint::free:
+            {
+                *newRefTypeOut = 0;
+                return false;
+            }
+            case RefinementConstraint::factor2CompletelyConstrained:
+            {
+                char output = 0;
+                bool anyFactorTwo = false;
+                for (int d = 0; d < DIM; d++)
+                {
+                    if (__d_abs(newChildNode->directionLevels[d] - toBeRefined->directionLevels[d])>1)
+                    {
+                        anyFactorTwo = true;
+                        SetCharBit(output, d, 1);
+                    }
+                }
+                *newRefTypeOut = output;
+                return anyFactorTwo;
+            }
+            case RefinementConstraint::factor2PartiallyConstrained:
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+    
+    bool RefinementTreeNode::NodeIsLocked(void)
+    {
+        return isLocked;
+    }
+    
+    void RefinementTreeNode::Lock(void)
+    {
+        isLocked = true;
+    }
+    
+    void RefinementTreeNode::Unlock(void)
+    {
+        isLocked = false;
     }
 
     RefinementTreeNode* RefinementTreeNode::RecursiveGetNodeAt(double coords[DIM])
@@ -123,7 +185,6 @@ namespace Anaptric
     int RefinementTreeNode::GetIndexFromOctantAndRefineType(char location, char refinementType)
     {
         int basis = GetInvCoordBasis(refinementType);
-        //basis = GetCoordBasis(refinementType);
         char vec = refinementType&location;
         int output = (int)((vec&1)*((basis&0x00ff0000)>>16) + ((vec&2)>>1)*((basis&0x0000ff00)>>8) + ((vec&4)>>2)*((basis&0x000000ff)));
         return output;
@@ -164,13 +225,17 @@ namespace Anaptric
         for (int i = 0; i < numSubNodes; i++)
         {
             newRefinementOrientation = (char)((i&1)*((basis&0x00ff0000)>>16) + ((i&2)>>1)*((basis&0x0000ff00)>>8) + ((i&4)>>2)*((basis&0x000000ff)));
-            subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this);
+            subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this, constraint);
         }
         GenerateNeighborsOfChildAllNodes();
         UpdateNeighborsOfNeighborsToChildNodes(subNodeRefinementType);
         for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
         {
             it->first->RemoveNeighbor(this);
+        }
+        for (int i = 0; i < numSubNodes; i++)
+        {
+            subNodes[i]->ResolveNewRefinementWithNeighbors();
         }
     }
 
@@ -337,7 +402,7 @@ namespace Anaptric
         return 1<<(((refinementType&1)?1:0) + ((refinementType&2)?1:0) + ((IS3D*(refinementType&4))?1:0));
     }
 
-    void RefinementTreeNode::DrawToObject(TikzObject* picture)
+    void RefinementTreeNode::DrawToObject(TikzObject* picture, DebugTikzDraw_t debugger)
     {
         double shrink = 0.0;
         double x1 = blockBounds[0]+shrink;
@@ -347,46 +412,17 @@ namespace Anaptric
         if (isTerminal)
         {
             picture->DrawBox(x1, y1, x2, y2);
+            if (debugger)
+            {
+                debugger(picture, this);
+            }
         }
         else
         {
             for (int i = 0; i < numSubNodes; i++)
             {
-                subNodes[i]->DrawToObject(picture);
+                subNodes[i]->DrawToObject(picture, debugger);
             }
-        }
-    }
-
-    void RefinementTreeNode::DebugDraw(TikzObject* picture)
-    {
-        double rad = 0.006;
-        double x1 = 0.5*(blockBounds[0]+blockBounds[1])-rad;
-        double y1 = 0.5*(blockBounds[2]+blockBounds[3])-rad;
-        double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
-        double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
-        double xProbe[DIM];
-        xProbe[0] = 0.51;
-        //xProbe[0] = 0.49;
-        xProbe[1] = 0.56;
-        if (BoxContains(blockBounds, xProbe))
-        {
-            picture->PushFillType(TikzColor::teal);
-            picture->FillBox(x1, y1, x2, y2);
-            picture->PushFillType(TikzColor::red);
-            for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
-            {
-                double xm = 0.5*(it->first->blockBounds[0]+it->first->blockBounds[1]);
-                double ym = 0.5*(it->first->blockBounds[2]+it->first->blockBounds[3]);
-                double x1n = 0.5*(it->first->blockBounds[0]+it->first->blockBounds[1])-rad;
-                double y1n = 0.5*(it->first->blockBounds[2]+it->first->blockBounds[3])-rad;
-                double x2n = 0.5*(it->first->blockBounds[0]+it->first->blockBounds[1])+rad;
-                double y2n = 0.5*(it->first->blockBounds[2]+it->first->blockBounds[3])+rad;
-                double dx = 0.9*rad;
-                picture->FillBox(x1n, y1n, x2n, y2n);
-                picture->DrawLine(xm, ym, xm-it->second.edgeVector[0]*dx, ym-it->second.edgeVector[1]*dx);
-            }
-            picture->PopFillType();
-            picture->PopFillType();
         }
     }
 
@@ -400,6 +436,11 @@ namespace Anaptric
     RefinementTreeNode::~RefinementTreeNode(void)
     {
         this->Destroy();
+    }
+
+    double* RefinementTreeNode::GetBlockBounds(void)
+    {
+        return blockBounds;
     }
 
     void RefinementTreeNode::Destroy(void)

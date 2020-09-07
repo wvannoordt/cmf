@@ -7,6 +7,7 @@
 #include <iostream>
 
 #define __dloop(mycode) for(int d = 0; d < DIM; d++) {mycode;}
+#define __d_abs(a) (((a)>0)?(a):(-(a)))
 
 static inline void Dim2Idx(int idx, int* dims, int* ijk)
 {

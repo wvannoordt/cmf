@@ -16,6 +16,7 @@ namespace Anaptric
             void Print(void);
             void Destroy(void);
             void Render(TikzObject* picture);
+            void Render(TikzObject* picture, DebugTikzDraw_t debugger);
             void RefineAll(char refinementType);
             void RefineRandom();
             void RefineAt(double coords[DIM], char refinementType);

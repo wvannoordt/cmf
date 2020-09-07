@@ -46,7 +46,7 @@ namespace Anaptric
                 localBounds[2*d] = blockBounds[2*d]+idx[d]*dx[d];
                 localBounds[2*d+1] = blockBounds[2*d]+(idx[d]+1)*dx[d];
             }
-            trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL);
+            trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL, refinementConstraintType);
             trunks[i]->SetRefineLimiter(&refineLimiter);
         }
         for (int i = 0; i < totalNumTrunks; i++)
@@ -161,11 +161,17 @@ namespace Anaptric
 
     void RefinementBlock::Render(TikzObject* picture)
     {
+        Render(picture, NULL);
+    }
+    
+    void RefinementBlock::Render(TikzObject* picture, DebugTikzDraw_t debugger)
+    {
         picture->PushLineType(TikzLineType::solid, 0.06, TikzColor::black);
         for (int i = 0; i < totalNumTrunks; i++)
         {
-            trunks[i]->DrawToObject(picture);
+            trunks[i]->DrawToObject(picture, debugger);
         }
         picture->PopLineType();
     }
+    
 }
