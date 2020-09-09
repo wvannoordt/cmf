@@ -9,11 +9,11 @@
 
 namespace Anaptric
 {
-    class I_VtkElement
+    class VtkElement
     {
         public:
-            I_VtkElement(void){elementType="NULL";}
-            ~I_VtkElement(void){}
+            VtkElement(void){elementType="NULL";}
+            ~VtkElement(void){}
             virtual void WriteToFile(std::ofstream & myfile){}
             virtual void ReadFromFile(std::ofstream & myfile){}
         protected:

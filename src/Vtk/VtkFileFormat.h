@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
-#include "I_VtkElement.h"
+#include "VtkElement.h"
 
 namespace Anaptric
 {
@@ -19,7 +19,7 @@ namespace Anaptric
         };
     }
     
-    class VtkFileFormat : public I_VtkElement
+    class VtkFileFormat : public VtkElement
     {
         public:
             VtkFileFormat(VtkFormatType::VtkFormatType formType_in);

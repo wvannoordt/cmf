@@ -1,5 +1,5 @@
+//https://vtk.org/wp-content/uploads/2015/04/file-formats.pdf
 #include "VtkFile.h"
-
 namespace Anaptric
 {
     VtkFile::VtkFile(std::string filename_in, VtkFormatType::VtkFormatType formType, VtkTopologyType::VtkTopologyType topType)
@@ -28,7 +28,7 @@ namespace Anaptric
 
     void VtkFile::SetAdjacency(size_t numEdges, size_t numEntries)
     {
-        topology.SetAdjacency(numEdges, numEntries);
+        //topology.SetAdjacency(numEdges, numEntries);
     }
 
     void VtkFile::AddPoint(double x, double y)

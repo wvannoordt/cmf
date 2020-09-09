@@ -6,11 +6,11 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
-#include "I_VtkElement.h"
+#include "VtkElement.h"
 
 namespace Anaptric
 {
-    class VtkVersion : public I_VtkElement
+    class VtkVersion : public VtkElement
     {
         public:
             VtkVersion(void);

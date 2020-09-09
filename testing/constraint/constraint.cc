@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include "Anaptric.h"
-#define RX 0.342
-#define RY 0.1231
+#define RX 0.542
+#define RY 0.5231
 static inline bool BoxContains(double* bounds, double* coords)
 {
 #if(IS3D)
@@ -78,10 +78,13 @@ int main(int argc, char** argv)
             double coords[2];
             coords[0] = RX+i*1.1;
             coords[1] = RY;
-            domains[i]->RefineRandom();
-            domains[i]->RefineRandom();
-            domains[i]->RefineRandom();
-            domains[i]->RefineRandom();
+            //domains[i]->RefineRandom();
+            //domains[i]->RefineRandom();
+            //domains[i]->RefineRandom();
+            //domains[i]->RefineRandom();
+            domains[i]->RefineAt(coords, 2);
+            domains[i]->RefineAt(coords, 2);
+            domains[i]->RefineAt(coords, 2);
         }
         
         std::string filename = "output/main.tex";

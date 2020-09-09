@@ -6,7 +6,8 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
-#include "I_VtkElement.h"
+#include "VtkElement.h"
+#include "VtkAttributable.h"
 
 namespace Anaptric
 {
@@ -37,7 +38,7 @@ namespace Anaptric
         return "NONE";
     }
 
-    class VtkTopology : public I_VtkElement
+    class VtkTopology : public VtkElement, public 
     {
         public:
             VtkTopology(VtkTopologyType::VtkTopologyType topologyType_in);
@@ -51,13 +52,6 @@ namespace Anaptric
             void AddPoint(double x, double y, double z);
         private:
             VtkTopologyType::VtkTopologyType topologyType;
-            double* pointBuf;
-            size_t* cellBuf;
-            size_t numPointsVec[3];
-            size_t pointSize;
-            bool deallocPointBuffer, deallocCellBuffer;
-            int pointIndex;
-            int edgeIndex;
     };
 }
 

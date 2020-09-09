@@ -6,17 +6,18 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
-#include "I_VtkElement.h"
+#include "VtkElement.h"
+#include "VtkAttributable.h"
 
 namespace Anaptric
 {
-    class VtkData : public I_VtkElement
+    class VtkData : public VtkElement, public VtkAttributable
     {
         public:
             VtkData(void);
             ~VtkData(void);
             void WriteToFile(std::ofstream & myfile);
-            void ReadFromFile(std::ofstream & myfile);        
+            void ReadFromFile(std::ofstream & myfile);
     };
 }
 
