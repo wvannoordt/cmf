@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 #include "VtkElement.h"
-#include "VtkAttributable.h"
+#include "VtkAttributeCollection.h"
 
 namespace Anaptric
 {
@@ -38,7 +38,7 @@ namespace Anaptric
         return "NONE";
     }
 
-    class VtkTopology : public VtkElement, public 
+    class VtkTopology : public VtkElement, public VtkHasAttributableCollection
     {
         public:
             VtkTopology(VtkTopologyType::VtkTopologyType topologyType_in);
@@ -46,12 +46,10 @@ namespace Anaptric
             ~VtkTopology(void);
             void WriteToFile(std::ofstream & myfile);
             void ReadFromFile(std::ofstream & myfile);
-            void SetPointCount(size_t pointNum);
-            void SetPointCount(size_t pointNumX, size_t pointNumY, size_t pointNumZ);
-            void AddPoint(double x, double y);
-            void AddPoint(double x, double y, double z);
+            void InitTopology(void);
         private:
             VtkTopologyType::VtkTopologyType topologyType;
+            bool uninitialized;
     };
 }
 

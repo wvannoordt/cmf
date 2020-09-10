@@ -165,9 +165,20 @@ namespace Anaptric
         VtkFile output(filename, VtkFormatType::ascii, VtkTopologyType::unstructuredGrid);
         int totalNumBlocks = 0;
         for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveCountTerminal(&totalNumBlocks);
-        output.SetPointCount(totalNumBlocks*(ANA_IS3D?8:4));
-        for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveWritePointsToVtk(&output);
-
+        output.Mesh()->Component("DATASET")->SetAttribute("numPoints",   (ANA_IS3D?8:4)*totalNumBlocks);
+        output.Mesh()->Component("DATASET")->SetAttribute("bufferCount", 3*(ANA_IS3D?8:4)*totalNumBlocks);
+        output.Mesh()->Component("CELLS")->SetAttribute("numPoints", (ANA_IS3D?8:4)*totalNumBlocks);
+        output.Mesh()->Component("CELLS")->SetAttribute("bufferCount", (ANA_IS3D?9:5)*totalNumBlocks);
+        output.Mesh()->Component("CELLS")->SetAttribute("totalEntries", (ANA_IS3D?9:5)*totalNumBlocks);
+        output.Mesh()->Component("CELL_TYPES")->SetAttribute("numPoints", totalNumBlocks);
+        output.Mesh()->Component("CELL_TYPES")->SetAttribute("bufferCount", totalNumBlocks);
+        double* pointBuffer;
+        int* indexBuffer;
+        int* cellTypeBuffer;
+        output.Mesh()->Component("DATASET")->GetBuffer(&pointBuffer);
+        output.Mesh()->Component("CELLS")->GetBuffer(&indexBuffer);
+        output.Mesh()->Component("CELL_TYPES")->GetBuffer(&cellTypeBuffer);
+        for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveWritePointsToVtk(pointBuffer, indexBuffer, cellTypeBuffer);
         output.Write();
     }
 

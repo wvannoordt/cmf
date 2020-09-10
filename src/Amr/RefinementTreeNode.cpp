@@ -352,7 +352,7 @@ namespace Anaptric
                 double y = blockBounds[2+CharBit(i, 1)];
                 double z = 0.0;
                 if (ANA_IS3D) z = blockBounds[4+CharBit(i, 2)];
-                vtk->AddPoint(x, y, z);
+                //vtk->AddPoint(x, y, z);
             }
         }
         else

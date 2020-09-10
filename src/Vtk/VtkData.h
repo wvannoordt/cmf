@@ -7,17 +7,19 @@
 #include <string>
 #include <vector>
 #include "VtkElement.h"
-#include "VtkAttributable.h"
+#include "VtkAttributeCollection.h"
 
 namespace Anaptric
 {
-    class VtkData : public VtkElement, public VtkAttributable
+    class VtkData : public VtkElement, public VtkHasAttributableCollection
     {
         public:
             VtkData(void);
             ~VtkData(void);
             void WriteToFile(std::ofstream & myfile);
             void ReadFromFile(std::ofstream & myfile);
+        private:
+
     };
 }
 
