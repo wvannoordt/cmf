@@ -342,7 +342,7 @@ namespace Anaptric
         }
     }
 
-    void RefinementTreeNode::RecursiveWritePointsToVtk(VtkFile* vtk)
+    /*void RefinementTreeNode::RecursiveWritePointsToVtk(VtkFile* vtk)
     {
         if (isTerminal)
         {
@@ -362,7 +362,7 @@ namespace Anaptric
                 subNodes[i]->RecursiveWritePointsToVtk(vtk);
             }
         }
-    }
+    }*/
 
     void RefinementTreeNode::RecursiveCountTerminal(int* totalNumBlocks)
     {

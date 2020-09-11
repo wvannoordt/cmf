@@ -178,7 +178,7 @@ namespace Anaptric
         output.Mesh()->Component("DATASET")->GetBuffer(&pointBuffer);
         output.Mesh()->Component("CELLS")->GetBuffer(&indexBuffer);
         output.Mesh()->Component("CELL_TYPES")->GetBuffer(&cellTypeBuffer);
-        for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveWritePointsToVtk(pointBuffer, indexBuffer, cellTypeBuffer);
+        //for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveWritePointsToVtk(pointBuffer, indexBuffer, cellTypeBuffer);
         output.Write();
     }
 
