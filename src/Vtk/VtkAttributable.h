@@ -197,6 +197,12 @@ namespace Anaptric
             int nextPointer;
             std::map<std::string, VtkAttributableType::VtkAttributableType> requiredAttributes;
             std::map<std::string, VtkAttribute> attributes;
+            void GetBuffer(char** buf, size_t* outputSize)
+            {
+                if (!bufferIsAllocated) __VTKERROR("Error: GetBuffer called before buffersize \"" << bufferSizeAttrName << "\" is set.");
+                *buf = dataBuffer;
+                *outputSize = allocatedSize;
+            }
         private:
             std::string bufferSizeAttrName;
             char* dataBuffer;
@@ -204,6 +210,7 @@ namespace Anaptric
             bool bufferIsAllocated;
             VtkAttributableType::VtkAttributableType bufferType;
             std::string className;
+        friend class VtkBuffer;
     };
 }
 

@@ -8,6 +8,7 @@
 #include "VtkHeader.h"
 #include "VtkTopology.h"
 #include "VtkVersion.h"
+#include "VtkBuffer.h"
 
 namespace Anaptric
 {

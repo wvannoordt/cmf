@@ -20,6 +20,10 @@ ifndef DIM
 DIM := 2
 endif
 
+ifndef DOCLEAN
+DOCLEAN :=
+endif
+
 CURRENT_BASEIDIR   = $(shell pwd)
 CURRENT_SRC_DIR   := ${CURRENT_BASEIDIR}/src
 CURRENT_LIB_DIR   := ${CURRENT_BASEIDIR}/lib
@@ -203,7 +207,7 @@ clean:
 		rm -rf $${tdir}/output;\
 	done
 
-test: final
+test: ${DOCLEAN} final
 	@for tdir in ${TESTS} ; do\
 		${MAKE} -C $${tdir} -f makefile test || exit 4;\
 	done

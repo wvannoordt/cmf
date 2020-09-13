@@ -172,12 +172,9 @@ namespace Anaptric
         output.Mesh()->Component("CELLS")->SetAttribute("totalEntries", (ANA_IS3D?9:5)*totalNumBlocks);
         output.Mesh()->Component("CELL_TYPES")->SetAttribute("numPoints", totalNumBlocks);
         output.Mesh()->Component("CELL_TYPES")->SetAttribute("bufferCount", totalNumBlocks);
-        double* pointBuffer;
-        int* indexBuffer;
-        int* cellTypeBuffer;
-        output.Mesh()->Component("DATASET")->GetBuffer(&pointBuffer);
-        output.Mesh()->Component("CELLS")->GetBuffer(&indexBuffer);
-        output.Mesh()->Component("CELL_TYPES")->GetBuffer(&cellTypeBuffer);
+        VtkBuffer points(output.Mesh()->Component("DATASET"));
+        VtkBuffer edges(output.Mesh()->Component("CELLS"));
+        VtkBuffer cellTypes(output.Mesh()->Component("CELL_TYPES"));
         //for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveWritePointsToVtk(pointBuffer, indexBuffer, cellTypeBuffer);
         output.Write();
     }
