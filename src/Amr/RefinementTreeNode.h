@@ -40,7 +40,7 @@ namespace Anaptric
             bool SharesEdgeWithHost(int edgeIndex);
             double* GetBlockBounds(void);
             void RecursiveCountTerminal(int* totalNumBlocks);
-            void RecursiveWritePointsToVtk(VtkFile* vtk);
+            void RecursiveWritePointsToVtk(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes);
         private:
             void Lock(void);
             void Unlock(void);

@@ -192,6 +192,11 @@ namespace Anaptric
                 Destroy();
             }
 
+            void Write(std::ofstream & myfile)
+            {
+                myfile << "HI" << std::endl;
+            }
+
         protected:
             char attributeBuffer[ANA_VTK_BUF_SIZE];
             int nextPointer;

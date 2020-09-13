@@ -12,6 +12,32 @@
 
 namespace Anaptric
 {
+    namespace VtkCellType
+    {
+        enum VtkCellType
+        {
+            none,
+            vertex,
+            polyVertex,
+            line,
+            polyLine,
+            triangle,
+            triangleStrip,
+            polygon,
+            pixel,
+            quad,
+            tetra,
+            voxel,
+            hexahedron,
+            wedge,
+            pyramid,
+            quadraticEdge,
+            quadraticTriangle,
+            quadraticQuad,
+            quadraticTetra,
+            quadraticHexahedron
+        };
+    }
     class VtkFile
     {
         public:

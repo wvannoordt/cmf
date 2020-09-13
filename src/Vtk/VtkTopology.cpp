@@ -79,7 +79,7 @@ namespace Anaptric
 
     void VtkTopology::WriteToFile(std::ofstream & myfile)
     {
-        myfile << "fuckyou" << std::endl;
+        collection.WriteAll(myfile);
     }
 
     void VtkTopology::ReadFromFile(std::ofstream & myfile)

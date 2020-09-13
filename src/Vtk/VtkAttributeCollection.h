@@ -54,6 +54,14 @@ namespace Anaptric
                     attributables.clear();
                 }
             }
+
+            void WriteAll(std::ofstream & myfile)
+            {
+                for (std::map<std::string, VtkAttributable*>::iterator it = attributables.begin(); it!=attributables.end(); it++)
+                {
+                    it->second->Write(myfile);
+                }
+            }
         private:
             std::map<std::string, VtkAttributable*> attributables;
             bool cleared;

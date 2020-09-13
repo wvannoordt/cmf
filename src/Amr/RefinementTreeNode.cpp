@@ -342,7 +342,7 @@ namespace Anaptric
         }
     }
 
-    /*void RefinementTreeNode::RecursiveWritePointsToVtk(VtkFile* vtk)
+    void RefinementTreeNode::RecursiveWritePointsToVtk(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes)
     {
         if (isTerminal)
         {
@@ -352,17 +352,22 @@ namespace Anaptric
                 double y = blockBounds[2+CharBit(i, 1)];
                 double z = 0.0;
                 if (ANA_IS3D) z = blockBounds[4+CharBit(i, 2)];
-                //vtk->AddPoint(x, y, z);
+                points << x;
+                points << y;
+                points << z;
+                edges << edges.Next();
             }
+            if (ANA_IS3D) {cellTypes << VtkCellType::voxel;}
+            else {cellTypes << VtkCellType::pixel;}
         }
         else
         {
             for (int i = 0; i < numSubNodes; i++)
             {
-                subNodes[i]->RecursiveWritePointsToVtk(vtk);
+                subNodes[i]->RecursiveWritePointsToVtk(points, edges, cellTypes);
             }
         }
-    }*/
+    }
 
     void RefinementTreeNode::RecursiveCountTerminal(int* totalNumBlocks)
     {
