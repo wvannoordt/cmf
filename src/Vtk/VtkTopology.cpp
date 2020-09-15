@@ -38,13 +38,16 @@ namespace Anaptric
                 VtkAttributable* dataset = collection.AddAttributable("DATASET", VtkAttributableType::doubleType);
                 dataset->AddRequiredAttribute("numPoints", VtkAttributableType::longType);
                 dataset->AddRequiredAttribute("bufferCount", VtkAttributableType::longType);
+                dataset->AddRequiredAttribute("stride", VtkAttributableType::intType);
                 VtkAttributable* cells = collection.AddAttributable("CELLS", VtkAttributableType::intType);
                 cells->AddRequiredAttribute("numPoints", VtkAttributableType::longType);
                 cells->AddRequiredAttribute("totalEntries", VtkAttributableType::longType);
                 cells->AddRequiredAttribute("bufferCount", VtkAttributableType::longType);
+                cells->AddRequiredAttribute("stride", VtkAttributableType::intType);
                 VtkAttributable* cellTypes = collection.AddAttributable("CELL_TYPES", VtkAttributableType::intType);
                 cellTypes->AddRequiredAttribute("numPoints", VtkAttributableType::longType);
                 cellTypes->AddRequiredAttribute("bufferCount", VtkAttributableType::longType);
+                cellTypes->AddRequiredAttribute("stride", VtkAttributableType::intType);
                 break;
             }
             case VtkTopologyType::polydata:

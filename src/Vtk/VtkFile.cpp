@@ -14,6 +14,11 @@ namespace Anaptric
     void VtkFile::Write(void)
     {
         std::ofstream myfile;
+        topology->CheckHasAllAttributes();
+        for (size_t i = 0; i < data.size(); i++)
+        {
+            data[i]->CheckHasAllAttributes();
+        }
         myfile.open(filename.c_str());
         version->WriteToFile(myfile);
         header->WriteToFile(myfile);

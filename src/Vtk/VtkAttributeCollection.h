@@ -15,6 +15,15 @@ namespace Anaptric
     {
         public:
             VtkAttributeCollection(void){cleared = false;}
+
+            void EnforceAllRequiredAttributes(void)
+            {
+                for (std::map<std::string, VtkAttributable*>::iterator it = attributables.begin(); it!=attributables.end(); it++)
+                {
+                    it->second->EnforceAllRequiredAttributes();
+                }
+            }
+
             bool Exists(std::string name)
             {
                 std::map<std::string,VtkAttributable*>::iterator it = attributables.find(name);
@@ -75,6 +84,10 @@ namespace Anaptric
             VtkAttributable* Component(std::string name)
             {
                 return collection.GetAttributable(name);
+            }
+            void CheckHasAllAttributes(void)
+            {
+                collection.EnforceAllRequiredAttributes();
             }
         protected:
             VtkAttributeCollection collection;

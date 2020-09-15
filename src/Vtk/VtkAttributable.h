@@ -39,6 +39,11 @@ namespace Anaptric
                 bufferSizeAttrName = bufferSizeName;
             }
 
+            void StrideIs(std::string strideName_in)
+            {
+                strideName = strideName_in;
+            }
+
             bool RequiredAttributeExists(std::string name)
             {
                 std::map<std::string,VtkAttributableType::VtkAttributableType>::iterator it = requiredAttributes.find(name);
@@ -47,6 +52,24 @@ namespace Anaptric
                    return true;
                 }
                 return false;
+            }
+
+            bool AttributeExists(std::string name)
+            {
+                std::map<std::string,VtkAttribute>::iterator it = attributes.find(name);
+                if(it != attributes.end())
+                {
+                   return true;
+                }
+                return false;
+            }
+
+            void EnforceAllRequiredAttributes(void)
+            {
+                for (std::map<std::string,VtkAttributableType::VtkAttributableType>::iterator it = requiredAttributes.begin(); it != requiredAttributes.end(); it++)
+                {
+                    if (!AttributeExists(it->first)) __VTKERROR("Cannot find required attribute \"" << it->first << "\" for object \"" << className << "\".");
+                }
             }
 
             void AddRequiredAttribute(std::string name, VtkAttributableType::VtkAttributableType attribType)
@@ -151,10 +174,18 @@ namespace Anaptric
                     {
                         __VTKERROR("Attempted to allocate dataBuffer using attribute \"" << name << "\" of improper type " << AttrTypeStr(setType) << ".");
                     }
-                    size_t allocsize = ((setType == VtkAttributableType::intType) ? (*((int*)data)) : (*((size_t*)data))) * GetBufferElementSize();;
+                    size_t allocsize = ((setType == VtkAttributableType::intType) ? (*((int*)data)) : (*((size_t*)data))) * GetBufferElementSize();
                     dataBuffer = (char*)malloc(allocsize);
                     bufferIsAllocated = true;
                     allocatedSize = allocsize;
+                }
+                if (name == strideName)
+                {
+                    if (!TypesAreCompatible(setType, VtkAttributableType::longType))
+                    {
+                        __VTKERROR("Attempted to set stride using attribute \"" << name << "\" of improper type " << AttrTypeStr(setType) << ".");
+                    }
+                    stride = (int)((setType == VtkAttributableType::intType) ? (*((int*)data)) : (*((size_t*)data)));
                 }
             }
 
@@ -184,7 +215,9 @@ namespace Anaptric
                 nextPointer = 0;
                 className = name_in;
                 allocatedSize = 0;
+                stride = -1;
                 BufferSizeIs("bufferCount");
+                StrideIs("stride");
             }
 
             ~VtkAttributable(void)
@@ -194,7 +227,39 @@ namespace Anaptric
 
             void Write(std::ofstream & myfile)
             {
-                myfile << "HI" << std::endl;
+                size_t elemSize = GetBufferElementSize();
+                size_t totalEntries = allocatedSize/elemSize;
+                std::cout << totalEntries << std::endl;
+                switch (bufferType)
+                {
+                    case VtkAttributableType::intType:
+                    {
+                        for (size_t idx = 0; idx < totalEntries; idx++)
+                        {
+                            myfile << *((int*)(dataBuffer+idx*elemSize)) << " ";
+                            if ((idx%stride==0)&&(idx>0)) myfile << std::endl;
+                        }
+                        break;
+                    }
+                    case VtkAttributableType::longType:
+                    {
+                        for (size_t idx = 0; idx < totalEntries; idx++)
+                        {
+                            myfile << *((size_t*)(dataBuffer+idx*elemSize)) << " ";
+                            if ((idx%stride==0)&&(idx>0)) myfile << std::endl;
+                        }
+                        break;
+                    }
+                    case VtkAttributableType::doubleType:
+                    {
+                        for (size_t idx = 0; idx < totalEntries; idx++)
+                        {
+                            myfile << *((double*)(dataBuffer+idx*elemSize)) << " ";
+                            if ((idx%stride==0)&&(idx>0)) myfile << std::endl;
+                        }
+                        break;
+                    }
+                }
             }
 
         protected:
@@ -209,10 +274,11 @@ namespace Anaptric
                 *outputSize = allocatedSize;
             }
         private:
-            std::string bufferSizeAttrName;
+            std::string bufferSizeAttrName, strideName;
             char* dataBuffer;
             size_t allocatedSize;
             bool bufferIsAllocated;
+            int stride;
             VtkAttributableType::VtkAttributableType bufferType;
             std::string className;
         friend class VtkBuffer;
