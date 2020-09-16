@@ -39,15 +39,18 @@ namespace Anaptric
                 dataset->AddRequiredAttribute("numPoints", VtkAttributableType::longType);
                 dataset->AddRequiredAttribute("bufferCount", VtkAttributableType::longType);
                 dataset->AddRequiredAttribute("stride", VtkAttributableType::intType);
+                dataset->SetFormat("DATASET UNSTRUCTURED_GRID\nPOINTS ${numPoints} float");
                 VtkAttributable* cells = collection.AddAttributable("CELLS", VtkAttributableType::intType);
                 cells->AddRequiredAttribute("numPoints", VtkAttributableType::longType);
                 cells->AddRequiredAttribute("totalEntries", VtkAttributableType::longType);
                 cells->AddRequiredAttribute("bufferCount", VtkAttributableType::longType);
                 cells->AddRequiredAttribute("stride", VtkAttributableType::intType);
+                cells->SetFormat("CELLS ${numPoints} ${totalEntries}");
                 VtkAttributable* cellTypes = collection.AddAttributable("CELL_TYPES", VtkAttributableType::intType);
                 cellTypes->AddRequiredAttribute("numPoints", VtkAttributableType::longType);
                 cellTypes->AddRequiredAttribute("bufferCount", VtkAttributableType::longType);
                 cellTypes->AddRequiredAttribute("stride", VtkAttributableType::intType);
+                cellTypes->SetFormat("CELL_TYPES ${numPoints}");
                 break;
             }
             case VtkTopologyType::polydata:

@@ -14,7 +14,7 @@ namespace Anaptric
     class VtkAttributeCollection
     {
         public:
-            VtkAttributeCollection(void){cleared = false;}
+            VtkAttributeCollection(void){cleared = false; count=0;}
 
             void EnforceAllRequiredAttributes(void)
             {
@@ -37,6 +37,8 @@ namespace Anaptric
             {
                 if (Exists(name)) __VTKERROR("Multiple definition of attribute " << name);
                 attributables.insert({name, new VtkAttributable(name, newType)});
+                indices.insert({count, name});
+                count++;
                 return attributables[name];
             }
 
@@ -66,13 +68,15 @@ namespace Anaptric
 
             void WriteAll(std::ofstream & myfile)
             {
-                for (std::map<std::string, VtkAttributable*>::iterator it = attributables.begin(); it!=attributables.end(); it++)
+                for (int i = 0; i < count; i++)
                 {
-                    it->second->Write(myfile);
+                    attributables[indices[i]]->Write(myfile);
                 }
             }
         private:
             std::map<std::string, VtkAttributable*> attributables;
+            std::map<int, std::string> indices;
+            int count;
             bool cleared;
     };
 

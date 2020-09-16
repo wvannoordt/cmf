@@ -12,6 +12,7 @@
 #include <cstring>
 
 #define ANA_VTK_BUF_SIZE 4096
+#define ANA_VTK_MAX_STRING_SIZE 256
 
 namespace Anaptric
 {
@@ -27,7 +28,7 @@ namespace Anaptric
     {
         std::string name;
         VtkAttributableType::VtkAttributableType attrType;
-        char* attrLocation;
+        size_t attrOffset;
         size_t varSize;
     };
 
@@ -93,7 +94,7 @@ namespace Anaptric
             {
                 newAttrValues->name = name;
                 newAttrValues->attrType = setType;
-                newAttrValues->attrLocation = attributeBuffer+nextPointer;
+                newAttrValues->attrOffset = nextPointer;
                 size_t storedSize = 0;
                 char* cPtr;
                 switch (setType)
@@ -207,6 +208,11 @@ namespace Anaptric
                     free(dataBuffer);
                 }
             }
+            
+            void SetFormat(std::string format_in)
+            {
+                format = format_in;
+            }
 
             VtkAttributable(std::string name_in, VtkAttributableType::VtkAttributableType atrType)
             {
@@ -218,52 +224,138 @@ namespace Anaptric
                 stride = -1;
                 BufferSizeIs("bufferCount");
                 StrideIs("stride");
+                format = "(NO FORMAT SPECIFIED)";
+                invocationStart = "${";
+                invocationEnd = "}";
             }
 
             ~VtkAttributable(void)
             {
                 Destroy();
             }
-
-            void Write(std::ofstream & myfile)
+            
+            bool PositionIsStart(size_t i, std::string str)
+            {
+                if (i < invocationStart.length()-1) return false;
+                return (str.substr(i-invocationStart.length()+1, invocationStart.length())==invocationStart);
+            }
+            
+            bool PositionIsEnd(size_t i, std::string str)
+            {
+                if (i+invocationEnd.length()-1 >= (str.length())) return false;
+                return (str.substr(i, invocationEnd.length()) == invocationEnd);
+            }
+            
+            void AssertBracketConsistency(std::string str)
+            {
+                int level = 0;
+                for (size_t i = 0; i < str.length(); i++)
+                {
+                    if (PositionIsStart(i, str)) level++;
+                    if (PositionIsEnd(i, str))
+                    {
+                        level--;
+                        if (level<0) __VTKERROR("Invocation \"" + str + "\" has inconsistent brackets.");
+                    }
+                }
+                if (level!=0) __VTKERROR("Invocation \"" + str + "\" has inconsistent brackets.");
+            }
+            
+            std::string GetDefinition(std::string keyValue)
+            {
+                if (!AttributeExists(keyValue)) __VTKERROR("Cannot find attribute \"" << keyValue << "\", requested in format of attribute \"" << className << "\"");
+                char buffer[ANA_VTK_MAX_STRING_SIZE] = {0};
+                VtkAttribute info = attributes[keyValue];
+                memcpy(buffer, attributeBuffer + info.attrOffset, info.varSize);
+                switch (info.attrType)
+                {
+                    case VtkAttributableType::intType:
+                    {
+                        int output = *((int*)buffer);
+                        return std::to_string(output);
+                    }
+                    case VtkAttributableType::doubleType:
+                    {
+                        double output = *((double*)buffer);
+                        return std::to_string(output);
+                    }
+                    case VtkAttributableType::longType:
+                    {
+                        size_t output = *((size_t*)buffer);
+                        return std::to_string(output);
+                    }
+                    case VtkAttributableType::stringType:
+                    {
+                        std::string output(buffer);
+                        return output;
+                    }
+                }
+            }
+            
+            std::string HeaderString(std::string str, int level)
+            {
+                if (str.length()==0) return str;
+                AssertBracketConsistency(str);
+                size_t start, end;
+                start = str.find(invocationStart);
+                if (start==std::string::npos)
+                {
+                    return str;
+                }
+                int bracketLevel = 1;
+                for (size_t i = start+invocationStart.length(); i < str.length(); i++)
+                {
+                    if (PositionIsStart(i, str)) bracketLevel++;
+                    if (PositionIsEnd(i, str)) bracketLevel--;
+                    if (bracketLevel==0) {end = i; break;}
+                }
+                std::string pre = str.substr(0, start);
+                std::string med = str.substr(start+invocationStart.length(), end-start-invocationStart.length());
+                std::string post = str.substr(end+invocationEnd.length(), str.length()-end-invocationEnd.length());
+                std::string output = pre + GetDefinition(HeaderString(med, level+1)) + HeaderString(post, level+1);
+                return output;
+            }
+            
+            std::string HeaderString(void) {return HeaderString(format, 0);}
+            
+            template <typename T> void WriteAs(std::ofstream & myfile)
             {
                 size_t elemSize = GetBufferElementSize();
                 size_t totalEntries = allocatedSize/elemSize;
-                std::cout << totalEntries << std::endl;
+                for (size_t idx = 0; idx < totalEntries; idx++)
+                {
+                    if ((idx%stride==0)&&(idx>0)) myfile << std::endl;
+                    myfile << *((T*)(dataBuffer+idx*elemSize));
+                    if (((idx+1)%stride!=0)) myfile << " ";
+                }
+            }
+
+            void Write(std::ofstream & myfile)
+            {
+                myfile << HeaderString() << std::endl;
                 switch (bufferType)
                 {
                     case VtkAttributableType::intType:
                     {
-                        for (size_t idx = 0; idx < totalEntries; idx++)
-                        {
-                            myfile << *((int*)(dataBuffer+idx*elemSize)) << " ";
-                            if ((idx%stride==0)&&(idx>0)) myfile << std::endl;
-                        }
+                        WriteAs<int>(myfile);
                         break;
                     }
                     case VtkAttributableType::longType:
                     {
-                        for (size_t idx = 0; idx < totalEntries; idx++)
-                        {
-                            myfile << *((size_t*)(dataBuffer+idx*elemSize)) << " ";
-                            if ((idx%stride==0)&&(idx>0)) myfile << std::endl;
-                        }
+                        WriteAs<size_t>(myfile);
                         break;
                     }
                     case VtkAttributableType::doubleType:
                     {
-                        for (size_t idx = 0; idx < totalEntries; idx++)
-                        {
-                            myfile << *((double*)(dataBuffer+idx*elemSize)) << " ";
-                            if ((idx%stride==0)&&(idx>0)) myfile << std::endl;
-                        }
+                        WriteAs<double>(myfile);
                         break;
                     }
                 }
+                myfile << std::endl;
             }
 
         protected:
-            char attributeBuffer[ANA_VTK_BUF_SIZE];
+            char attributeBuffer[ANA_VTK_BUF_SIZE] = {0};
             int nextPointer;
             std::map<std::string, VtkAttributableType::VtkAttributableType> requiredAttributes;
             std::map<std::string, VtkAttribute> attributes;
@@ -278,7 +370,9 @@ namespace Anaptric
             char* dataBuffer;
             size_t allocatedSize;
             bool bufferIsAllocated;
+            std::string invocationStart, invocationEnd;
             int stride;
+            std::string format;
             VtkAttributableType::VtkAttributableType bufferType;
             std::string className;
         friend class VtkBuffer;

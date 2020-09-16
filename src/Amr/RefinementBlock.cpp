@@ -160,6 +160,7 @@ namespace Anaptric
         localInput.DebugPrint();
     }
 
+    //This is for debugging only. For any real VTK output, an externl iterator should be used.
     void RefinementBlock::OutputDebugVtk(std::string filename)
     {
         VtkFile output(filename, VtkFormatType::ascii, VtkTopologyType::unstructuredGrid);
@@ -168,7 +169,7 @@ namespace Anaptric
         output.Mesh()->Component("DATASET")->SetAttribute("numPoints",   (ANA_IS3D?8:4)*totalNumBlocks);
         output.Mesh()->Component("DATASET")->SetAttribute("bufferCount", 3*(ANA_IS3D?8:4)*totalNumBlocks);
         output.Mesh()->Component("DATASET")->SetAttribute("stride", 3);
-        output.Mesh()->Component("CELLS")->SetAttribute("numPoints", (ANA_IS3D?8:4)*totalNumBlocks);
+        output.Mesh()->Component("CELLS")->SetAttribute("numPoints", totalNumBlocks);
         output.Mesh()->Component("CELLS")->SetAttribute("bufferCount", (ANA_IS3D?9:5)*totalNumBlocks);
         output.Mesh()->Component("CELLS")->SetAttribute("totalEntries", (ANA_IS3D?9:5)*totalNumBlocks);
         output.Mesh()->Component("CELLS")->SetAttribute("stride", (ANA_IS3D?9:5));

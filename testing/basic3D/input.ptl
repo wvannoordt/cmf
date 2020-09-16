@@ -2,5 +2,5 @@ Domain
 {
 	blockDim = [4, 4, 4]
 	blockBounds = [0,1,0,1,0,1]
-	refinementConstraintType = free
+	refinementConstraintType = factor2CompletelyConstrained
 }

@@ -71,6 +71,7 @@ namespace Anaptric
             RefinementLimit_t* refineLimiter;
 
             friend class NeighborIterator;
+            friend class NodeIterator;
     };
 }
 

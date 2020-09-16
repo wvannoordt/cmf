@@ -14,7 +14,7 @@ static inline void Dim2Idx(int idx, int* dims, int* ijk)
     ijk[0] = idx%(dims[0]);
     ijk[1] = ((idx-ijk[0]) / dims[0])%dims[1];
 #if(ANA_IS3D)
-    ijk[2] = ((idx-ijk[0]-dims[0]*ijk[1])/dims[1]) % dims[2];
+    ijk[2] = ((idx-ijk[0]-dims[0]*ijk[1])/(dims[1]*dims[0])) % dims[2];
 #endif
 }
 

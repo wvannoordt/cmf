@@ -37,7 +37,7 @@ namespace Anaptric
             bool deallocTrunks;
             RefinementConstraint::RefinementConstraint refinementConstraintType;
             RefinementLimit_t refineLimiter;
-
+            friend class NodeIterator;
     };
 }
 
