@@ -192,6 +192,7 @@ setup:
 		ln -s $${hdr} -t ${CURRENT_HDRHX_DIR};\
 	done
 	@for tdir in ${TESTS} ; do\
+		echo "Linking ${CURRENT_BASEIDIR}/util/makefile.testing to $${tdir}/makefile";\
 		ln -sf ${CURRENT_BASEIDIR}/util/makefile.testing $${tdir}/makefile;\
 	done
 

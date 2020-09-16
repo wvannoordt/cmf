@@ -7,6 +7,7 @@
 #include <vector>
 #include <utility>
 #include "RefinementConstraint.h"
+#include "NodeIterator.h"
 #include "VtkFile.h"
 
 namespace Anaptric
@@ -18,13 +19,23 @@ namespace Anaptric
     };
 
     class RefinementTreeNode;
+    class NodeIterator;
     typedef bool(*RefinementLimit_t)(RefinementTreeNode*);
     typedef void(*DebugTikzDraw_t)(TikzObject*, RefinementTreeNode*);
 
     class RefinementTreeNode
     {
         public:
-            RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in, int level_in, RefinementTreeNode* host_in, RefinementConstraint::RefinementConstraint constraint_in);
+            RefinementTreeNode
+            (
+                double* hostBounds,
+                char refineType_in,
+                char refineOrientation_in,
+                int level_in,
+                RefinementTreeNode* host_in,
+                RefinementConstraint::RefinementConstraint constraint_in,
+                NodeIterator* iterator_in
+            );
             ~RefinementTreeNode(void);
             void Destroy(void);
             void RefineRandom();
@@ -69,9 +80,9 @@ namespace Anaptric
             std::map<RefinementTreeNode*, NodeEdge> neighbors;
             bool isOnBoundary[2*ANA_DIM];
             RefinementLimit_t* refineLimiter;
-
+            NodeIterator* iterator;
+            int iteratorIndex;
             friend class NeighborIterator;
-            friend class NodeIterator;
     };
 }
 

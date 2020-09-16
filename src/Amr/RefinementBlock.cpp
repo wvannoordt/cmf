@@ -33,6 +33,10 @@ namespace Anaptric
         this->Destroy();
     }
 
+    void RefinementBlock::Iterator(void){iterator.Reset();}
+    bool RefinementBlock::HasNextBlock(void){!iterator.IsAtEnd();}
+    void RefinementBlock::NextBlock(void){iterator.Increment();}
+
     void RefinementBlock::DefineTrunks(void)
     {
         deallocTrunks = true;
@@ -47,7 +51,7 @@ namespace Anaptric
                 localBounds[2*d] = blockBounds[2*d]+idx[d]*dx[d];
                 localBounds[2*d+1] = blockBounds[2*d]+(idx[d]+1)*dx[d];
             }
-            trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL, refinementConstraintType);
+            trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL, refinementConstraintType, &iterator);
             trunks[i]->SetRefineLimiter(&refineLimiter);
         }
         for (int i = 0; i < totalNumTrunks; i++)

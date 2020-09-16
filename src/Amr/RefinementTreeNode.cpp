@@ -12,8 +12,18 @@
 
 namespace Anaptric
 {
-    RefinementTreeNode::RefinementTreeNode(double* hostBounds, char refineType_in, char refineOrientation_in, int level_in, RefinementTreeNode* host_in, RefinementConstraint::RefinementConstraint constraint_in)
+    RefinementTreeNode::RefinementTreeNode
+    (
+        double* hostBounds,
+        char refineType_in,
+        char refineOrientation_in,
+        int level_in,
+        RefinementTreeNode* host_in,
+        RefinementConstraint::RefinementConstraint constraint_in,
+        NodeIterator* iterator_in
+    )
     {
+        iterator = iterator_in;
         constraint = constraint_in;
         isLocked = false;
         isTerminal = true;
@@ -238,7 +248,7 @@ namespace Anaptric
         for (int i = 0; i < numSubNodes; i++)
         {
             newRefinementOrientation = (char)((i&1)*((basis&0x00ff0000)>>16) + ((i&2)>>1)*((basis&0x0000ff00)>>8) + ((i&4)>>2)*((basis&0x000000ff)));
-            subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this, constraint);
+            subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this, constraint, iterator);
         }
         GenerateNeighborsOfChildAllNodes();
         UpdateNeighborsOfNeighborsToChildNodes(subNodeRefinementType);

@@ -1,1 +1,1 @@
-cmd: 'DOCLEAN=clean DIM=3 TESTS=basic3D make test'
+cmd: 'DIM=3 TESTS=basic3D make test'

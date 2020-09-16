@@ -12,12 +12,11 @@ int main(int argc, char** argv)
         coords[0] = 0.1;
         coords[1] = 0.1;
         coords[2] = 0.00001;
-        //domain.RefineAt(coords, 7);
-        //domain.RefineAt(coords, 7);
-        domain.RefineRandom();
-        domain.RefineRandom();
-        std::string filename = "output/domain.vtk";
-        domain.OutputDebugVtk(filename);
+        domain.RefineAt(coords, 3);
+        //for (domain.Iterator(); domain.HasNextBlock(); domain.NextBlock())
+        //{
+        //    
+        //}
         Anaptric::Finalize();
     )
     return 0;

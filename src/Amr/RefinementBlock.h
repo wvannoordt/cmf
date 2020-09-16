@@ -5,6 +5,7 @@
 #include "PropTreeLib.h"
 #include "RefinementTreeNode.h"
 #include "RefinementConstraint.h"
+#include "NodeIterator.h"
 
 namespace Anaptric
 {
@@ -25,6 +26,9 @@ namespace Anaptric
             bool PointIsInDomain(double coords[ANA_DIM]);
             void SetRefineLimitCriterion(RefinementLimit_t limiter_in);
             void OutputDebugVtk(std::string filename);
+            void Iterator(void);
+            bool HasNextBlock(void);
+            void NextBlock(void);
         private:
             void DefineTrunks(void);
             void HandleRefinementQueryOutsideDomain(double coords[ANA_DIM]);
@@ -37,7 +41,7 @@ namespace Anaptric
             bool deallocTrunks;
             RefinementConstraint::RefinementConstraint refinementConstraintType;
             RefinementLimit_t refineLimiter;
-            friend class NodeIterator;
+            NodeIterator iterator;
     };
 }
 
