@@ -10,7 +10,7 @@
 #include "VtkVersion.h"
 #include "VtkBuffer.h"
 
-namespace Anaptric
+namespace cmf
 {
     namespace VtkCellType
     {

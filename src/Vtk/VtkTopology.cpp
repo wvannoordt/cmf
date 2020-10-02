@@ -1,5 +1,5 @@
 #include "VtkTopology.h"
-namespace Anaptric
+namespace cmf
 {
     VtkTopology::VtkTopology(VtkTopologyType::VtkTopologyType topologyType_in)
     {

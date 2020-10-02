@@ -1,4 +1,4 @@
-LIB_NAME := Anaptric
+LIB_NAME := cmf
 
 ifndef OPTLEVEL
 OPTLEVEL := 0
@@ -95,7 +95,7 @@ endif
 export VALG
 
 COMPILE_TIME_OPT += -DTRACK_OUTPUT_ORIGINS=0
-COMPILE_TIME_OPT += -DANA_DIM=${DIM}
+COMPILE_TIME_OPT += -DCMF_DIM=${DIM}
 
 
 DEVICE_FLAGS := -O${OPTLEVEL} -x cu -rdc=true -Xcompiler -fPIC ${COMPILE_TIME_OPT} -dc

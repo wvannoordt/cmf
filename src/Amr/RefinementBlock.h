@@ -7,7 +7,7 @@
 #include "RefinementConstraint.h"
 #include "NodeIterator.h"
 
-namespace Anaptric
+namespace cmf
 {
     class RefinementBlock
     {
@@ -20,10 +20,10 @@ namespace Anaptric
             void Render(TikzObject* picture, DebugTikzDraw_t debugger);
             void RefineAll(char refinementType);
             void RefineRandom();
-            void RefineAt(double coords[ANA_DIM], char refinementType);
-            RefinementTreeNode* GetNodeAt(double coords[ANA_DIM]);
-            bool PointIsInDomain(double coords[ANA_DIM], int* idx);
-            bool PointIsInDomain(double coords[ANA_DIM]);
+            void RefineAt(double coords[CMF_DIM], char refinementType);
+            RefinementTreeNode* GetNodeAt(double coords[CMF_DIM]);
+            bool PointIsInDomain(double coords[CMF_DIM], int* idx);
+            bool PointIsInDomain(double coords[CMF_DIM]);
             void SetRefineLimitCriterion(RefinementLimit_t limiter_in);
             void OutputDebugVtk(std::string filename);
             void Iterator(void);
@@ -31,12 +31,12 @@ namespace Anaptric
             void NextBlock(void);
         private:
             void DefineTrunks(void);
-            void HandleRefinementQueryOutsideDomain(double coords[ANA_DIM]);
+            void HandleRefinementQueryOutsideDomain(double coords[CMF_DIM]);
             PropTreeLib::PropertyTree localInput;
             int* blockDim;
             int totalNumTrunks;
             double* blockBounds;
-            double dx[ANA_DIM];
+            double dx[CMF_DIM];
             RefinementTreeNode** trunks;
             bool deallocTrunks;
             RefinementConstraint::RefinementConstraint refinementConstraintType;

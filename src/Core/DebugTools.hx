@@ -5,7 +5,7 @@
 
 #define __longline "---------------------------------------------------------"
 
-#if __ana_cpu
+#if __cmf_cpu
 #define __dump(mystuff) {std::cout << __FILE__ <<  " (" << __LINE__ << "): " << mystuff << std::endl;}
 #define __qdump(mystuff) {std::cout << mystuff << std::endl;}
 #define __sdump(mystuff) {std::cout << #mystuff << ": " <<  mystuff << std::endl;}
@@ -14,7 +14,7 @@
 #endif
 
 
-#if __ana_gpu
+#if __cmf_gpu
 #define __dump(mystuff) ;
 #define __qdump(mystuff) ;
 #define __sdump(mystuff) ;

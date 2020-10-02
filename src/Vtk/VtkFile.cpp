@@ -1,11 +1,11 @@
 //https://vtk.org/wp-content/uploads/2015/04/file-formats.pdf
 #include "VtkFile.h"
-namespace Anaptric
+namespace cmf
 {
     VtkFile::VtkFile(std::string filename_in, VtkFormatType::VtkFormatType formType, VtkTopologyType::VtkTopologyType topType)
     {
         format = new VtkFileFormat(formType);
-        header = new VtkHeader("Anaptric");
+        header = new VtkHeader("cmf");
         topology = new VtkTopology(topType);
         version = new VtkVersion(3, 0);
         filename = filename_in;

@@ -3,7 +3,7 @@
 
 #include "Config.h"
 
-namespace Anaptric
+namespace cmf
 {
     namespace TikzLineType
     {

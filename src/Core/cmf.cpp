@@ -1,7 +1,7 @@
 #include "PropTreeLib.h"
-#include "Anaptric.h"
+#include "cmf.h"
 #include <string>
-namespace Anaptric
+namespace cmf
 {
     PropTreeLib::PropertyTree mainInput;
     void Initialize(void)
@@ -17,5 +17,11 @@ namespace Anaptric
     void Finalize(void)
     {
 
+    }
+
+    int GetDim(void)
+    {
+        //To test if a 2D code calls a 3D api etc.
+        return CMF_DIM;
     }
 }

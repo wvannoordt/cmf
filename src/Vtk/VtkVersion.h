@@ -8,13 +8,13 @@
 #include <vector>
 #include "VtkElement.h"
 
-namespace Anaptric
+namespace cmf
 {
     class VtkVersion : public VtkElement
     {
         public:
             VtkVersion(void);
-            VtkVersion(int major_in, int minor_in);            
+            VtkVersion(int major_in, int minor_in);
             ~VtkVersion(void);
             void WriteToFile(std::ofstream & myfile);
             void ReadFromFile(std::ofstream & myfile);

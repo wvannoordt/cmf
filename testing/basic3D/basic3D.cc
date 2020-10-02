@@ -1,13 +1,13 @@
 #include <iostream>
 #include <cmath>
-#include "Anaptric.h"
+#include "cmf.h"
 int main(int argc, char** argv)
 {
     __only3d
     (
-        Anaptric::Initialize();
-        Anaptric::ReadInput("input.ptl");
-        Anaptric::RefinementBlock domain("Domain");
+        cmf::Initialize();
+        cmf::ReadInput("input.ptl");
+        cmf::RefinementBlock domain("Domain");
         double coords[3];
         coords[0] = 0.1;
         coords[1] = 0.1;
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
         domain.RefineRandom();
         std::string filename = "output/domain.vtk";
         domain.OutputDebugVtk(filename);
-        Anaptric::Finalize();
+        cmf::Finalize();
     )
     return 0;
 }

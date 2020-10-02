@@ -1,20 +1,21 @@
 #include <iostream>
 #include <cmath>
-#include "Anaptric.h"
+#include "cmf.h"
 int main(int argc, char** argv)
 {
     __only2d
     (
-        Anaptric::Initialize();
-        Anaptric::ReadInput("input.ptl");
-        Anaptric::RefinementBlock domain("Domain");
+        if (CMF_DIM != cmf::GetDim()) std::cout << "BAD DIM" << std::endl;
+        cmf::Initialize();
+        cmf::ReadInput("input.ptl");
+        cmf::RefinementBlock domain("Domain");
 
         std::string filename = "output/main.tex";
-        Anaptric::TikzObject picture;
+        cmf::TikzObject picture;
         picture.Open(filename);
         domain.Render(&picture);
         picture.Close();
-        Anaptric::Finalize();
+        cmf::Finalize();
     )
     return 0;
 }

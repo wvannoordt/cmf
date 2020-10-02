@@ -4,7 +4,7 @@
 #include <string>
 #include "Config.h"
 
-namespace Anaptric
+namespace cmf
 {
     namespace TikzColor
     {

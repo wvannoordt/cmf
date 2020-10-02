@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cmath>
-#include "Anaptric.h"
-bool limit(Anaptric::RefinementTreeNode* block)
+#include "cmf.h"
+bool limit(cmf::RefinementTreeNode* block)
 {
     return (block->GetLevel() > 2);
 }
@@ -10,18 +10,18 @@ int main(int argc, char** argv)
 {
     __only2d
     (
-        Anaptric::Initialize();
-        Anaptric::ReadInput("input.ptl");
-        Anaptric::RefinementBlock domain("Domain");
-        Anaptric::RefinementBlock domain2("Domain2");
+        cmf::Initialize();
+        cmf::ReadInput("input.ptl");
+        cmf::RefinementBlock domain("Domain");
+        cmf::RefinementBlock domain2("Domain2");
         std::string filename = "output/main.tex";
-        Anaptric::TikzObject picture;
+        cmf::TikzObject picture;
         picture.Open(filename);
     	picture.SetClip(0,0,1,1);
         domain.Render(&picture);
         domain2.Render(&picture);
         picture.Close();
-        Anaptric::Finalize();
+        cmf::Finalize();
     )
     return 0;
 }

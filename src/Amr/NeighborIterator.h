@@ -3,7 +3,7 @@
 
 #include "RefinementTreeNode.h"
 
-namespace Anaptric
+namespace cmf
 {
     class NeighborIterator
     {

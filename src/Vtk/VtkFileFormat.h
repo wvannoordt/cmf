@@ -8,7 +8,7 @@
 #include <vector>
 #include "VtkElement.h"
 
-namespace Anaptric
+namespace cmf
 {
     namespace VtkFormatType
     {
@@ -18,7 +18,7 @@ namespace Anaptric
             binary
         };
     }
-    
+
     class VtkFileFormat : public VtkElement
     {
         public:
@@ -26,7 +26,7 @@ namespace Anaptric
             VtkFileFormat(void);
             ~VtkFileFormat(void);
             void WriteToFile(std::ofstream & myfile);
-            void ReadFromFile(std::ofstream & myfile);        
+            void ReadFromFile(std::ofstream & myfile);
         private:
             VtkFormatType::VtkFormatType formType;
     };

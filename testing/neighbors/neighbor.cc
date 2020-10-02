@@ -1,14 +1,14 @@
 #include <iostream>
 #include <cmath>
-#include "Anaptric.h"
+#include "cmf.h"
 
 int main(int argc, char** argv)
 {
     __only2d
     (
-        Anaptric::Initialize();
-        Anaptric::ReadInput("input.ptl");
-        Anaptric::RefinementBlock domain("Domain");
+        cmf::Initialize();
+        cmf::ReadInput("input.ptl");
+        cmf::RefinementBlock domain("Domain");
         double coords[2];
         coords[0] = 0.5;
         coords[1] = 0.6;
@@ -19,12 +19,12 @@ int main(int argc, char** argv)
         //domain.RefineRandom();
         //domain.RefineAt(coords, 2);
         std::string filename = "output/main.tex";
-        Anaptric::TikzObject picture;
+        cmf::TikzObject picture;
         picture.Open(filename);
     	picture.SetClip(0,0,1,1);
         domain.Render(&picture);
         picture.Close();
-        Anaptric::Finalize();
+        cmf::Finalize();
     )
     return 0;
 }

@@ -9,7 +9,7 @@
 #include <map>
 #include "VtkAttributable.h"
 
-namespace Anaptric
+namespace cmf
 {
     class VtkAttributeCollection
     {

@@ -11,10 +11,10 @@
 #include <map>
 #include <cstring>
 
-#define ANA_VTK_BUF_SIZE 4096
-#define ANA_VTK_MAX_STRING_SIZE 256
+#define CMF_VTK_BUF_SIZE 4096
+#define CMF_VTK_MAX_STRING_SIZE 256
 
-namespace Anaptric
+namespace cmf
 {
     namespace VtkAttributableType
     {
@@ -208,7 +208,7 @@ namespace Anaptric
                     free(dataBuffer);
                 }
             }
-            
+
             void SetFormat(std::string format_in)
             {
                 format = format_in;
@@ -233,19 +233,19 @@ namespace Anaptric
             {
                 Destroy();
             }
-            
+
             bool PositionIsStart(size_t i, std::string str)
             {
                 if (i < invocationStart.length()-1) return false;
                 return (str.substr(i-invocationStart.length()+1, invocationStart.length())==invocationStart);
             }
-            
+
             bool PositionIsEnd(size_t i, std::string str)
             {
                 if (i+invocationEnd.length()-1 >= (str.length())) return false;
                 return (str.substr(i, invocationEnd.length()) == invocationEnd);
             }
-            
+
             void AssertBracketConsistency(std::string str)
             {
                 int level = 0;
@@ -260,11 +260,11 @@ namespace Anaptric
                 }
                 if (level!=0) __VTKERROR("Invocation \"" + str + "\" has inconsistent brackets.");
             }
-            
+
             std::string GetDefinition(std::string keyValue)
             {
                 if (!AttributeExists(keyValue)) __VTKERROR("Cannot find attribute \"" << keyValue << "\", requested in format of attribute \"" << className << "\"");
-                char buffer[ANA_VTK_MAX_STRING_SIZE] = {0};
+                char buffer[CMF_VTK_MAX_STRING_SIZE] = {0};
                 VtkAttribute info = attributes[keyValue];
                 memcpy(buffer, attributeBuffer + info.attrOffset, info.varSize);
                 switch (info.attrType)
@@ -291,7 +291,7 @@ namespace Anaptric
                     }
                 }
             }
-            
+
             std::string HeaderString(std::string str, int level)
             {
                 if (str.length()==0) return str;
@@ -315,9 +315,9 @@ namespace Anaptric
                 std::string output = pre + GetDefinition(HeaderString(med, level+1)) + HeaderString(post, level+1);
                 return output;
             }
-            
+
             std::string HeaderString(void) {return HeaderString(format, 0);}
-            
+
             template <typename T> void WriteAs(std::ofstream & myfile)
             {
                 size_t elemSize = GetBufferElementSize();
@@ -355,7 +355,7 @@ namespace Anaptric
             }
 
         protected:
-            char attributeBuffer[ANA_VTK_BUF_SIZE] = {0};
+            char attributeBuffer[CMF_VTK_BUF_SIZE] = {0};
             int nextPointer;
             std::map<std::string, VtkAttributableType::VtkAttributableType> requiredAttributes;
             std::map<std::string, VtkAttribute> attributes;

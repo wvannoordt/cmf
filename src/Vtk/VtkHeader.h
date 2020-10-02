@@ -8,7 +8,7 @@
 #include <vector>
 #include "VtkElement.h"
 
-namespace Anaptric
+namespace cmf
 {
     class VtkHeader : public VtkElement
     {

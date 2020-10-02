@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cmath>
-#include "Anaptric.h"
+#include "cmf.h"
 #define RX 0.542
 #define RY 0.5231
 static inline bool BoxContains(double* bounds, double* coords)
@@ -12,7 +12,7 @@ static inline bool BoxContains(double* bounds, double* coords)
 #endif
 }
 
-void DebugDraw(Anaptric::TikzObject* picture, Anaptric::RefinementTreeNode* node)
+void DebugDraw(cmf::TikzObject* picture, cmf::RefinementTreeNode* node)
 {
     double rad = 0.006;
     double* blockBounds = node->GetBlockBounds();
@@ -20,28 +20,28 @@ void DebugDraw(Anaptric::TikzObject* picture, Anaptric::RefinementTreeNode* node
     double y1 = 0.5*(blockBounds[2]+blockBounds[3])-rad;
     double x2 = 0.5*(blockBounds[0]+blockBounds[1])+rad;
     double y2 = 0.5*(blockBounds[2]+blockBounds[3])+rad;
-    double xProbe[ANA_DIM];
+    double xProbe[CMF_DIM];
     xProbe[0] = RX;
     xProbe[1] = RY;
     bool neighs = true;
     if (!neighs && node->IsAnyDomainBoundary())
     {
-        picture->PushFillType(Anaptric::TikzColor::gray);
+        picture->PushFillType(cmf::TikzColor::gray);
         picture->FillBox(blockBounds[0], blockBounds[2], blockBounds[1], blockBounds[3]);
         picture->PopFillType();
     }
     if (neighs && BoxContains(blockBounds, xProbe))
     {
-        picture->PushFillType(Anaptric::TikzColor::teal);
+        picture->PushFillType(cmf::TikzColor::teal);
         picture->FillBox(x1, y1, x2, y2);
-        picture->PushFillType(Anaptric::TikzColor::green);
+        picture->PushFillType(cmf::TikzColor::green);
         picture->FillBox(xProbe[0]-rad, xProbe[1]-rad, xProbe[0]+rad, xProbe[1]+rad);
-        picture->PushFillType(Anaptric::TikzColor::red);
-        for (Anaptric::NeighborIterator it(node); it.Active(); it++)
+        picture->PushFillType(cmf::TikzColor::red);
+        for (cmf::NeighborIterator it(node); it.Active(); it++)
         {
-            
-            Anaptric::RefinementTreeNode* n = it.Node();
-            Anaptric::NodeEdge edge = it.Edge();
+
+            cmf::RefinementTreeNode* n = it.Node();
+            cmf::NodeEdge edge = it.Edge();
             double* nBlockBounds = n->GetBlockBounds();
             double xm  = 0.5*(nBlockBounds[0]+nBlockBounds[1]);
             double ym  = 0.5*(nBlockBounds[2]+nBlockBounds[3]);
@@ -63,16 +63,16 @@ int main(int argc, char** argv)
 {
     __only2d
     (
-        Anaptric::Initialize();
-        Anaptric::ReadInput("input.ptl");
-        Anaptric::RefinementBlock domainA("DomainA");
-        Anaptric::RefinementBlock domainB("DomainB");
-        
-        Anaptric::RefinementBlock* domains[2];
+        cmf::Initialize();
+        cmf::ReadInput("input.ptl");
+        cmf::RefinementBlock domainA("DomainA");
+        cmf::RefinementBlock domainB("DomainB");
+
+        cmf::RefinementBlock* domains[2];
         domains[0] = &domainA;
         domains[1] = &domainB;
-        
-        
+
+
         for (int i = 0; i < 2; i++)
         {
             double coords[2];
@@ -86,17 +86,17 @@ int main(int argc, char** argv)
             domains[i]->RefineAt(coords, 2);
             domains[i]->RefineAt(coords, 2);
         }
-        
+
         std::string filename = "output/main.tex";
-        Anaptric::TikzObject picture;
+        cmf::TikzObject picture;
         picture.Open(filename);
-        Anaptric::DebugTikzDraw_t neighborDraw(DebugDraw);
+        cmf::DebugTikzDraw_t neighborDraw(DebugDraw);
         for (int i = 0; i < 2; i++)
         {
             domains[i]->Render(&picture, neighborDraw);
         }
         picture.Close();
-        Anaptric::Finalize();
+        cmf::Finalize();
     )
     return 0;
 }

@@ -1,5 +1,5 @@
 #include "VtkBuffer.h"
-namespace Anaptric
+namespace cmf
 {
     VtkBuffer::VtkBuffer(VtkAttributable* input)
     {

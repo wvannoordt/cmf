@@ -9,7 +9,7 @@
 #include "VtkElement.h"
 #include "VtkAttributeCollection.h"
 
-namespace Anaptric
+namespace cmf
 {
     namespace VtkTopologyType
     {

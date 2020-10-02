@@ -1,23 +1,23 @@
 #include "VtkFileFormat.h"
-namespace Anaptric
+namespace cmf
 {
     VtkFileFormat::VtkFileFormat(VtkFormatType::VtkFormatType formType_in)
     {
         elementType = "fileformat";
         formType = formType_in;
     }
-    
+
     VtkFileFormat::VtkFileFormat(void)
     {
         elementType = "fileformat";
         formType = VtkFormatType::ascii;
     }
-    
+
     VtkFileFormat::~VtkFileFormat(void)
     {
-        
+
     }
-    
+
     void VtkFileFormat::WriteToFile(std::ofstream & myfile)
     {
         switch (formType)
@@ -34,9 +34,9 @@ namespace Anaptric
             }
         }
     }
-    
+
     void VtkFileFormat::ReadFromFile(std::ofstream & myfile)
     {
-        
+
     }
 }

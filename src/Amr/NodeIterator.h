@@ -4,7 +4,7 @@
 class RefinementTreeNode;
 #include "RefinementTreeNode.h"
 
-namespace Anaptric
+namespace cmf
 {
     class NodeIterator
     {

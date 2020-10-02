@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <string>
 
-namespace Anaptric
+namespace cmf
 {
     TikzObject::TikzObject(void)
     {

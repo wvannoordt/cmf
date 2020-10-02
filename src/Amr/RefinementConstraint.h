@@ -1,6 +1,6 @@
 #ifndef REFTYPE_H
 #define REFTYPE_H
-namespace Anaptric
+namespace cmf
 {
     namespace RefinementConstraint
     {

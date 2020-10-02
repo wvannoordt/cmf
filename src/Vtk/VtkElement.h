@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace Anaptric
+namespace cmf
 {
     class VtkElement
     {

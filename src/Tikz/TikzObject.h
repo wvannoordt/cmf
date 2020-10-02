@@ -13,7 +13,7 @@
 #include "TikzColor.h"
 #include <stack>
 
-namespace Anaptric
+namespace cmf
 {
     class TikzObject
     {

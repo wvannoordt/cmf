@@ -1,7 +1,7 @@
 #ifndef VTK_BUFFER_H
 #define VTK_BUFFER_H
 #include "VtkFile.h"
-namespace Anaptric
+namespace cmf
 {
     class VtkBuffer
     {

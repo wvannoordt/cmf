@@ -10,12 +10,12 @@
 #include "NodeIterator.h"
 #include "VtkFile.h"
 
-namespace Anaptric
+namespace cmf
 {
     struct NodeEdge
     {
         char isDomainEdge;
-        int edgeVector[ANA_DIM];
+        int edgeVector[CMF_DIM];
     };
 
     class RefinementTreeNode;
@@ -44,7 +44,7 @@ namespace Anaptric
             void CreateNewNeighbor(RefinementTreeNode* target, int* deltaijk, char isDomainEdge);
             void RemoveNeighbor(RefinementTreeNode* target);
             bool IsAnyDomainBoundary(void);
-            RefinementTreeNode* RecursiveGetNodeAt(double coords[ANA_DIM]);
+            RefinementTreeNode* RecursiveGetNodeAt(double coords[CMF_DIM]);
             void Refine(char newRefinementType);
             void SetRefineLimiter(RefinementLimit_t* limiter_in);
             int GetLevel(void);
@@ -71,14 +71,14 @@ namespace Anaptric
             char refineType, refineOrientation;
             bool isTerminal, deallocSubTrees, isLocked;
             char subNodeRefinementType;
-            double blockBounds[2*ANA_DIM];
+            double blockBounds[2*CMF_DIM];
             RefinementConstraint::RefinementConstraint constraint;
             RefinementTreeNode** subNodes;
             RefinementTreeNode* host;
             int numSubNodes, level;
-            int directionLevels[ANA_DIM];
+            int directionLevels[CMF_DIM];
             std::map<RefinementTreeNode*, NodeEdge> neighbors;
-            bool isOnBoundary[2*ANA_DIM];
+            bool isOnBoundary[2*CMF_DIM];
             RefinementLimit_t* refineLimiter;
             NodeIterator* iterator;
             int iteratorIndex;
