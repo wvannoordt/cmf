@@ -3,6 +3,7 @@
 #include "PropTreeLib.h"
 #include "cmf.h"
 #include "RefinementTreeNode.h"
+#include "BlockIterator.h"
 #include "Config.h"
 #include <cstdlib>
 #include "Utils.hx"
@@ -20,10 +21,10 @@ namespace cmf
         int level_in,
         RefinementTreeNode* host_in,
         RefinementConstraint::RefinementConstraint constraint_in,
-        NodeIterator* iterator_in
+        RefinementBlock* rootBlock_in
     )
     {
-        iterator = iterator_in;
+        rootBlock = rootBlock_in;
         constraint = constraint_in;
         isLocked = false;
         isTerminal = true;
@@ -79,7 +80,7 @@ namespace cmf
         }
     }
 
-    void RefinementTreeNode::SetRefineLimiter(RefinementLimit_t* limiter_in)
+    void RefinementTreeNode::SetRefineLimiter(NodeFilter_t* limiter_in)
     {
         refineLimiter = limiter_in;
     }
@@ -233,7 +234,7 @@ namespace cmf
     {
         if ((refineLimiter!=NULL) && (*refineLimiter!=NULL))
         {
-            RefinementLimit_t isLimited = *refineLimiter;
+            NodeFilter_t isLimited = *refineLimiter;
             if (isLimited(this)) return;
         }
         char effective = newRefinementType;
@@ -248,7 +249,7 @@ namespace cmf
         for (int i = 0; i < numSubNodes; i++)
         {
             newRefinementOrientation = (char)((i&1)*((basis&0x00ff0000)>>16) + ((i&2)>>1)*((basis&0x0000ff00)>>8) + ((i&4)>>2)*((basis&0x000000ff)));
-            subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this, constraint, iterator);
+            subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this, constraint, rootBlock);
         }
         GenerateNeighborsOfChildAllNodes();
         UpdateNeighborsOfNeighborsToChildNodes(subNodeRefinementType);

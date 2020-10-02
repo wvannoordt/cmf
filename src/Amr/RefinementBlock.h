@@ -2,13 +2,15 @@
 #define RefinementBlock_H
 
 #include <string>
+#include "AmrFcnTypes.h"
 #include "PropTreeLib.h"
 #include "RefinementTreeNode.h"
+#include "BlockIterator.h"
 #include "RefinementConstraint.h"
-#include "NodeIterator.h"
 
 namespace cmf
 {
+    class RefinementTreeNode;
     class RefinementBlock
     {
         public:
@@ -24,11 +26,8 @@ namespace cmf
             RefinementTreeNode* GetNodeAt(double coords[CMF_DIM]);
             bool PointIsInDomain(double coords[CMF_DIM], int* idx);
             bool PointIsInDomain(double coords[CMF_DIM]);
-            void SetRefineLimitCriterion(RefinementLimit_t limiter_in);
+            void SetRefineLimitCriterion(NodeFilter_t limiter_in);
             void OutputDebugVtk(std::string filename);
-            void Iterator(void);
-            bool HasNextBlock(void);
-            void NextBlock(void);
         private:
             void DefineTrunks(void);
             void HandleRefinementQueryOutsideDomain(double coords[CMF_DIM]);
@@ -40,8 +39,7 @@ namespace cmf
             RefinementTreeNode** trunks;
             bool deallocTrunks;
             RefinementConstraint::RefinementConstraint refinementConstraintType;
-            RefinementLimit_t refineLimiter;
-            NodeIterator iterator;
+            NodeFilter_t refineLimiter;
     };
 }
 

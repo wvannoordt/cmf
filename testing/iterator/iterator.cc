@@ -13,7 +13,7 @@ int main(int argc, char** argv)
         coords[1] = 0.1;
         coords[2] = 0.00001;
         domain.RefineAt(coords, 3);
-        //for (domain.Iterator(); domain.HasNextBlock(); domain.NextBlock())
+        //for (cmf::BlockIterator i(domain); i.HasNext(); i++)
         //{
         //
         //}

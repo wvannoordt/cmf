@@ -2,27 +2,26 @@
 #define RefinementTreeNode_H
 
 #include <string>
+#include "AmrFcnTypes.h"
 #include "Config.h"
 #include "TikzObject.h"
 #include <vector>
 #include <utility>
+#include "RefinementBlock.h"
 #include "RefinementConstraint.h"
-#include "NodeIterator.h"
+#include "BlockIterator.h"
 #include "VtkFile.h"
 
 namespace cmf
 {
+
     struct NodeEdge
     {
         char isDomainEdge;
         int edgeVector[CMF_DIM];
     };
 
-    class RefinementTreeNode;
-    class NodeIterator;
-    typedef bool(*RefinementLimit_t)(RefinementTreeNode*);
-    typedef void(*DebugTikzDraw_t)(TikzObject*, RefinementTreeNode*);
-
+    class RefinementBlock;
     class RefinementTreeNode
     {
         public:
@@ -34,7 +33,7 @@ namespace cmf
                 int level_in,
                 RefinementTreeNode* host_in,
                 RefinementConstraint::RefinementConstraint constraint_in,
-                NodeIterator* iterator_in
+                RefinementBlock* rootBlock_in
             );
             ~RefinementTreeNode(void);
             void Destroy(void);
@@ -46,7 +45,7 @@ namespace cmf
             bool IsAnyDomainBoundary(void);
             RefinementTreeNode* RecursiveGetNodeAt(double coords[CMF_DIM]);
             void Refine(char newRefinementType);
-            void SetRefineLimiter(RefinementLimit_t* limiter_in);
+            void SetRefineLimiter(NodeFilter_t* limiter_in);
             int GetLevel(void);
             bool SharesEdgeWithHost(int edgeIndex);
             double* GetBlockBounds(void);
@@ -79,10 +78,11 @@ namespace cmf
             int directionLevels[CMF_DIM];
             std::map<RefinementTreeNode*, NodeEdge> neighbors;
             bool isOnBoundary[2*CMF_DIM];
-            RefinementLimit_t* refineLimiter;
-            NodeIterator* iterator;
+            NodeFilter_t* refineLimiter;
+            RefinementBlock* rootBlock;
             int iteratorIndex;
             friend class NeighborIterator;
+            friend class BlockIterator;
     };
 }
 
