@@ -35,7 +35,7 @@ namespace cmf
             }
             VtkAttributable* AddAttributable(std::string name, VtkAttributableType::VtkAttributableType newType)
             {
-                if (Exists(name)) __VTKERROR("Multiple definition of attribute " << name);
+                if (Exists(name)) CmfError("Multiple definition of attribute " + name);
                 attributables.insert({name, new VtkAttributable(name, newType)});
                 indices.insert({count, name});
                 count++;
@@ -44,7 +44,7 @@ namespace cmf
 
             VtkAttributable* GetAttributable(std::string name)
             {
-                if (!Exists(name)) __VTKERROR("Attempted to fetch non-existent attribute " << name);
+                if (!Exists(name)) CmfError("Attempted to fetch non-existent attribute " + name);
                 return attributables[name];
             }
 

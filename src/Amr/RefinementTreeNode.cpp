@@ -10,6 +10,7 @@
 #include "DebugTools.hx"
 #include <vector>
 #include "VtkFile.h"
+#include "CmfError.h"
 
 namespace cmf
 {
@@ -104,6 +105,11 @@ namespace cmf
         }
     }
 
+    bool RefinementTreeNode::IsTerminal(void)
+    {
+        return isTerminal;
+    }
+
     int RefinementTreeNode::GetLevel(void)
     {
         return level;
@@ -172,7 +178,7 @@ namespace cmf
             }
             case RefinementConstraint::factor2PartiallyConstrained:
             {
-                __erkill("RefinementConstraint::factor2PartiallyConstrained not implemented");
+                CmfError("RefinementConstraint::factor2PartiallyConstrained not implemented");
                 return false;
             }
         }
@@ -201,7 +207,7 @@ namespace cmf
         {
             char location = GetOctant(blockBounds, coords);
             int index = GetIndexFromOctantAndRefineType(location, subNodeRefinementType);
-            if (index>=numSubNodes) __erkill("Error in RecursiveGetNodeAt: index>=numSubNodes");
+            if (index>=numSubNodes) CmfError("Error in RecursiveGetNodeAt: index>=numSubNodes");
             return subNodes[index]->RecursiveGetNodeAt(coords);
         }
     }
@@ -406,7 +412,7 @@ namespace cmf
 
         for (RefinementTreeNode* currentNode = neighbor; (currentNode->directionLevels[d])>=(child->directionLevels[d]); currentNode = currentNode->host)
         {
-            if (!(currentNode->host)) __erkill("Error: neighbor classification reference null host.");
+            if (!(currentNode->host)) CmfError("Error: neighbor classification referenced null host.");
             if (currentNode->directionLevels[d]!=child->directionLevels[d])
             {
                 allEdgeConditionsSatisfied = allEdgeConditionsSatisfied && currentNode->SharesEdgeWithHost(edgeIndex);

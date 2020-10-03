@@ -1,8 +1,7 @@
 #ifndef VTK_ATTR_H
 #define VTK_ATTR_H
 #include <iostream>
-#define __VTKlongline "---------------------------------------------------------"
-#define __VTKERROR(mystuff) {std::cout << __VTKlongline <<std::endl << "[VTK] Terminate called from " << __FILE__ <<  ", line (" << __LINE__ << "): " << mystuff << std::endl << __VTKlongline << std::endl; abort();}
+#include "CmfError.h"
 #include <fstream>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -69,13 +68,13 @@ namespace cmf
             {
                 for (std::map<std::string,VtkAttributableType::VtkAttributableType>::iterator it = requiredAttributes.begin(); it != requiredAttributes.end(); it++)
                 {
-                    if (!AttributeExists(it->first)) __VTKERROR("Cannot find required attribute \"" << it->first << "\" for object \"" << className << "\".");
+                    if (!AttributeExists(it->first)) CmfError("Cannot find required attribute \"" + it->first + "\" for object \"" + className + "\".");
                 }
             }
 
             void AddRequiredAttribute(std::string name, VtkAttributableType::VtkAttributableType attribType)
             {
-                if (RequiredAttributeExists(name)) __VTKERROR("Multiple definition of attribute " << name);
+                if (RequiredAttributeExists(name)) CmfError("Multiple definition of attribute " + name);
                 requiredAttributes.insert({name, attribType});
             }
 
@@ -144,7 +143,7 @@ namespace cmf
                     case VtkAttributableType::intType: return sizeof(int);
                     case VtkAttributableType::doubleType: return sizeof(double);
                     case VtkAttributableType::longType: return sizeof(size_t);
-                    case VtkAttributableType::stringType: __VTKERROR("Error: bufferType is set to incompatible type (" << AttrTypeStr(bufferType) << ").");
+                    case VtkAttributableType::stringType: CmfError("Error: bufferType is set to incompatible type (" + AttrTypeStr(bufferType) + ").");
                 }
             }
 
@@ -158,13 +157,13 @@ namespace cmf
                     {
                         std::cout << " => " << it->first << " (" << AttrTypeStr(it->second) << ")" << std::endl;
                     }
-                    __VTKERROR("Stopping");
+                    CmfError("Stopping");
                 }
                 if ((requiredAttributes[name] != setType) && (!TypesAreCompatible(requiredAttributes[name], setType)))
                 {
                     std::cout << "Error: Attempt to set attribute \"" << name << "\" to type " << std::endl;
                     std::cout << "\"" << AttrTypeStr(setType) << "\" but it is of type \"" << AttrTypeStr(requiredAttributes[name]) << "\"" << std::endl;
-                    __VTKERROR("Stopping");
+                    CmfError("Stopping");
                 }
                 VtkAttribute newAttrValues;
                 CreateNewAttribute(&newAttrValues, name, data, setType);
@@ -173,7 +172,7 @@ namespace cmf
                 {
                     if (!TypesAreCompatible(setType, VtkAttributableType::longType))
                     {
-                        __VTKERROR("Attempted to allocate dataBuffer using attribute \"" << name << "\" of improper type " << AttrTypeStr(setType) << ".");
+                        CmfError("Attempted to allocate dataBuffer using attribute \"" + name + "\" of improper type " + AttrTypeStr(setType) + ".");
                     }
                     size_t allocsize = ((setType == VtkAttributableType::intType) ? (*((int*)data)) : (*((size_t*)data))) * GetBufferElementSize();
                     dataBuffer = (char*)malloc(allocsize);
@@ -184,7 +183,7 @@ namespace cmf
                 {
                     if (!TypesAreCompatible(setType, VtkAttributableType::longType))
                     {
-                        __VTKERROR("Attempted to set stride using attribute \"" << name << "\" of improper type " << AttrTypeStr(setType) << ".");
+                        CmfError("Attempted to set stride using attribute \"" + name + "\" of improper type " + AttrTypeStr(setType) + ".");
                     }
                     stride = (int)((setType == VtkAttributableType::intType) ? (*((int*)data)) : (*((size_t*)data)));
                 }
@@ -255,15 +254,15 @@ namespace cmf
                     if (PositionIsEnd(i, str))
                     {
                         level--;
-                        if (level<0) __VTKERROR("Invocation \"" + str + "\" has inconsistent brackets.");
+                        if (level<0) CmfError("Invocation \"" + str + "\" has inconsistent brackets.");
                     }
                 }
-                if (level!=0) __VTKERROR("Invocation \"" + str + "\" has inconsistent brackets.");
+                if (level!=0) CmfError("Invocation \"" + str + "\" has inconsistent brackets.");
             }
 
             std::string GetDefinition(std::string keyValue)
             {
-                if (!AttributeExists(keyValue)) __VTKERROR("Cannot find attribute \"" << keyValue << "\", requested in format of attribute \"" << className << "\"");
+                if (!AttributeExists(keyValue)) CmfError("Cannot find attribute \"" + keyValue + "\", requested in format of attribute \"" + className + "\"");
                 char buffer[CMF_VTK_MAX_STRING_SIZE] = {0};
                 VtkAttribute info = attributes[keyValue];
                 memcpy(buffer, attributeBuffer + info.attrOffset, info.varSize);
@@ -361,7 +360,7 @@ namespace cmf
             std::map<std::string, VtkAttribute> attributes;
             void GetBuffer(char** buf, size_t* outputSize)
             {
-                if (!bufferIsAllocated) __VTKERROR("Error: GetBuffer called before buffersize \"" << bufferSizeAttrName << "\" is set.");
+                if (!bufferIsAllocated) CmfError("Error: GetBuffer called before buffersize \"" + bufferSizeAttrName + "\" is set.");
                 *buf = dataBuffer;
                 *outputSize = allocatedSize;
             }

@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include "cmf.h"
+using cmf::cmfout;
+using cmf::cmfendl;
 int main(int argc, char** argv)
 {
     __only3d
@@ -15,7 +17,7 @@ int main(int argc, char** argv)
         domain.RefineAt(coords, 3);
         for (cmf::BlockIterator i(&domain); i.HasNext(); i++)
         {
-            
+            cmfout << "HI" << cmfendl;
         }
         cmf::Finalize();
     )

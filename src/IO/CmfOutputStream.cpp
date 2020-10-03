@@ -2,7 +2,7 @@
 namespace cmf
 {
     cmfoutputflush cmfendl;
-    CmfOutputStream ptlout;
+    CmfOutputStream cmfout;
     CmfOutputStream::CmfOutputStream(void)
     {
         streams.push_back(&std::cout);

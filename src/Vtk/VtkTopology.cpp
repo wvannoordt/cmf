@@ -15,7 +15,7 @@ namespace cmf
         {
             case VtkTopologyType::structuredPoints:
             {
-                __VTKERROR("structuredPoints not implemented");
+                CmfError("structuredPoints not implemented");
                 collection.AddAttributable("DATASET", VtkAttributableType::intType);
                 VtkAttributable* dataset = collection.GetAttributable("DATASET");
                 dataset->AddRequiredAttribute("numpnts_x", VtkAttributableType::intType);
@@ -30,7 +30,7 @@ namespace cmf
             }
             case VtkTopologyType::structuredGrid:
             {
-                __VTKERROR("structuredGrid not implemented");
+                CmfError("structuredGrid not implemented");
                 break;
             }
             case VtkTopologyType::unstructuredGrid:
@@ -55,17 +55,17 @@ namespace cmf
             }
             case VtkTopologyType::polydata:
             {
-                __VTKERROR("polydata not implemented");
+                CmfError("polydata not implemented");
                 break;
             }
             case VtkTopologyType::rectilinearGrid:
             {
-                __VTKERROR("rectilinearGrid not implemented");
+                CmfError("rectilinearGrid not implemented");
                 break;
             }
             case VtkTopologyType::field:
             {
-                __VTKERROR("field not implemented");
+                CmfError("field not implemented");
                 break;
             }
         }

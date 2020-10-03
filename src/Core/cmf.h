@@ -1,6 +1,7 @@
 #ifndef CMF_H
 #define CMF_H
 
+#include "CmfError.h"
 #include <string>
 #include "Config.h"
 #include "PropTreeLib.h"

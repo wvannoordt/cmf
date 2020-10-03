@@ -1,5 +1,5 @@
-#ifndef OUTPUTSTREAM_H
-#define OUTPUTSTREAM_H
+#ifndef CMFOUTPUTSTREAM_H
+#define CMFOUTPUTSTREAM_H
 #include <vector>
 #include <ostream>
 #include <iostream>

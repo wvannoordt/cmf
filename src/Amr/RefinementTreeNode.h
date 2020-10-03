@@ -43,6 +43,7 @@ namespace cmf
             void CreateNewNeighbor(RefinementTreeNode* target, int* deltaijk, char isDomainEdge);
             void RemoveNeighbor(RefinementTreeNode* target);
             bool IsAnyDomainBoundary(void);
+            bool IsTerminal(void);
             RefinementTreeNode* RecursiveGetNodeAt(double coords[CMF_DIM]);
             void Refine(char newRefinementType);
             void SetRefineLimiter(NodeFilter_t* limiter_in);

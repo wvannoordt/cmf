@@ -1,6 +1,7 @@
 #ifndef BLOCK_ITERATOR_H
 #define BLOCK_ITERATOR_H
 #include <vector>
+#include "AmrFcnTypes.h"
 namespace cmf
 {
     class RefinementBlock;
@@ -14,6 +15,7 @@ namespace cmf
         private:
             RefinementBlock* hostBlock;
             size_t index;
+            NodeFilter_t filter;
     };
 }
 
