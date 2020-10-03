@@ -9,8 +9,11 @@ namespace cmf
         public:
             BlockIterator(RefinementBlock* hostBlock_in);
             ~BlockIterator(void);
+            bool HasNext(void);
+            BlockIterator& operator++(int dummy);
         private:
             RefinementBlock* hostBlock;
+            size_t index;
     };
 }
 
