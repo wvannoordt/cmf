@@ -2,6 +2,7 @@
 #define RefinementBlock_H
 
 #include <string>
+#include <vector>
 #include "AmrFcnTypes.h"
 #include "PropTreeLib.h"
 #include "RefinementTreeNode.h"
@@ -28,6 +29,7 @@ namespace cmf
             bool PointIsInDomain(double coords[CMF_DIM]);
             void SetRefineLimitCriterion(NodeFilter_t limiter_in);
             void OutputDebugVtk(std::string filename);
+            void RegisterNewNode(RefinementTreeNode* newNode);
         private:
             void DefineTrunks(void);
             void HandleRefinementQueryOutsideDomain(double coords[CMF_DIM]);
@@ -40,6 +42,8 @@ namespace cmf
             bool deallocTrunks;
             RefinementConstraint::RefinementConstraint refinementConstraintType;
             NodeFilter_t refineLimiter;
+            std::vector<RefinementTreeNode*> allNodes;
+        friend class RefinementTreeNode;
     };
 }
 

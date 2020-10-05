@@ -48,6 +48,7 @@ namespace cmf
                 localBounds[2*d+1] = blockBounds[2*d]+(idx[d]+1)*dx[d];
             }
             trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL, refinementConstraintType, this);
+            RegisterNewNode(trunks[i]);
             trunks[i]->SetRefineLimiter(&refineLimiter);
         }
         for (int i = 0; i < totalNumTrunks; i++)
@@ -75,6 +76,11 @@ namespace cmf
                 }
             }
         }
+    }
+    
+    void RefinementBlock::RegisterNewNode(RefinementTreeNode* newNode)
+    {
+        allNodes.push_back(newNode);
     }
 
     void RefinementBlock::SetRefineLimitCriterion(NodeFilter_t limiter_in)

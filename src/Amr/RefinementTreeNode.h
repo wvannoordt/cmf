@@ -87,4 +87,6 @@ namespace cmf
     };
 }
 
+#include "BlockFilters.h"
+
 #endif

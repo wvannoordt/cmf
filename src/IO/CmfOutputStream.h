@@ -23,6 +23,7 @@ namespace cmf
             CmfOutputStream& operator << (const char* a);
             CmfOutputStream& operator << (char* a);
             CmfOutputStream& operator << (int a);
+            CmfOutputStream& operator << (size_t a);
             CmfOutputStream& operator << (cmfoutputflush a);
             CmfOutputStream& operator << (float a);
             CmfOutputStream& operator << (bool a);
