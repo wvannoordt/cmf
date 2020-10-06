@@ -14,11 +14,12 @@ int main(int argc, char** argv)
         coords[0] = 0.1;
         coords[1] = 0.1;
         coords[2] = 0.00001;
-        domain.RefineAt(coords, 3);
+        int p = 0;
         for (cmf::BlockIterator i(&domain); i.HasNext(); ++i)
         {
-            cmfout << i << cmfendl;
-            //std::cout << i << std::endl;
+            cmfout << "Block " << i << cmfendl;
+            if (p==18) i.Node()->Refine(7);
+            p++;
         }
         cmf::Finalize();
     )

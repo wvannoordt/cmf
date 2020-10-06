@@ -44,6 +44,7 @@ namespace cmf
             NodeFilter_t refineLimiter;
             std::vector<RefinementTreeNode*> allNodes;
         friend class RefinementTreeNode;
+        friend class BlockIterator;
     };
 }
 

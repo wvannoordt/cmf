@@ -6,6 +6,7 @@ namespace cmf
     BlockIterator::BlockIterator(RefinementBlock* hostBlock_in)
     {
         hostBlock = hostBlock_in;
+        allNodes = &(hostBlock_in->allNodes);
         index = 0;
         filter = BlockFilters::Every;
     }
@@ -20,17 +21,20 @@ namespace cmf
         index++;
         return *this;
     }
-    
+
     BlockIterator & BlockIterator::operator++(void)
     {
         index++;
         return *this;
     }
-    
-    RefinementTreeNode* BlockIterator
+
+    RefinementTreeNode* BlockIterator::Node(void)
+    {
+        return (*allNodes)[index];
+    }
 
     bool BlockIterator::HasNext(void)
     {
-        return (index<10);
+        return (index<allNodes->size());
     }
 }

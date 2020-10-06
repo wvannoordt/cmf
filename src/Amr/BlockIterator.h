@@ -16,12 +16,14 @@ namespace cmf
             bool HasNext(void);
             BlockIterator   operator++(int dummy);
             BlockIterator & operator++(void);
+            RefinementTreeNode* Node(void);
             friend std::ostream & operator << (std::ostream &out, const BlockIterator &c) {out << c.index; return out;}
             friend CmfOutputStream & operator << (CmfOutputStream &out, const BlockIterator &c) {out << c.index; return out;}
         private:
             RefinementBlock* hostBlock;
             size_t index;
             NodeFilter_t filter;
+            std::vector<RefinementTreeNode*>* allNodes;
     };
 }
 
