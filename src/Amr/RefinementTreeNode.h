@@ -52,6 +52,7 @@ namespace cmf
             double* GetBlockBounds(void);
             void RecursiveCountTerminal(int* totalNumBlocks);
             void RecursiveWritePointsToVtk(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes, int* num);
+            void WriteBlockDataToVtkBuffers(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes, int* num);
         private:
             void Lock(void);
             void Unlock(void);
@@ -68,8 +69,11 @@ namespace cmf
             int GetInvCoordBasis(char refinementType);
             void DefineBounds(double* hostBounds, char refineType_in, char refineOrientation_in);
             void DetermineNeighborClassificationUpdate(RefinementTreeNode* neighbor, RefinementTreeNode* child, int d, bool tangentUpperOrientation, int* newEdgeVec, bool* relationshipIsAnnihilated);
-            char refineType, refineOrientation;
-            bool isTerminal, deallocSubTrees, isLocked;
+            char refineType
+            char refineOrientation;
+            bool isTerminal
+            bool deallocSubTrees
+            bool isLocked;
             char subNodeRefinementType;
             double blockBounds[2*CMF_DIM];
             RefinementConstraint::RefinementConstraint constraint;

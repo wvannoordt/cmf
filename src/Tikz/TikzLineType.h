@@ -7,6 +7,8 @@ namespace cmf
 {
     namespace TikzLineType
     {
+        /// @brief Provides available standard line styles in TikZ.
+        /// @author WVN
         enum TikzLineType
         {
             solid,
@@ -24,6 +26,9 @@ namespace cmf
             looselyDashDotDotted
         };
 
+        /// @brief Provides string representations of standard line styles in TikZ.
+        /// @param lineType an integer-cast TikzLineType
+        /// @author WVN
         inline static std::string TikzTypeStr(int lineType)
         {
             switch (lineType)

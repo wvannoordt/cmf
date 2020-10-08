@@ -10,6 +10,19 @@ namespace cmf
         index = 0;
         filter = BlockFilters::Every;
     }
+    
+    BlockIterator::BlockIterator(RefinementBlock* hostBlock_in, NodeFilter_t filter_in)
+    {
+        hostBlock = hostBlock_in;
+        allNodes = &(hostBlock_in->allNodes);
+        index = 0;
+        filter = filter_in;
+    }
+    
+    size_t BlockIterator::Size(void)
+    {
+        return hostBlock->Size();
+    }
 
     BlockIterator::~BlockIterator(void)
     {

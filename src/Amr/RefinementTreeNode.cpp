@@ -328,9 +328,15 @@ namespace cmf
                     currentBasisIndex++;
                 }
             }
+            __sdump((int)orientationConstraintMask);
+            __sdump((int)orientationConstraintValues);
+            __sdump(numCandidateChildren);
+            __qdump("");
+            bool seeking = (relationship.edgeVector[0]==1)&&(relationship.edgeVector[1]==0)&&(relationship.edgeVector[2]==0);
             for (int i = 0; i < numCandidateChildren; i++)
             {
                 //There will need to be changes here.
+                if (seeking) __qdump("found (0 -1 0)");
                 __dloop(newEdgeVec[d] = -relationship.edgeVector[d]);
                 char orientationFromBasis = BasisEval(indexingBasis, (char)i);
                 char orientation = (orientationFromBasis&~orientationConstraintMask)|(orientationConstraintValues&orientationConstraintMask);
@@ -350,6 +356,7 @@ namespace cmf
                         DetermineNeighborClassificationUpdate(neighbor, subNodes[idx], d, isUpperOrientationInDirection, newEdgeVec, &relationshipIsAnnihilated);
                     }
                 }
+                if (seeking) __sdump((relationshipIsAnnihilated?"Y":"N"));
                 if (!relationshipIsAnnihilated)
                 {
                     neighbor->CreateNewNeighbor(subNodes[idx], newEdgeVec, relationship.isDomainEdge);
@@ -364,21 +371,7 @@ namespace cmf
     {
         if (isTerminal)
         {
-            edges << (CMF_IS3D?8:4);
-            for (char i = 0; i < (1<<CMF_DIM); i++)
-            {
-                double x = blockBounds[0+CharBit(i, 0)];
-                double y = blockBounds[2+CharBit(i, 1)];
-                double z = 0.0;
-                if (CMF_IS3D) z = blockBounds[4+CharBit(i, 2)];
-                points << x;
-                points << y;
-                points << z;
-                edges << (*num);
-                (*num) = (*num)+1;
-            }
-            if (CMF_IS3D) {cellTypes << VtkCellType::voxel;}
-            else {cellTypes << VtkCellType::pixel;}
+            WriteBlockDataToVtkBuffers(points, edges, cellTypes, num);
         }
         else
         {
@@ -387,6 +380,25 @@ namespace cmf
                 subNodes[i]->RecursiveWritePointsToVtk(points, edges, cellTypes, num);
             }
         }
+    }
+    
+    void RefinementTreeNode::WriteBlockDataToVtkBuffers(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes, int* num)
+    {
+        edges << (CMF_IS3D?8:4);
+        for (char i = 0; i < (1<<CMF_DIM); i++)
+        {
+            double x = blockBounds[0+CharBit(i, 0)];
+            double y = blockBounds[2+CharBit(i, 1)];
+            double z = 0.0;
+            if (CMF_IS3D) z = blockBounds[4+CharBit(i, 2)];
+            points << x;
+            points << y;
+            points << z;
+            edges << (*num);
+            (*num) = (*num)+1;
+        }
+        if (CMF_IS3D) {cellTypes << VtkCellType::voxel;}
+        else {cellTypes << VtkCellType::pixel;}
     }
 
     void RefinementTreeNode::RecursiveCountTerminal(int* totalNumBlocks)

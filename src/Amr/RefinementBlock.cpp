@@ -27,6 +27,11 @@ namespace cmf
         for (int d = 0; d < CMF_DIM; d++) dx[d] = (blockBounds[2*d+1]-blockBounds[2*d])/blockDim[d];
         DefineTrunks();
     }
+    
+    size_t RefinementBlock::Size(void)
+    {
+        return allNodes.size();
+    }
 
     RefinementBlock::~RefinementBlock(void)
     {

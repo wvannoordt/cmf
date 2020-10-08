@@ -1,6 +1,15 @@
+user
+{
+	allNeighs = true
+	doRefinement = true
+	testDir = z
+	testVal = -1
+}
 Domain
 {
-	blockDim = [4, 4, 4]
+	#define num 3
+	blockDim = [$(num), $(num), $(num)]
 	blockBounds = [0,1,0,1,0,1]
-	refinementConstraintType = factor2CompletelyConstrained
+	refinementConstraintType = free
+	//refinementConstraintType = factor2CompletelyConstrained
 }

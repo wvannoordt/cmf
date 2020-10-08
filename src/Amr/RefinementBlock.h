@@ -30,6 +30,7 @@ namespace cmf
             void SetRefineLimitCriterion(NodeFilter_t limiter_in);
             void OutputDebugVtk(std::string filename);
             void RegisterNewNode(RefinementTreeNode* newNode);
+            size_t Size(void);
         private:
             void DefineTrunks(void);
             void HandleRefinementQueryOutsideDomain(double coords[CMF_DIM]);

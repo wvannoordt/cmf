@@ -8,6 +8,8 @@ namespace cmf
 {
     namespace TikzColor
     {
+        /// @brief Provides available standard colors in TikZ.
+        /// @author WVN
         enum TikzColor
         {
             red,
@@ -32,6 +34,9 @@ namespace cmf
         };
     }
 
+    /// @brief Provides string representations of standard colors in TikZ.
+    /// @param color an integer-cast TikzColor
+    /// @author WVN
     inline static std::string TikzColorStr(int color)
     {
         switch (color)

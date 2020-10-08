@@ -9,10 +9,25 @@ namespace cmf
         topology = new VtkTopology(topType);
         version = new VtkVersion(3, 0);
         filename = filename_in;
+        isEmpty = false;
+    }
+    
+    VtkFile::VtkFile(void)
+    {
+        format = NULL;
+        header = NULL;
+        topology = NULL;
+        version = NULL;
+        filename = "NOFILE";
+        isEmpty = true;
     }
 
     void VtkFile::Write(void)
     {
+        if (isEmpty)
+        {
+            CmfError("Attempted to output an empty VTK file object.");
+        }
         std::ofstream myfile;
         topology->CheckHasAllAttributes();
         for (size_t i = 0; i < data.size(); i++)
@@ -38,9 +53,12 @@ namespace cmf
 
     VtkFile::~VtkFile(void)
     {
-        delete format;
-        delete header;
-        delete topology;
-        delete version;
+        if (!isEmpty)
+        {
+            delete format;
+            delete header;
+            delete topology;
+            delete version;
+        }
     }
 }
