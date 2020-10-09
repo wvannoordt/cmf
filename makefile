@@ -148,7 +148,7 @@ export CC_HOST
 export CURRENT_BASEIDIR
 export DIM
 
-.PHONY: final
+.PHONY: final docs
 
 final: ${DO_CLEAN} PTL setup ${TARGETNAME_CUDA} ${TARGETNAME_HYBRID_D} ${LINK_STEP} ${TARGETNAME_HYBRID_H} ${TARGETNAME_HOST}
 	${CC_HOST} -fPIC -shared ${CURRENT_OBJ_DIR}/*.o ${CURRENT_IFLAGS} ${IFLAGS_DEPENDENCIES} ${COMPILE_TIME_OPT} ${LZLIB} ${LCUDA} ${LFLAGS_DEPENDENCIES} -o ${TARGET}
@@ -207,9 +207,13 @@ clean:
 		unlink $${tdir}/makefile||echo"";\
 		rm -rf $${tdir}/output;\
 	done
+	${MAKE} -C ${CURRENT_DOC_DIR} -f makefile.docs clean
 
 test: ${DOCLEAN} final
 	@for tdir in ${TESTS} ; do\
 		${MAKE} -C $${tdir} -f makefile test || exit 4;\
 	done
 	@echo "ALL TESTS SUCCESSFUL"
+
+docs:
+	${MAKE} -C ${CURRENT_DOC_DIR} -f makefile.docs

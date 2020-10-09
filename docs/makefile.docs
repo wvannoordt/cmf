@@ -1,0 +1,21 @@
+DX = $(shell which doxygen)
+DOXFILE := doxyfile
+OUTPUTDIR := generated
+IDXHTML := ${OUTPUTDIR}/html/index.html
+GCHRM := $(shell which google-chrome)
+OPTARGET :=
+ifneq (${GCHRM},)
+OPTARGET := gopen
+endif
+
+.PHONY: main op
+op: main ${OPTARGET}
+
+gopen:
+	${GCHRM} ${IDXHTML}
+
+main:
+	${DX} ${DOXFILE}
+
+clean:
+	rm -rf generated
