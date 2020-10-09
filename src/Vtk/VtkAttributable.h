@@ -31,19 +31,30 @@ namespace cmf
         size_t varSize;
     };
 
+    /// @brief Class (to be inherited) providing a way to get/set generic attributes
+    /// @author WVN
     class VtkAttributable
     {
         public:
+            /// @brief Set the name of the attribute that represents the buffer size
+            /// @param bufferSizeName The name of the attribute corresponding to the buffer size
+            /// @author WVN
             void BufferSizeIs(std::string bufferSizeName)
             {
                 bufferSizeAttrName = bufferSizeName;
             }
 
+            /// @brief Set the name of the attribute that represents the stride
+            /// @param strideName_in The name of the attribute corresponding to the buffer stride
+            /// @author WVN
             void StrideIs(std::string strideName_in)
             {
                 strideName = strideName_in;
             }
 
+            /// @brief Returns true if the provided attrubte name is a required attrubte
+            /// @param name The name of the attribute to check
+            /// @author WVN
             bool RequiredAttributeExists(std::string name)
             {
                 std::map<std::string,VtkAttributableType::VtkAttributableType>::iterator it = requiredAttributes.find(name);
@@ -54,6 +65,9 @@ namespace cmf
                 return false;
             }
 
+            /// @brief Returns true if the provided attrubte name exists within the provided attributes
+            /// @param name The name of the attribute to check
+            /// @author WVN
             bool AttributeExists(std::string name)
             {
                 std::map<std::string,VtkAttribute>::iterator it = attributes.find(name);
@@ -64,6 +78,9 @@ namespace cmf
                 return false;
             }
 
+            /// @brief Asserts that all required attributes are found
+            /// @pre Throws an error if not all required attributes are found
+            /// @author WVN
             void EnforceAllRequiredAttributes(void)
             {
                 for (std::map<std::string,VtkAttributableType::VtkAttributableType>::iterator it = requiredAttributes.begin(); it != requiredAttributes.end(); it++)
@@ -71,13 +88,22 @@ namespace cmf
                     if (!AttributeExists(it->first)) CmfError("Cannot find required attribute \"" + it->first + "\" for object \"" + className + "\".");
                 }
             }
-
+            
+            /// @brief Adds a required attribute
+            /// @param name The name of the required attribute to add
+            /// @param attribType The expected type of the required attribute
+            /// \see VtkAttributableType
+            /// @author WVN
             void AddRequiredAttribute(std::string name, VtkAttributableType::VtkAttributableType attribType)
             {
                 if (RequiredAttributeExists(name)) CmfError("Multiple definition of attribute " + name);
                 requiredAttributes.insert({name, attribType});
             }
 
+            /// @brief Provides a string representation of a VtkAttributableType
+            /// @param typein The VtkAttributableType to provide a string representation of
+            /// \see VtkAttributableType
+            /// @author WVN
             std::string AttrTypeStr(VtkAttributableType::VtkAttributableType typein)
             {
                 switch (typein)
@@ -89,6 +115,13 @@ namespace cmf
                 }
             }
 
+            /// @brief Creates a new VtkAttribute.
+            /// @param newAttrValues A VtkAttribute object to be created
+            /// @param name The name of the new attribute
+            /// @param data The location of data to copy (copied to dataBuffer) pertaining to this attribute
+            /// @param setType The type of the new attribute
+            /// \see VtkAttributableType
+            /// @author WVN
             void CreateNewAttribute(VtkAttribute* newAttrValues, std::string name, void* data, VtkAttributableType::VtkAttributableType setType)
             {
                 newAttrValues->name = name;
@@ -129,6 +162,11 @@ namespace cmf
                 nextPointer += storedSize;
             }
 
+            /// @brief Returns true if the provided types can be cast to each other according to the current implementation
+            /// @param a A VtkAttributableType to be checked against b
+            /// @param b A VtkAttributableType to be checked against a
+            /// \see VtkAttributableType
+            /// @author WVN
             bool TypesAreCompatible(VtkAttributableType::VtkAttributableType a, VtkAttributableType::VtkAttributableType b)
             {
                 if ((a==VtkAttributableType::intType) && (b==VtkAttributableType::longType)) return true;
@@ -136,6 +174,11 @@ namespace cmf
                 return false;
             }
 
+            /// @brief Identical to the sizeof operator, but for the VtkAttributableType of the current buffer
+            /// @param a A VtkAttributableType to be checked against b
+            /// @param b A VtkAttributableType to be checked against a
+            /// \see VtkAttributableType
+            /// @author WVN
             size_t GetBufferElementSize(void)
             {
                 switch (bufferType)
@@ -147,6 +190,12 @@ namespace cmf
                 }
             }
 
+            /// @brief Sets a new attribute and parses the provided data.
+            /// @param name The name of the new attribute
+            /// @param data The location of data to copy (copied to dataBuffer) pertaining to this attribute
+            /// @param setType The type of the new attribute
+            /// \see VtkAttributableType
+            /// @author WVN
             void SetAttribute(std::string name, void* data, VtkAttributableType::VtkAttributableType setType)
             {
                 if (!RequiredAttributeExists(name))
@@ -189,16 +238,54 @@ namespace cmf
                 }
             }
 
+            /// @brief Expose the underlying buffer.
+            /// @param bufOut Location to place the address of the underlying buffer
+            /// @param outputSize Set to the size of the underlying buffer
+            /// @author WVN
             void GetBuffer(int**    bufOut, size_t* outputSize) {*outputSize = allocatedSize; *bufOut = (int*)    dataBuffer;}
+            
+            /// @brief Expose the underlying buffer.
+            /// @param bufOut Location to place the address of the underlying buffer
+            /// @author WVN
             void GetBuffer(int**    bufOut)                     {                             *bufOut = (int*)    dataBuffer;}
+            
+            /// @brief Expose the underlying buffer.
+            /// @param bufOut Location to place the address of the underlying buffer
+            /// @param outputSize Set to the size of the underlying buffer
+            /// @author WVN
             void GetBuffer(double** bufOut, size_t* outputSize) {*outputSize = allocatedSize; *bufOut = (double*) dataBuffer;}
+            
+            /// @brief Expose the underlying buffer.
+            /// @param bufOut Location to place the address of the underlying buffer
+            /// @author WVN
             void GetBuffer(double** bufOut)                     {                             *bufOut = (double*) dataBuffer;}
 
+            /// @brief Set attribute data by name
+            /// @param name The name of the attribute to set
+            /// @param data The data associated with the attribute name
+            /// @author WVN
             void SetAttribute(std::string name, int data)         {SetAttribute(name, (void*)&data, VtkAttributableType::intType);   }
+            
+            /// @brief Set attribute data by name
+            /// @param name The name of the attribute to set
+            /// @param data The data associated with the attribute name
+            /// @author WVN
             void SetAttribute(std::string name, double data)      {SetAttribute(name, (void*)&data, VtkAttributableType::doubleType);}
+            
+            /// @brief Set attribute data by name
+            /// @param name The name of the attribute to set
+            /// @param data The data associated with the attribute name
+            /// @author WVN
             void SetAttribute(std::string name, size_t data)      {SetAttribute(name, (void*)&data, VtkAttributableType::longType);  }
+            
+            /// @brief Set attribute data by name
+            /// @param name The name of the attribute to set
+            /// @param data The data associated with the attribute name
+            /// @author WVN
             void SetAttribute(std::string name, std::string data) {SetAttribute(name, (void*)&data, VtkAttributableType::stringType);}
 
+            /// @brief Frees underlying buffer
+            /// @author WVN
             void Destroy(void)
             {
                 if (bufferIsAllocated)
@@ -208,11 +295,19 @@ namespace cmf
                 }
             }
 
+            /// @brief Set the attribute format string for the current object
+            /// @param format_in The format string of the current object
+            /// @author WVN
             void SetFormat(std::string format_in)
             {
                 format = format_in;
             }
-
+            
+            /// @brief Set the attribute format string for the current object
+            /// @param name_in The name of the current VtkAttributable
+            /// @param namatrTypee_in The type of the current VtkAttributable
+            /// \see VtkAttributableType
+            /// @author WVN
             VtkAttributable(std::string name_in, VtkAttributableType::VtkAttributableType atrType)
             {
                 bufferType = atrType;
@@ -228,23 +323,37 @@ namespace cmf
                 invocationEnd = "}";
             }
 
+            /// @brief The destructor for VtkAttributable, calls Destroy
+            /// \see Destroy
+            /// @author WVN
             ~VtkAttributable(void)
             {
                 Destroy();
             }
 
+            /// @brief Checks if the end of a string is at a given position
+            /// @param i The position in question
+            /// @param str The string to find
+            /// @author WVN
             bool PositionIsStart(size_t i, std::string str)
             {
                 if (i < invocationStart.length()-1) return false;
                 return (str.substr(i-invocationStart.length()+1, invocationStart.length())==invocationStart);
             }
 
+            /// @brief Checks if the beginning of a string is at a given position
+            /// @param i The position in question
+            /// @param str The string to find
+            /// @author WVN
             bool PositionIsEnd(size_t i, std::string str)
             {
                 if (i+invocationEnd.length()-1 >= (str.length())) return false;
                 return (str.substr(i, invocationEnd.length()) == invocationEnd);
             }
 
+            /// @brief Checks if the given string has bracket consistency
+            /// @param str The string to test
+            /// @author WVN
             void AssertBracketConsistency(std::string str)
             {
                 int level = 0;
@@ -260,6 +369,9 @@ namespace cmf
                 if (level!=0) CmfError("Invocation \"" + str + "\" has inconsistent brackets.");
             }
 
+            /// @brief Returns the string representation of the attribute
+            /// @param keyValue The name of the attribute to retrieve
+            /// @author WVN
             std::string GetDefinition(std::string keyValue)
             {
                 if (!AttributeExists(keyValue)) CmfError("Cannot find attribute \"" + keyValue + "\", requested in format of attribute \"" + className + "\"");
@@ -291,6 +403,10 @@ namespace cmf
                 }
             }
 
+            /// @brief Recursively resolves a string within a preprocessor expansion context
+            /// @param str The string to resolve
+            /// @param level The number of current recursions
+            /// @author WVN
             std::string HeaderString(std::string str, int level)
             {
                 if (str.length()==0) return str;
@@ -315,8 +431,14 @@ namespace cmf
                 return output;
             }
 
+            /// @brief Recursively resolves a string within a preprocessor expansion context
+            /// @param str The string to resolve
+            /// @author WVN
             std::string HeaderString(void) {return HeaderString(format, 0);}
 
+            /// @brief Writes generic data to a file stream
+            /// @param myfile The file stream to be written to
+            /// @author WVN
             template <typename T> void WriteAs(std::ofstream & myfile)
             {
                 size_t elemSize = GetBufferElementSize();
@@ -329,6 +451,9 @@ namespace cmf
                 }
             }
 
+            /// @brief Writes the current object to a file stream
+            /// @param myfile The file stream to be written to
+            /// @author WVN
             void Write(std::ofstream & myfile)
             {
                 myfile << HeaderString() << std::endl;
@@ -354,10 +479,22 @@ namespace cmf
             }
 
         protected:
+            /// @brief Stores all attribute data
             char attributeBuffer[CMF_VTK_BUF_SIZE] = {0};
+            
+            /// @brief Index of current storage location
             int nextPointer;
+            
+            /// @brief A list of required attributes by name
             std::map<std::string, VtkAttributableType::VtkAttributableType> requiredAttributes;
+            
+            /// @brief A list of existing attributes by name
             std::map<std::string, VtkAttribute> attributes;
+            
+            /// @brief Retrieves the underlying data buffer
+            /// @param buf An address to copy the underlying buffer pointer to
+            /// @param outputSize An address to copy the underlying buffer size to
+            /// @author WVN
             void GetBuffer(char** buf, size_t* outputSize)
             {
                 if (!bufferIsAllocated) CmfError("Error: GetBuffer called before buffersize \"" + bufferSizeAttrName + "\" is set.");
@@ -365,14 +502,37 @@ namespace cmf
                 *outputSize = allocatedSize;
             }
         private:
-            std::string bufferSizeAttrName, strideName;
+            /// @brief Name of the attribute corresponding to the buffer size
+            std::string bufferSizeAttrName;
+            
+            /// @brief Name of the attribute corresponding to the buffer stride
+            std::string strideName;
+            
+            /// @brief The data buffer
             char* dataBuffer;
+            
+            /// @brief The size of the data buffer
             size_t allocatedSize;
+            
+            /// @brief Set to true when the buffer is allocated, and false when it is freed
             bool bufferIsAllocated;
-            std::string invocationStart, invocationEnd;
+            
+            /// @brief The symbol at the beginning of a symbolic invocation
+            std::string invocationStart;
+            
+            /// @brief The symbol at the end of a symbolic invocation
+            std::string invocationEnd;
+            
+            /// @brief The stride of the current buffer
             int stride;
+            
+            /// @brief The header format string
             std::string format;
+            
+            /// @brief The type of the data buffer
             VtkAttributableType::VtkAttributableType bufferType;
+            
+            /// @brief The name of the current object
             std::string className;
         friend class VtkBuffer;
     };
