@@ -23,11 +23,20 @@ namespace cmf
         };
     }
 
+    /// @brief Stores the data associated with an attribute
+    /// @author WVN
     struct VtkAttribute
     {
+        /// @brief Name of the attribute
         std::string name;
+        
+        /// @brief Type of the attribute
         VtkAttributableType::VtkAttributableType attrType;
+        
+        /// @brief Location of the attribute
         size_t attrOffset;
+        
+        /// @brief Size of the attribute
         size_t varSize;
     };
 
