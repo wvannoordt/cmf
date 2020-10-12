@@ -174,9 +174,15 @@ namespace cmf
     //This is for debugging only. For any real VTK output, an externl iterator should be used.
     void RefinementBlock::OutputDebugVtk(std::string filename)
     {
+        OutputDebugVtk(filename, [](RefinementTreeNode*){return true;});
+    }
+    
+    //This is for debugging only. For any real VTK output, an externl iterator should be used.
+    void RefinementBlock::OutputDebugVtk(std::string filename, NodeFilter_t filter)
+    {
         VtkFile output(filename, VtkFormatType::ascii, VtkTopologyType::unstructuredGrid);
         int totalNumBlocks = 0;
-        for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveCountTerminal(&totalNumBlocks);
+        for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveCountTerminal(&totalNumBlocks, filter);
         output.Mesh()->Component("DATASET")->SetAttribute("numPoints",   (CMF_IS3D?8:4)*totalNumBlocks);
         output.Mesh()->Component("DATASET")->SetAttribute("bufferCount", 3*(CMF_IS3D?8:4)*totalNumBlocks);
         output.Mesh()->Component("DATASET")->SetAttribute("stride", 3);
@@ -191,7 +197,7 @@ namespace cmf
         VtkBuffer edges(output.Mesh()->Component("CELLS"));
         VtkBuffer cellTypes(output.Mesh()->Component("CELL_TYPES"));
         int count = 0;
-        for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveWritePointsToVtk(points, edges, cellTypes, &count);
+        for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveWritePointsToVtk(points, edges, cellTypes, &count, filter);
         output.Write();
     }
 

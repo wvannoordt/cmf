@@ -1,13 +1,15 @@
 user
 {
 	allNeighs = true
+	level0 = false
 	doRefinement = true
-	testDir = z
+	testDir = x
 	testVal = -1
+	//outputName = output/neigh.vtk
 }
 Domain
 {
-	#define num 3
+	#define num 10
 	blockDim = [$(num), $(num), $(num)]
 	blockBounds = [0,1,0,1,0,1]
 	refinementConstraintType = free

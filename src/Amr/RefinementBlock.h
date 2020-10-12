@@ -87,6 +87,12 @@ namespace cmf
             /// @author WVN
             void OutputDebugVtk(std::string filename);
             
+            /// @brief Outputs a VTK file that contains only the node boxes. Used only for debugging/
+            /// @param filename A ".vtk" filename to write to
+            /// @param filter A function pointer that, if returns false on any given node, skips that node
+            /// @author WVN
+            void OutputDebugVtk(std::string filename, NodeFilter_t filter);
+            
             /// @brief Called every time a new node is created via refinement, used to build enumerators.
             /// @param newNode A pointer to a node to register
             /// @author WVN
@@ -128,7 +134,7 @@ namespace cmf
             bool deallocTrunks;
             
             /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
-            RefinementConstraint::RefinementConstraint constraint;
+            RefinementConstraint::RefinementConstraint refinementConstraintType;
             
             /// @brief See RefinementTreeNode::refineLimiter. Applied to all contained nodes
             NodeFilter_t refineLimiter;

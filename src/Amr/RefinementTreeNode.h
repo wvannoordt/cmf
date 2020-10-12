@@ -149,15 +149,34 @@ namespace cmf
             
             /// @brief Recursively counts the number of terminal nodes and increments totalNumBlocks accordingly.
             /// Deprecated, should not be used.
-            /// @param totalNumBlocks Pointer to a counter to be incremented.
+            /// @param totalNumBlocks Pointer to a counter to be incremented
             /// @author WVN
             void RecursiveCountTerminal(int* totalNumBlocks);
+            
+            /// @brief Recursively counts the number of terminal nodes and increments totalNumBlocks accordingly.
+            /// Deprecated, should not be used.
+            /// @param totalNumBlocks Pointer to a counter to be incremented
+            /// @param filter A function pointer that, if returns false on any given node, skips that node
+            /// @author WVN
+            void RecursiveCountTerminal(int* totalNumBlocks, NodeFilter_t filter);
             
             /// @brief Recursively writes points to the provided VtkBuffers objects. Calls WriteBlockDataToVtkBuffers
             /// with the same parameters.
             /// @param points VtkBuffer object representing the point buffer. Point coordinates are streamed into this
             /// @param edges VtkBuffer object representing the adjacency buffer. Point indices are streamed into this
             /// @param cellTypes VtkBuffer object representing the point buffer. Cell type IDs are streamed into this
+            /// @param num A pointer to a running total
+            /// @param filter A function pointer that, if returns false on any given node, skips that node
+            /// \see VtkFile VtkBuffer VtkCellType WriteBlockDataToVtkBuffers
+            /// @author WVN
+            void RecursiveWritePointsToVtk(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes, int* num, NodeFilter_t filter);
+            
+            /// @brief Recursively writes points to the provided VtkBuffers objects. Calls WriteBlockDataToVtkBuffers
+            /// with the same parameters.
+            /// @param points VtkBuffer object representing the point buffer. Point coordinates are streamed into this
+            /// @param edges VtkBuffer object representing the adjacency buffer. Point indices are streamed into this
+            /// @param cellTypes VtkBuffer object representing the point buffer. Cell type IDs are streamed into this
+            /// @param num A pointer to a running total
             /// \see VtkFile VtkBuffer VtkCellType WriteBlockDataToVtkBuffers
             /// @author WVN
             void RecursiveWritePointsToVtk(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes, int* num);
@@ -169,6 +188,10 @@ namespace cmf
             /// \see VtkFile VtkBuffer VtkCellType
             /// @author WVN
             void WriteBlockDataToVtkBuffers(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes, int* num);
+            
+            /// @brief Returns the number of neighbors of the current node.
+            /// @author WVN
+            int NumberOfNeighbors(void);
         private:
             /// @brief Locks the current node from being modified by recursive calls.
             /// \see Unlock
@@ -268,16 +291,16 @@ namespace cmf
             void DetermineNeighborClassificationUpdate(RefinementTreeNode* neighbor, RefinementTreeNode* child, int d, bool tangentUpperOrientation, int* newEdgeVec, bool* relationshipIsAnnihilated);
             
             /// @brief The refinement type that produced this node (see RefinementTreeNode constructor for interpretation)
-            char refineType
+            char refineType;
             
             /// @brief The refinement orientation of this node with respect to host (see RefinementTreeNode constructor for interpretation)
             char refineOrientation;
             
             /// @brief Set to false if this node has children, true otherwise
-            bool isTerminal
+            bool isTerminal;
             
             /// @brief Set to false if this node has children, true otherwise
-            bool deallocSubTrees
+            bool deallocSubTrees;
             
             /// @brief If true, should prevent recursive neighbor flood calls from looping back to current node
             bool isLocked;
@@ -298,7 +321,7 @@ namespace cmf
             RefinementTreeNode* host;
             
             /// @brief The number of children this node has
-            int numSubNodes
+            int numSubNodes;
             
             /// @brief The number of refinement levels that it took to arrive at this node
             int level;

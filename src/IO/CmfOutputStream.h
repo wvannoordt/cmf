@@ -31,6 +31,7 @@ namespace cmf
             CmfOutputStream& operator << (std::string a);
             CmfOutputStream& operator << (double a);
             CmfOutputStream& operator << (const char* a);
+            CmfOutputStream& operator << (const void* a);
             CmfOutputStream& operator << (char* a);
             CmfOutputStream& operator << (int a);
             CmfOutputStream& operator << (size_t a);

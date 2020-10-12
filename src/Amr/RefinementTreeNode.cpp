@@ -300,6 +300,11 @@ namespace cmf
         __dloop(dispVector[d] = shuffledIndices[d]);
     }
 
+    int RefinementTreeNode::NumberOfNeighbors(void)
+    {
+        return neighbors.size();
+    }
+
     void RefinementTreeNode::UpdateNeighborsOfNeighborsToChildNodes(char newRefinementType)
     {
         for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
@@ -324,27 +329,22 @@ namespace cmf
                 int currentBasisVector = 1<<d;
                 if (CharBit(~orientationConstraintMask, d))
                 {
-                    indexingBasis = indexingBasis + currentBasisVector<<(4*currentBasisIndex);
+                    indexingBasis = indexingBasis | (currentBasisVector<<(8*currentBasisIndex));
                     currentBasisIndex++;
                 }
             }
-            __sdump((int)orientationConstraintMask);
-            __sdump((int)orientationConstraintValues);
-            __sdump(numCandidateChildren);
-            __qdump("");
-            bool seeking = (relationship.edgeVector[0]==1)&&(relationship.edgeVector[1]==0)&&(relationship.edgeVector[2]==0);
             for (int i = 0; i < numCandidateChildren; i++)
             {
                 //There will need to be changes here.
-                if (seeking) __qdump("found (0 -1 0)");
                 __dloop(newEdgeVec[d] = -relationship.edgeVector[d]);
                 char orientationFromBasis = BasisEval(indexingBasis, (char)i);
                 char orientation = (orientationFromBasis&~orientationConstraintMask)|(orientationConstraintValues&orientationConstraintMask);
                 int orientationToIdxBasis = GetInvCoordBasis(newRefinementType);
                 int idx = GetIndexFromOctantAndRefineType(orientation, newRefinementType);
-                bool relationshipIsAnnihilated;
+                bool relationshipIsAnnihilated = false;
                 for (int d = 0; d < CMF_DIM; d++)
                 {
+                    
                     bool isUpperOrientationInDirection = subNodes[idx]->SharesEdgeWithHost(2*d+1);
                     bool relationshipStableFromOrientation = (relationship.edgeVector[d]==(isUpperOrientationInDirection?1:-1));
                     bool edgeVectorMightBeReduced = (CharBit(newRefinementType, d)==1);
@@ -352,11 +352,10 @@ namespace cmf
                     edgeVectorMightBeReduced = edgeVectorMightBeReduced && (!relationshipStableFromOrientation);
                     if (edgeVectorMightBeReduced)
                     {
-                        relationshipIsAnnihilated = false;
+                        relationshipIsAnnihilated = false;                        
                         DetermineNeighborClassificationUpdate(neighbor, subNodes[idx], d, isUpperOrientationInDirection, newEdgeVec, &relationshipIsAnnihilated);
                     }
                 }
-                if (seeking) __sdump((relationshipIsAnnihilated?"Y":"N"));
                 if (!relationshipIsAnnihilated)
                 {
                     neighbor->CreateNewNeighbor(subNodes[idx], newEdgeVec, relationship.isDomainEdge);
@@ -369,15 +368,23 @@ namespace cmf
 
     void RefinementTreeNode::RecursiveWritePointsToVtk(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes, int* num)
     {
+        RecursiveWritePointsToVtk(points, edges, cellTypes, num, [](RefinementTreeNode*){return true;});
+    }
+
+    void RefinementTreeNode::RecursiveWritePointsToVtk(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes, int* num, NodeFilter_t filter)
+    {
         if (isTerminal)
         {
-            WriteBlockDataToVtkBuffers(points, edges, cellTypes, num);
+            if (filter(this))
+            {
+                WriteBlockDataToVtkBuffers(points, edges, cellTypes, num);
+            }
         }
         else
         {
             for (int i = 0; i < numSubNodes; i++)
             {
-                subNodes[i]->RecursiveWritePointsToVtk(points, edges, cellTypes, num);
+                subNodes[i]->RecursiveWritePointsToVtk(points, edges, cellTypes, num, filter);
             }
         }
     }
@@ -403,15 +410,23 @@ namespace cmf
 
     void RefinementTreeNode::RecursiveCountTerminal(int* totalNumBlocks)
     {
+        RecursiveCountTerminal(totalNumBlocks, [](RefinementTreeNode*){return true;});
+    }
+    
+    void RefinementTreeNode::RecursiveCountTerminal(int* totalNumBlocks, NodeFilter_t filter)
+    {
         if (isTerminal)
         {
-            (*totalNumBlocks)++;
+            if (filter(this))
+            {
+                (*totalNumBlocks)++;
+            }
         }
         else
         {
             for (int i = 0; i < numSubNodes; i++)
             {
-                subNodes[i]->RecursiveCountTerminal(totalNumBlocks);
+                subNodes[i]->RecursiveCountTerminal(totalNumBlocks, filter);
             }
         }
     }

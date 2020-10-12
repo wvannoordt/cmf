@@ -1,0 +1,15 @@
+#define num 7
+DomainA
+{
+	blockDim = [$(num), $(num), $(num)]
+	blockBounds = [0, 1, 0, 1, 0, 1]
+	//refinementConstraintType = free
+	refinementConstraintType = factor2CompletelyConstrained
+}
+DomainB
+{
+	blockDim = [$(num), $(num), $(num)]
+	blockBounds = [1.1, 2.1, 0, 1, 0, 1]
+	//refinementConstraintType = free
+	refinementConstraintType = factor2CompletelyConstrained
+}

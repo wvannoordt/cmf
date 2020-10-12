@@ -41,6 +41,11 @@ namespace cmf
         for (size_t i = 0; i < streams.size(); i++) *streams[i] << a;
         return *this;
     }
+    CmfOutputStream& CmfOutputStream::operator << (const void* a)
+    {
+        for (size_t i = 0; i < streams.size(); i++) *streams[i] << a;
+        return *this;
+    }
     CmfOutputStream& CmfOutputStream::operator << (char* a)
     {
         for (size_t i = 0; i < streams.size(); i++) *streams[i] << a;

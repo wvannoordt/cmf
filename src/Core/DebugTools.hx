@@ -1,16 +1,16 @@
 #ifndef DEBUG_TOOLS_H
 #define DEBUG_TOOLS_H
 #include "HybridComputing.h"
+#include "CmfOutputStream.h"
 #include <iostream>
 
 #define __longline "---------------------------------------------------------"
 
 #if __cmf_cpu
-#define __dump(mystuff) {std::cout << __FILE__ <<  " (" << __LINE__ << "): " << mystuff << std::endl;}
-#define __qdump(mystuff) {std::cout << mystuff << std::endl;}
-#define __sdump(mystuff) {std::cout << #mystuff << ": " <<  mystuff << std::endl;}
-#define __dumpwait(mystuff) {std::cout << __FILE__ <<  " (" << __LINE__ << "): " << mystuff << std::endl;std::cin.get();}
-#define __erkill(mystuff) {std::cout << __longline <<std::endl << "Terminate called from " << __FILE__ <<  ", line (" << __LINE__ << "): " << mystuff << std::endl << __longline << std::endl; abort();}
+#define __dump(mystuff) {cmf::cmfout << __FILE__ <<  " (" << __LINE__ << "): " << mystuff << cmf::cmfendl;}
+#define __qdump(mystuff) {cmf::cmfout << mystuff << cmf::cmfendl;}
+#define __sdump(mystuff) {cmf::cmfout << #mystuff << ": " <<  mystuff << cmf::cmfendl;}
+#define __erkill(mystuff) {cmf::cmfout << __longline <<std::endl << "Terminate called from " << __FILE__ <<  ", line (" << __LINE__ << "): " << mystuff << std::endl << __longline << cmf::cmfendl; abort();}
 #endif
 
 

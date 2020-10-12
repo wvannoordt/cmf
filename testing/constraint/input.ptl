@@ -2,11 +2,11 @@ DomainA
 {
 	blockDim = [6, 6]
 	blockBounds = [0,1,0,1]
-	refinementConstraintType = factor2CompletelyConstrained
+	refinementConstraintType = free
 }
 DomainB
 {
 	blockDim = [6, 6]
 	blockBounds = [1.1,2.1,0,1]
-	refinementConstraintType = free
+	refinementConstraintType = factor2CompletelyConstrained
 }

@@ -146,10 +146,10 @@ static inline char BasisEvalReverse(int basis, char coord)
 /// @author WVN
 static inline void PrintIntAsVector(int p)
 {
-    std::cout << ((p&0xff000000)>>24) << ", ";
-    std::cout << ((p&0x00ff0000)>>16) << ", ";
-    std::cout << ((p&0x0000ff00)>>8 ) << ", ";
-    std::cout << ((p&0x000000ff)>>0 ) << std::endl;
+    cmf::cmfout << (int)((p&0xff000000)>>24) << ", ";
+    cmf::cmfout << (int)((p&0x00ff0000)>>16) << ", ";
+    cmf::cmfout << (int)((p&0x0000ff00)>>8 ) << ", ";
+    cmf::cmfout << (int)((p&0x000000ff)>>0 ) << cmf::cmfendl;
 }
 
 /// @brief Prints a char according to the interpretation found in BasisEval. Used only for debugging. \see BasisEval BasisEvalReverse

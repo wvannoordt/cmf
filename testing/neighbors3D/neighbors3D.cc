@@ -9,39 +9,47 @@ int main(int argc, char** argv)
     __only3d
     (
         cmf::Initialize();
-        PropTreeLib::PropertyTree user;
+        PropTreeLib::PropertyTree userInput;
         bool allNeighs;
+        bool level0;
         bool doRefinement;
         int testDir;
         int testVal;
-        user.SetAsSubtree(cmf::mainInput["user"]);
-        user["allNeighs"].MapTo(&allNeighs) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
-        user["doRefinement"].MapTo(&doRefinement) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
-        user["testDir"].MapTo(&testDir) = new PropTreeLib::Variables::PTLEnum("x", "x:y:z", "dummy");
-        user["testVal"].MapTo(&testVal) = new PropTreeLib::Variables::PTLInteger(-1, "dummy");
+        //cmfout.AddFileToStream("output/cmf.log");
+        std::string outputName = "output/neigh.vtk";
+        
+        userInput.SetAsSubtree(cmf::mainInput["user"]);
+        userInput["allNeighs"].MapTo(&allNeighs) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
+        userInput["level0"].MapTo(&level0) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
+        userInput["doRefinement"].MapTo(&doRefinement) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
+        userInput["testDir"].MapTo(&testDir) = new PropTreeLib::Variables::PTLEnum("x", "x:y:z", "dummy");
+        userInput["testVal"].MapTo(&testVal) = new PropTreeLib::Variables::PTLInteger(-1, "dummy");
+        //userInput["outputName"].MapTo(&outputName) = new PropTreeLib::Variables::PTLString("output/neigh.vtk", "dummy");
         cmf::ReadInput("input.ptl");
-        user.StrictParse();
+        userInput.StrictParse();
+        cmf::mainInput.DebugPrint();
         cmf::RefinementBlock domain("Domain");
         double coords[3];
-        coords[0] = 0.5001;
-        coords[1] = 0.5001;
-        coords[2] = 0.5001;
+        coords[0] = 0.001;
+        coords[1] = 0.001;
+        coords[2] = 0.001;
         if (doRefinement) domain.RefineAt(coords, 7);
-        coords[0] = 0.501;
-        coords[1] = 0.501;
-        coords[2] = 0.501;
-        CmfError("test");
+        coords[0] = 0.999;
+        coords[1] = 0.999;
+        coords[2] = 0.999;
         cmf::RefinementTreeNode* targetnode = domain.GetNodeAt(coords);
         int numBlocks = 1;
         for (cmf::NeighborIterator i(targetnode); i.Active(); i++)
         {
             if ((i.Edge().edgeVector[testDir] == testVal) || allNeighs)
             {
-                numBlocks++;
+                if (!level0 || (i.Node()->GetLevel()==0))
+                {
+                    numBlocks++;
+                }
             }
         }
-        std::string filename = "output/neigh.vtk";
-        cmf::VtkFile output(filename, cmf::VtkFormatType::ascii, cmf::VtkTopologyType::unstructuredGrid);
+        cmf::VtkFile output(outputName, cmf::VtkFormatType::ascii, cmf::VtkTopologyType::unstructuredGrid);
         output.Mesh()->Component("DATASET")->SetAttribute("numPoints", 8*numBlocks);
         output.Mesh()->Component("DATASET")->SetAttribute("bufferCount", 3*8*numBlocks);
         output.Mesh()->Component("DATASET")->SetAttribute("stride", 3);
@@ -57,13 +65,20 @@ int main(int argc, char** argv)
         cmf::VtkBuffer cellTypes(output.Mesh()->Component("CELL_TYPES"));
         int count = 0;
         targetnode->WriteBlockDataToVtkBuffers(points, edges, cellTypes, &count);
+        int neighcount = 0;
         for (cmf::NeighborIterator i(targetnode); i.Active(); i++)
         {
+            neighcount++;
             if ((i.Edge().edgeVector[testDir] == testVal) || allNeighs)
             {
-                i.Node()->WriteBlockDataToVtkBuffers(points, edges, cellTypes, &count);
+                if (!level0 || (i.Node()->GetLevel()==0))
+                {
+                    i.Node()->WriteBlockDataToVtkBuffers(points, edges, cellTypes, &count);
+                }
             }
         }
+        //cmfout << "Neighcount " << neighcount << cmfendl;
+        //cmfout << "Realneighcound " << targetnode->NumberOfNeighbors() << cmfendl;
         output.Write();
         cmf::Finalize();
     )
