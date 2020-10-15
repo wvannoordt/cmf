@@ -192,6 +192,10 @@ namespace cmf
             /// @brief Returns the number of neighbors of the current node.
             /// @author WVN
             int NumberOfNeighbors(void);
+            
+            /// @brief Returns the maximum length of the bounding box of the current node.
+            /// @author WVN
+            double MaxEdgeLength(void);
         private:
             /// @brief Locks the current node from being modified by recursive calls.
             /// \see Unlock

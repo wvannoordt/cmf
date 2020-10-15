@@ -407,6 +407,18 @@ namespace cmf
         if (CMF_IS3D) {cellTypes << VtkCellType::voxel;}
         else {cellTypes << VtkCellType::pixel;}
     }
+    
+    double RefinementTreeNode::MaxEdgeLength(void)
+    {
+        double dx = blockBounds[1] - blockBounds[0];
+        double dy = blockBounds[3] - blockBounds[2];
+        double maxout = (dx>dy)?dx:dy;
+#if(CMF_IS3D)
+        double dz = blockBounds[5] - blockBounds[4];
+        maxout = (maxout>dz)?maxout:dz;
+#endif
+        return maxout;
+    }
 
     void RefinementTreeNode::RecursiveCountTerminal(int* totalNumBlocks)
     {

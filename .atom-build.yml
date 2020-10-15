@@ -1,1 +1,1 @@
-cmd: 'DIM=3 TESTS=constraint3D make test'
+cmd: 'DIM=2 TESTS=circle make test'

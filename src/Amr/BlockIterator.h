@@ -58,6 +58,9 @@ namespace cmf
             /// @author WVN
             friend CmfOutputStream & operator << (CmfOutputStream &out, const BlockIterator &c) {out << c.index; return out;}
         private:
+            /// @brief Moves to the first node that satisfies the filter
+            void SeekFirst(void);
+            
             /// @brief The block being iterated over
             RefinementBlock* hostBlock;
             
@@ -69,6 +72,9 @@ namespace cmf
             
             /// @brief The list of all relevant nodes
             std::vector<RefinementTreeNode*>* allNodes;
+            
+            /// @brief Indicates whether or not the iterator has reached the end of the underlyin vector
+            bool isAtEnd;
     };
 }
 
