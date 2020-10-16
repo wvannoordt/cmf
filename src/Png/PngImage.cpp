@@ -19,7 +19,7 @@ namespace cmf
         int num = 1;
         machineIsBigEndian = ! ( *(char *)&num == 1 );
     }
-    
+
     PngImage::PngImage(int height_in, int width_in)
     {
         height = height_in;
@@ -30,7 +30,7 @@ namespace cmf
         int num = 1;
         machineIsBigEndian = ! ( *(char *)&num == 1 );
     }
-    
+
     void PngImage::Write(std::string filename)
     {
 #if(!CMF_ZLIB_EXT_ENABLE)
@@ -44,12 +44,12 @@ namespace cmf
         WriteEnd(fileWriter);
         fclose(fileWriter);
     }
-    
+
     int* PngImage::GetBuffer(void)
     {
         return imageBuffer;
     }
-    
+
     PngImage::~PngImage(void)
     {
         if (bufferRequiresDealloc)
@@ -58,22 +58,22 @@ namespace cmf
             free(imageBuffer);
         }
     }
-    
+
     void PngImage::Fill(int color)
     {
         for (size_t i = 0; i < width*height; i++) *(imageBuffer+i) = color;
     }
-    
+
     void PngImage::Fill(pxtype color)
     {
         Fill(*((int*)color));
     }
-    
+
     void PngImage::SetPixel(int row, int col, int color)
     {
         *(imageBuffer + row*width + col) = color;
     }
-    
+
     void PngImage::SetPixel(int row, int col, pxtype color)
     {
         *((ubyte*)(imageBuffer + row*width + col)+0) = color[0];
@@ -81,7 +81,7 @@ namespace cmf
         *((ubyte*)(imageBuffer + row*width + col)+2) = color[2];
         *((ubyte*)(imageBuffer + row*width + col)+3) = color[3];
     }
-    
+
     void PngImage::WriteData(FILE* fileWriter, const int& col, const int& row, int* imdata)
     {
 
