@@ -9,6 +9,7 @@
 #include "RefinementTreeNode.h"
 #include "NeighborIterator.h"
 #include "VtkFile.h"
+#include "PngImage.h"
 namespace cmf
 {
     extern PropTreeLib::PropertyTree mainInput;
