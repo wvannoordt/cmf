@@ -12,14 +12,14 @@ int main(int argc, char** argv)
     (
         cmf::Initialize();
         cmf::ReadInput("input.ptl");
-        cmf::RefinementBlock domain("Domain");
-        cmf::RefinementBlock domain2("Domain2");
+        cmf::CartesianMesh domain("Domain");
+        cmf::CartesianMesh domain2("Domain2");
         std::string filename = "output/main.tex";
         cmf::TikzObject picture;
         picture.Open(filename);
     	picture.SetClip(0,0,1,1);
-        domain.Render(&picture);
-        domain2.Render(&picture);
+        domain.Blocks()->Render(&picture);
+        domain2.Blocks()->Render(&picture);
         picture.Close();
         cmf::Finalize();
     )

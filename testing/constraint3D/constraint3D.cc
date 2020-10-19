@@ -12,9 +12,9 @@ int main(int argc, char** argv)
         cmf::Initialize();
         int numRef = 3;
         cmf::ReadInput("input.ptl");
-        cmf::RefinementBlock domainA("DomainA");
-        cmf::RefinementBlock domainB("DomainB");
-        cmf::RefinementBlock* domains[2];
+        cmf::CartesianMesh domainA("DomainA");
+        cmf::CartesianMesh domainB("DomainB");
+        cmf::CartesianMesh* domains[2];
         domains[0] = &domainA;
         domains[1] = &domainB;
         char reftype = 7;
@@ -26,9 +26,9 @@ int main(int argc, char** argv)
             coords[2] = RZ;
             //domains[i]->RefineRandom();
             //domains[i]->RefineRandom();
-            for (int j = 0; j < numRef; j++) domains[i]->RefineAt(coords, reftype);
+            for (int j = 0; j < numRef; j++) domains[i]->Blocks()->RefineAt(coords, reftype);
             std::string filename = "output/domain_" + std::to_string(i) + ".vtk";
-            domains[i]->OutputDebugVtk(filename, [](cmf::RefinementTreeNode* n){return (n->GetLevel() == 2);});
+            domains[i]->Blocks()->OutputDebugVtk(filename, [](cmf::RefinementTreeNode* n){return (n->GetLevel() == 2);});
         }
         cmf::Finalize();
     )

@@ -12,16 +12,13 @@
 
 namespace cmf
 {
-    RefinementBlock::RefinementBlock(std::string title)
+    RefinementBlock::RefinementBlock(int* blockDim_in, double* blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in)
     {
+        blockDim = blockDim_in;
+        blockBounds = blockBounds_in;
+        refinementConstraintType = constraint_in;
         refineLimiter = NULL;
         srand((unsigned int)time(NULL));
-        localInput.SetAsSubtree(mainInput[title]);
-        localInput["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions");
-        localInput["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds");
-        localInput["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
-            = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
-        localInput.StrictParse();
         totalNumTrunks = 1;
         for (int i = 0; i < CMF_DIM; i++) totalNumTrunks*=blockDim[i];
         for (int d = 0; d < CMF_DIM; d++) dx[d] = (blockBounds[2*d+1]-blockBounds[2*d])/blockDim[d];
@@ -164,11 +161,6 @@ namespace cmf
             }
             delete[] trunks;
         }
-    }
-
-    void RefinementBlock::Print(void)
-    {
-        localInput.DebugPrint();
     }
 
     //This is for debugging only. For any real VTK output, an externl iterator should be used.

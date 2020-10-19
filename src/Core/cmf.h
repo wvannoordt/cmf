@@ -5,6 +5,7 @@
 #include <string>
 #include "Config.h"
 #include "PropTreeLib.h"
+#include "CartesianMesh.h"
 #include "RefinementBlock.h"
 #include "RefinementTreeNode.h"
 #include "NeighborIterator.h"

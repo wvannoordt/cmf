@@ -65,10 +65,10 @@ int main(int argc, char** argv)
     (
         cmf::Initialize();
         cmf::ReadInput("input.ptl");
-        cmf::RefinementBlock domainA("DomainA");
-        cmf::RefinementBlock domainB("DomainB");
+        cmf::CartesianMesh domainA("DomainA");
+        cmf::CartesianMesh domainB("DomainB");
 
-        cmf::RefinementBlock* domains[2];
+        cmf::CartesianMesh* domains[2];
         domains[0] = &domainA;
         domains[1] = &domainB;
 
@@ -78,13 +78,9 @@ int main(int argc, char** argv)
             double coords[2];
             coords[0] = RX+i*1.1;
             coords[1] = RY;
-            domains[i]->RefineRandom();
-            domains[i]->RefineRandom();
-            domains[i]->RefineRandom();
-            //domains[i]->RefineRandom();
-            //domains[i]->RefineAt(coords, 2);
-            //domains[i]->RefineAt(coords, 2);
-            //domains[i]->RefineAt(coords, 2);
+            domains[i]->Blocks()->RefineRandom();
+            domains[i]->Blocks()->RefineRandom();
+            domains[i]->Blocks()->RefineRandom();
         }
 
         std::string filename = "output/main.tex";
@@ -93,7 +89,7 @@ int main(int argc, char** argv)
         cmf::DebugTikzDraw_t neighborDraw(DebugDraw);
         for (int i = 0; i < 2; i++)
         {
-            domains[i]->Render(&picture, neighborDraw);
+            domains[i]->Blocks()->Render(&picture, neighborDraw);
         }
         picture.Close();
         cmf::Finalize();

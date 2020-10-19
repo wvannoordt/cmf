@@ -19,17 +19,16 @@ namespace cmf
     {
         public:
             /// @brief Constructor for the RefinementBlock object.
-            /// @param title A string title that will be used to look for option in the section of the input file (the section has the same name)
+            /// @param blockDim_in The number of subdivisions to initially divide the bounding box into
+            /// @param blockBounds_in The bounding box for the domain
+            /// @param constraint_in A string title that will be used to look for option in the section of the input file (the section has the same name)
+            /// \see RefinementConstraint.h
             /// @author WVN
-            RefinementBlock(std::string title);
+            RefinementBlock(int* blockDim_in, double* blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in);
             
             /// @brief Destructor for the RefinementBlock object. Explicitly calls Destroy and destroys all contained RefinementTreeNode objects.
             /// @author WVN
             ~RefinementBlock(void);
-            
-            /// @brief Deprecated
-            /// @author WVN
-            void Print(void);
             
             /// @brief Called when destructor is called. Destroys all contained RefinementTreeNode objects.
             /// @author WVN
@@ -111,9 +110,6 @@ namespace cmf
             /// @param coords the coordinates of the query
             /// @author WVN
             void HandleRefinementQueryOutsideDomain(double coords[CMF_DIM]);
-            
-            /// @brief PropertyTree object that contains the input data for this object (see <a href="https://github.com/wvannoordt/PropTreeLib">PropTreeLib</a>)
-            PropTreeLib::PropertyTree localInput;
             
             /// @brief An array of size CMF_DIM that represents the initial block dimensions
             int* blockDim;

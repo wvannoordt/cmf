@@ -28,16 +28,16 @@ int main(int argc, char** argv)
         cmf::ReadInput("input.ptl");
         userInput.StrictParse();
         cmf::mainInput.DebugPrint();
-        cmf::RefinementBlock domain("Domain");
+        cmf::CartesianMesh domain("Domain");
         double coords[3];
         coords[0] = 0.001;
         coords[1] = 0.001;
         coords[2] = 0.001;
-        if (doRefinement) domain.RefineAt(coords, 7);
+        if (doRefinement) domain.Blocks()->RefineAt(coords, 7);
         coords[0] = 0.999;
         coords[1] = 0.999;
         coords[2] = 0.999;
-        cmf::RefinementTreeNode* targetnode = domain.GetNodeAt(coords);
+        cmf::RefinementTreeNode* targetnode = domain.Blocks()->GetNodeAt(coords);
         int numBlocks = 1;
         for (cmf::NeighborIterator i(targetnode); i.Active(); i++)
         {

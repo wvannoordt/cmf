@@ -7,17 +7,17 @@ int main(int argc, char** argv)
     (
         cmf::Initialize();
         cmf::ReadInput("input.ptl");
-        cmf::RefinementBlock domain("Domain");
+        cmf::CartesianMesh domain("Domain");
         double coords[3];
         coords[0] = 0.1;
         coords[1] = 0.1;
         coords[2] = 0.00001;
-        //domain.RefineAt(coords, 7);
-        //domain.RefineAt(coords, 7);
-        domain.RefineRandom();
-        domain.RefineRandom();
+        //domain.Blocks()->RefineAt(coords, 7);
+        //domain.Blocks()->RefineAt(coords, 7);
+        domain.Blocks()->RefineRandom();
+        domain.Blocks()->RefineRandom();
         std::string filename = "output/domain.vtk";
-        domain.OutputDebugVtk(filename);
+        domain.Blocks()->OutputDebugVtk(filename);
         cmf::Finalize();
     )
     return 0;

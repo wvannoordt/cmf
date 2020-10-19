@@ -12,8 +12,8 @@ int main(int argc, char** argv)
     (
         cmf::Initialize();
         cmf::ReadInput("input.ptl");
-        cmf::RefinementBlock domain("Domain");
-        domain.SetRefineLimitCriterion(limit);
+        cmf::CartesianMesh domain("Domain");
+        domain.Blocks()->SetRefineLimitCriterion(limit);
         double coords[2];
         double nvec[2];
         double tvec[2];
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
                 if ((q-0.5)*(q-0.5) < lim) reftype = 1;
                 if ((q-0.0)*(q-0.0) < lim) reftype = 1;
                 if ((q-1.0)*(q-1.0) < lim) reftype = 1;
-                domain.RefineAt(coords, reftype);
+                domain.Blocks()->RefineAt(coords, reftype);
             }
         }
         double beta = 1.57079632679 - shockangle;
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
             coords[1] = yc + shockradius*sin(thetaCirc);
             nvec[0] = cos(thetaCirc);
             nvec[1] = sin(thetaCirc);
-            domain.RefineAt(coords, 3);
+            domain.Blocks()->RefineAt(coords, 3);
 
             //line, upper
             nvec[0] = cos(thetaMin);
@@ -78,13 +78,13 @@ int main(int argc, char** argv)
             tvec[1] = sin(-shockangle);
             coords[0] = xc + shockradius*cos(thetaMax)+shocklen*prog*tvec[0];
             coords[1] = yc + shockradius*sin(thetaMax)+shocklen*prog*tvec[1];
-            domain.RefineAt(coords, 3);
+            domain.Blocks()->RefineAt(coords, 3);
         }
         std::string filename = "output/main.tex";
         cmf::TikzObject picture;
         picture.Open(filename);
     	picture.SetClip(0,0,1,1);
-        domain.Render(&picture);
+        domain.Blocks()->Render(&picture);
         //picture.FillCircle(xc, yc, rmean-0.001);
         picture.Close();
         cmf::Finalize();
