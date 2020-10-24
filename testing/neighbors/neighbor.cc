@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-    if (CMF_DIM != cmf::GetDim())
+    if (2 != cmf::GetDim())
     {
         cmf::cmfout << "WARNING: skipping test case in file " << __FILE__ << ": dimensions incompatible." << cmf::cmfendl;
         return 0;
