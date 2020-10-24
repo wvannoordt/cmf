@@ -6,6 +6,16 @@ ifneq ("$(wildcard case.mk)","")
 include case.mk
 endif
 
+ifndef DOLATEXOUTPUT
+DOLATEXOUTPUT := 0
+endif
+
+ifeq (${DOLATEXOUTPUT}, 1)
+DOLATEXOUTPUTTARGET := latex
+else
+DOLATEXOUTPUTTARGET :=
+endif
+
 ifndef DIM
 DIM := 2
 endif
@@ -23,6 +33,9 @@ setup:
 clean:
 	-rm ${TARGET}
 
-test: clean main
+.PHONY: test
+test: clean main ${DOLATEXOUTPUTTARGET}
 	${VALG} ./${TARGET}
+
+latex:
 	${MAKE} -C output -f makefile

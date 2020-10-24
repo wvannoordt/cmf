@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include "cmf.h"
+#include "cmftestutils.h"
 double pldist(double* c, double x1, double y1, double x2, double y2, double r)
 {
     double x0 = c[0];
@@ -59,11 +60,7 @@ bool circGeomNoisy(cmf::RefinementTreeNode* n)
 }
 int main(int argc, char** argv)
 {
-    if (2 != cmf::GetDim())
-    {
-        cmf::cmfout << "WARNING: skipping test case in file " << __FILE__ << ": dimensions incompatible." << cmf::cmfendl;
-        return 0;
-    }
+    EXIT_WARN_IF_DIM_NOT(2);
     cmf::Initialize();
     cmf::ReadInput("input.ptl");
     cmf::cmfout << "BEFORE" << cmf::cmfendl;

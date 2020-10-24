@@ -28,6 +28,10 @@ ifndef ZLIB_ENABLE
 ZLIB_ENABLE := 1
 endif
 
+ifndef DOLATEXOUTPUT
+DOLATEXOUTPUT := 0
+endif
+export DOLATEXOUTPUT
 
 
 CURRENT_BASEIDIR   = $(shell pwd)
@@ -207,6 +211,10 @@ setup:
 		echo "Linking ${CURRENT_BASEIDIR}/util/makefile.testing to $${tdir}/makefile";\
 		ln -sf ${CURRENT_BASEIDIR}/util/makefile.testing $${tdir}/makefile;\
 	done
+	@for tdir in ${TESTS} ; do\
+		echo "Linking ${CURRENT_BASEIDIR}/util/cmftestutils.h to $${tdir}/makefile";\
+		ln -sf ${CURRENT_BASEIDIR}/util/cmftestutils.h $${tdir}/cmftestutils.h;\
+	done
 
 clean:
 	-rm -r ${CURRENT_LIB_DIR}
@@ -217,6 +225,7 @@ clean:
 		${MAKE} -C $${tdir} -f makefile clean;\
 		echo "removing $${tdir}/output";\
 		unlink $${tdir}/makefile||echo"";\
+		unlink $${tdir}/cmftestutils.h||echo"";\
 		rm -rf $${tdir}/output;\
 	done
 	${MAKE} -C ${CURRENT_DOC_DIR} -f makefile.docs clean

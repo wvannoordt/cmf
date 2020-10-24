@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include "cmf.h"
+#include "cmftestutils.h"
 bool limit(cmf::RefinementTreeNode* block)
 {
     return (block->GetLevel() > 2);
@@ -8,11 +9,7 @@ bool limit(cmf::RefinementTreeNode* block)
 
 int main(int argc, char** argv)
 {
-    if (2 != cmf::GetDim())
-    {
-        cmf::cmfout << "WARNING: skipping test case in file " << __FILE__ << ": dimensions incompatible." << cmf::cmfendl;
-        return 0;
-    }
+    EXIT_WARN_IF_DIM_NOT(2);
     cmf::Initialize();
     cmf::ReadInput("input.ptl");
     cmf::CartesianMeshInputInfo inputInfo("Domain", cmf::mainInput);

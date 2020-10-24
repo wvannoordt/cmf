@@ -3,14 +3,10 @@
 #include "cmf.h"
 using cmf::cmfout;
 using cmf::cmfendl;
-
+#include "cmftestutils.h"
 int main(int argc, char** argv)
 {
-    if (3 != cmf::GetDim())
-    {
-        cmf::cmfout << "WARNING: skipping test case in file " << __FILE__ << ": dimensions incompatible." << cmf::cmfendl;
-        return 0;
-    }
+    EXIT_WARN_IF_DIM_NOT(3);
     cmf::Initialize();
     PropTreeLib::PropertyTree userInput;
     bool allNeighs;

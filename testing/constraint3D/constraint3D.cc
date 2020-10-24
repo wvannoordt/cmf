@@ -1,17 +1,14 @@
 #include <iostream>
 #include <cmath>
 #include "cmf.h"
+#include "cmftestutils.h"
 #define RX 0.50001
 #define RY 0.001
 #define RZ 0.50001
 
 int main(int argc, char** argv)
 {
-    if (3 != cmf::GetDim())
-    {
-        cmf::cmfout << "WARNING: skipping test case in file " << __FILE__ << ": dimensions incompatible." << cmf::cmfendl;
-        return 0;
-    }
+    EXIT_WARN_IF_DIM_NOT(3);
     cmf::Initialize();
     int numRef = 3;
     cmf::ReadInput("input.ptl");
