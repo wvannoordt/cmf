@@ -8,8 +8,8 @@ int main(int argc, char** argv)
         if (CMF_DIM != cmf::GetDim()) std::cout << "BAD DIM" << std::endl;
         cmf::Initialize();
         cmf::ReadInput("input.ptl");
-        cmf::CartesianMesh domain("Domain");
-
+        cmf::CartesianMeshInputInfo inputInfo("Domain", cmf::mainInput);
+        cmf::CartesianMesh domain(inputInfo);
         std::string filename = "output/main.tex";
         cmf::TikzObject picture;
         picture.Open(filename);

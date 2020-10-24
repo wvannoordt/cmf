@@ -2,15 +2,12 @@
 
 namespace cmf
 {
-    CartesianMesh::CartesianMesh(std::string title_in)
-    {
-        title = title_in;
-        localInput.SetAsSubtree(mainInput[title]);
-        localInput["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions");
-        localInput["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds");
-        localInput["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
-            = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
-        localInput.StrictParse();
+    CartesianMesh::CartesianMesh(CartesianMeshInputInfo input): ICmfMesh(input)
+    {   
+        title = input.title;        
+        blockDim = input.blockDim;
+        blockBounds = input.blockBounds;
+        refinementConstraintType = input.refinementConstraintType;
         blocks = new RefinementBlock(blockDim, blockBounds, refinementConstraintType);
     }
     

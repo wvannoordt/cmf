@@ -9,17 +9,49 @@
 #include "BlockIterator.h"
 #include "RefinementConstraint.h"
 #include "RefinementBlock.h"
+#include "ICmfMesh.h"
 #include "cmf.h"
 
 namespace cmf
 {
-    class CartesianMesh
+    /// @brief A struct containing all the input information for a Cartesian mesh
+    /// @author WVN
+    struct CartesianMeshInputInfo : ICmfMeshInfo
+    {
+        /// @brief An array of size CMF_DIM that represents the initial block dimensions
+        int* blockDim;
+        
+        /// @brief An array of size 2*CMF_DIM the represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
+        double* blockBounds;
+        
+        /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
+        RefinementConstraint::RefinementConstraint refinementConstraintType;
+        
+        /// @brief Constructor for the CartesianMeshInputInfo object.
+        /// @param title_in title of the mesh
+        /// @param inputTree PropertryTree to be read from
+        /// @author WVN
+        CartesianMeshInputInfo(std::string title_in, PropTreeLib::PropertyTree& inputTree) : ICmfMeshInfo(title_in, inputTree)
+        {
+            Define();
+            Parse();
+        }
+        
+        void Define()
+        {
+            objectInput["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions");
+            objectInput["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds");
+            objectInput["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
+                = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
+        }
+    };
+    class CartesianMesh : ICmfMesh
     {
         public:
             /// @brief Constructor for the CartesianMesh object.
-            /// @param title_in A name to give this domain
+            /// @param input Input data for the 
             /// @author WVN
-            CartesianMesh(std::string title_in);
+            CartesianMesh(CartesianMeshInputInfo input);
             
             /// @brief Destructor for the CartesianMesh object.
             /// @author WVN
@@ -32,12 +64,6 @@ namespace cmf
             
             /// @brief contains the mesh blocks of the current mesh
             RefinementBlock* blocks;
-            
-            /// @brief PropertyTree object that contains the input data for this object (see <a href="https://github.com/wvannoordt/PropTreeLib">PropTreeLib</a>)
-            PropTreeLib::PropertyTree localInput;
-            
-            /// @brief The title of the current mesh
-            std::string title;
             
             /// @brief An array of size CMF_DIM that represents the initial block dimensions
             int* blockDim;

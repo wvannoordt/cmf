@@ -9,7 +9,8 @@ int main(int argc, char** argv)
     (
         cmf::Initialize();
         cmf::ReadInput("input.ptl");
-        cmf::CartesianMesh domain("Domain");
+        cmf::CartesianMeshInputInfo inputInfo("Domain", cmf::mainInput);
+        cmf::CartesianMesh domain(inputInfo);
         double coords[3];
         coords[0] = 0.1;
         coords[1] = 0.1;

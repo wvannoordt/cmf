@@ -28,7 +28,8 @@ int main(int argc, char** argv)
         cmf::ReadInput("input.ptl");
         userInput.StrictParse();
         cmf::mainInput.DebugPrint();
-        cmf::CartesianMesh domain("Domain");
+        cmf::CartesianMeshInputInfo inputInfo("Domain", cmf::mainInput);
+        cmf::CartesianMesh domain(inputInfo);
         double coords[3];
         coords[0] = 0.001;
         coords[1] = 0.001;
