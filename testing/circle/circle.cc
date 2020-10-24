@@ -59,44 +59,46 @@ bool circGeomNoisy(cmf::RefinementTreeNode* n)
 }
 int main(int argc, char** argv)
 {
-    __only2d
-    (
-        cmf::Initialize();
-        cmf::ReadInput("input.ptl");
-        cmf::cmfout << "BEFORE" << cmf::cmfendl;
-        cmf::CartesianMeshInputInfo inputInfo("Domain", cmf::mainInput);
-        cmf::cmfout << "AFTER" << cmf::cmfendl;
-        cmf::CartesianMesh domain(inputInfo);
-        //coords[0] = 0.11;
-        //coords[1] = 0.52;
-        //double r = 0.3;
-        coords[0] = 0.105;
-        coords[1] = 0.54;
-        //domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->MaxEdgeLength() < 0.03) && (n->GetLevel() > 4);});
-        domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->GetLevel() > 4);});
-        cmf::NodeFilter_t circle(circGeom);
-        cmf::NodeFilter_t circle2(circGeomNoisy);
-        int c = 0;
-        for (cmf::BlockIterator i(domain.Blocks(), circle); i.HasNext(); i++)
-        {
-            //i.Node()->Refine((char)(1+(c++)%3));
-            i.Node()->Refine(7);
-            //std::cout << i.Node()->GetLevel() << std::endl;
-        }
-        int p = 0;
-        for (cmf::BlockIterator i(domain.Blocks(), [](cmf::RefinementTreeNode* n){return (n->IsTerminal());}); i.HasNext(); i++)
-        {
-            std::cout << "BLOCK " << p++ << " " << circle2(i.Node()) << std::endl;
-        }
-        std::string filename = "output/main.tex";
-        cmf::TikzObject picture;
-        picture.Open(filename);
-    	picture.SetClip(0,0,1,1);
-        domain.Blocks()->Render(&picture);
-        picture.PushLineType("solid", 0.03, "red");
-        picture.DrawCircle(coords[0], coords[1], r);
-        picture.Close();
-        cmf::Finalize();
-    )
+    if (CMF_DIM != cmf::GetDim())
+    {
+        cmf::cmfout << "WARNING: skipping test case in file " << __FILE__ << ": dimensions incompatible." << cmf::cmfendl;
+        return 0;
+    }
+    cmf::Initialize();
+    cmf::ReadInput("input.ptl");
+    cmf::cmfout << "BEFORE" << cmf::cmfendl;
+    cmf::CartesianMeshInputInfo inputInfo("Domain", cmf::mainInput);
+    cmf::cmfout << "AFTER" << cmf::cmfendl;
+    cmf::CartesianMesh domain(inputInfo);
+    //coords[0] = 0.11;
+    //coords[1] = 0.52;
+    //double r = 0.3;
+    coords[0] = 0.105;
+    coords[1] = 0.54;
+    //domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->MaxEdgeLength() < 0.03) && (n->GetLevel() > 4);});
+    domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->GetLevel() > 4);});
+    cmf::NodeFilter_t circle(circGeom);
+    cmf::NodeFilter_t circle2(circGeomNoisy);
+    int c = 0;
+    for (cmf::BlockIterator i(domain.Blocks(), circle); i.HasNext(); i++)
+    {
+        //i.Node()->Refine((char)(1+(c++)%3));
+        i.Node()->Refine(7);
+        //std::cout << i.Node()->GetLevel() << std::endl;
+    }
+    int p = 0;
+    for (cmf::BlockIterator i(domain.Blocks(), [](cmf::RefinementTreeNode* n){return (n->IsTerminal());}); i.HasNext(); i++)
+    {
+        std::cout << "BLOCK " << p++ << " " << circle2(i.Node()) << std::endl;
+    }
+    std::string filename = "output/main.tex";
+    cmf::TikzObject picture;
+    picture.Open(filename);
+	picture.SetClip(0,0,1,1);
+    domain.Blocks()->Render(&picture);
+    picture.PushLineType("solid", 0.03, "red");
+    picture.DrawCircle(coords[0], coords[1], r);
+    picture.Close();
+    cmf::Finalize();
     return 0;
 }

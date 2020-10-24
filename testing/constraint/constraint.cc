@@ -61,40 +61,42 @@ void DebugDraw(cmf::TikzObject* picture, cmf::RefinementTreeNode* node)
 
 int main(int argc, char** argv)
 {
-    __only2d
-    (
-        cmf::Initialize();
-        cmf::ReadInput("input.ptl");
-        cmf::CartesianMeshInputInfo inputInfoA("DomainA", cmf::mainInput);
-        cmf::CartesianMeshInputInfo inputInfoB("DomainB", cmf::mainInput);
-        cmf::CartesianMesh domainA(inputInfoA);
-        cmf::CartesianMesh domainB(inputInfoB);
+    if (CMF_DIM != cmf::GetDim())
+    {
+        cmf::cmfout << "WARNING: skipping test case in file " << __FILE__ << ": dimensions incompatible." << cmf::cmfendl;
+        return 0;
+    }
+    cmf::Initialize();
+    cmf::ReadInput("input.ptl");
+    cmf::CartesianMeshInputInfo inputInfoA("DomainA", cmf::mainInput);
+    cmf::CartesianMeshInputInfo inputInfoB("DomainB", cmf::mainInput);
+    cmf::CartesianMesh domainA(inputInfoA);
+    cmf::CartesianMesh domainB(inputInfoB);
 
-        cmf::CartesianMesh* domains[2];
-        domains[0] = &domainA;
-        domains[1] = &domainB;
+    cmf::CartesianMesh* domains[2];
+    domains[0] = &domainA;
+    domains[1] = &domainB;
 
 
-        for (int i = 0; i < 2; i++)
-        {
-            double coords[2];
-            coords[0] = RX+i*1.1;
-            coords[1] = RY;
-            domains[i]->Blocks()->RefineRandom();
-            domains[i]->Blocks()->RefineRandom();
-            domains[i]->Blocks()->RefineRandom();
-        }
+    for (int i = 0; i < 2; i++)
+    {
+        double coords[2];
+        coords[0] = RX+i*1.1;
+        coords[1] = RY;
+        domains[i]->Blocks()->RefineRandom();
+        domains[i]->Blocks()->RefineRandom();
+        domains[i]->Blocks()->RefineRandom();
+    }
 
-        std::string filename = "output/main.tex";
-        cmf::TikzObject picture;
-        picture.Open(filename);
-        cmf::DebugTikzDraw_t neighborDraw(DebugDraw);
-        for (int i = 0; i < 2; i++)
-        {
-            domains[i]->Blocks()->Render(&picture, neighborDraw);
-        }
-        picture.Close();
-        cmf::Finalize();
-    )
+    std::string filename = "output/main.tex";
+    cmf::TikzObject picture;
+    picture.Open(filename);
+    cmf::DebugTikzDraw_t neighborDraw(DebugDraw);
+    for (int i = 0; i < 2; i++)
+    {
+        domains[i]->Blocks()->Render(&picture, neighborDraw);
+    }
+    picture.Close();
+    cmf::Finalize();
     return 0;
 }
