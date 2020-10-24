@@ -1,1 +1,1 @@
-cmd: 'DIM=2 TESTS=circle make test'
+cmd: 'DIM=2 TESTS=png make test'

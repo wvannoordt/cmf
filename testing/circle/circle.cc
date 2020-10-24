@@ -38,10 +38,6 @@ bool circleIntersects(double* c, double r, double* box, bool dooutput)
     anEdgeIsIn = anEdgeIsIn || (pldist(c, box[0], box[3], box[1], box[3], r));
     //return aCornerIsIn;
     //return aCornerIsIn;
-    std::cout << std::endl;
-    std::cout << "aCornerIsIn " << aCornerIsIn << std::endl;
-    std::cout << "isContained " << isContained << std::endl;
-    std::cout << "anEdgeIsIn  " << anEdgeIsIn << std::endl;
     return aCornerIsIn || isContained || anEdgeIsIn;
 }
 double r = 0.01;

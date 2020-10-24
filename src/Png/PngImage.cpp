@@ -58,6 +58,16 @@ namespace cmf
             free(imageBuffer);
         }
     }
+    
+    int PngImage::GetHeight(void)
+    {
+        return height;
+    }
+    
+    int PngImage::GetWidth(void)
+    {
+        return width;
+    }
 
     void PngImage::Fill(int color)
     {
@@ -79,6 +89,20 @@ namespace cmf
         *((ubyte*)(imageBuffer + row*width + col)+0) = color[0];
         *((ubyte*)(imageBuffer + row*width + col)+1) = color[1];
         *((ubyte*)(imageBuffer + row*width + col)+2) = color[2];
+        *((ubyte*)(imageBuffer + row*width + col)+3) = color[3];
+    }
+    
+    void PngImage::AlphaSetPixel(int row, int col, int color)
+    {
+        AlphaSetPixel(row, col, *((pxtype*)&color));
+    }
+    
+    void PngImage::AlphaSetPixel(int row, int col, pxtype color)
+    {
+        float theta = (float)color[3]/255.0;
+        *((ubyte*)(imageBuffer + row*width + col)+0) = (1-theta)*(*((ubyte*)(imageBuffer + row*width + col)+0))+theta*color[0];
+        *((ubyte*)(imageBuffer + row*width + col)+1) = (1-theta)*(*((ubyte*)(imageBuffer + row*width + col)+1))+theta*color[1];
+        *((ubyte*)(imageBuffer + row*width + col)+2) = (1-theta)*(*((ubyte*)(imageBuffer + row*width + col)+2))+theta*color[2];
         *((ubyte*)(imageBuffer + row*width + col)+3) = color[3];
     }
 

@@ -11,6 +11,7 @@
 #include "NeighborIterator.h"
 #include "VtkFile.h"
 #include "PngImage.h"
+#include "PngDrawer.h"
 namespace cmf
 {
     extern PropTreeLib::PropertyTree mainInput;

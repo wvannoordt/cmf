@@ -61,6 +61,20 @@ namespace cmf
         	/// @author WVN
             void SetPixel(int row, int col, pxtype color);
             
+            /// @brief Sets a pixel in the pixel buffer, allowing transparency
+            /// @param row Row-index of target pixel
+            /// @param col Column-index of target pixel
+            /// @param color The color to set the pixel to
+        	/// @author WVN
+            void AlphaSetPixel(int row, int col, int color);
+            
+            /// @brief Sets a pixel in the pixel buffer, allowing transparency
+            /// @param row Row-index of target pixel
+            /// @param col Column-index of target pixel
+            /// @param color The color to set the pixel to
+        	/// @author WVN
+            void AlphaSetPixel(int row, int col, pxtype color);
+            
             /// @brief Destructor for PngImage. Frees resources if needed.
         	/// @author WVN
             ~PngImage(void);
@@ -74,6 +88,14 @@ namespace cmf
             /// @brief Returns the underlying pixel buffer.
         	/// @author WVN
             int* GetBuffer(void);
+            
+            /// @brief Returns the underlying pixel buffer height
+        	/// @author WVN
+            int GetHeight(void);
+            
+            /// @brief Returns the underlying pixel buffer width
+        	/// @author WVN
+            int GetWidth(void);
         
         private:
             /// @brief Writes the PNG signature to the file pointer.
