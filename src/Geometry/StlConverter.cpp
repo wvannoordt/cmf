@@ -89,6 +89,9 @@ namespace cmf
     void StlConverter::ConvertGeometry(SurfaceTriangulation* target)
     {
         WriteLine(3, "Converting to native geometry");
+        target->AllocatePointBuffer(3*facetCount*sizeof(double));
+        target->AllocateNormalBuffer(3*facetCount*sizeof(double));
+        target->SetNumFaces(facetCount);
     }
     
     StlConverter::~StlConverter(void)

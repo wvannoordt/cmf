@@ -88,6 +88,9 @@ namespace cmf
             
             /// @brief The normal buffer
             double* normals;
+            
+            /// @brief A condition set that defined when a full definition has been achieved
+            ConditionSet conditions;
     };
 }
 
