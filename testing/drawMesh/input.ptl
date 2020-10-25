@@ -1,0 +1,7 @@
+Domain
+{
+	blockDim = [12, 3]
+	blockBounds = [0,4,0,1]
+	refinementConstraintType = factor2CompletelyConstrained
+	//refinementConstraintType = free
+}

@@ -12,6 +12,8 @@
 #include "VtkFile.h"
 #include "PngImage.h"
 #include "PngDrawer.h"
+#include "BlockFilters.h"
+#include "AxisAlignedLongCylinder.h"
 namespace cmf
 {
     extern PropTreeLib::PropertyTree mainInput;

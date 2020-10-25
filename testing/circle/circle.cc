@@ -2,7 +2,7 @@
 #include <cmath>
 #include "cmf.h"
 #include "cmftestutils.h"
-double pldist(double* c, double x1, double y1, double x2, double y2, double r)
+bool pldist(double* c, double x1, double y1, double x2, double y2, double r)
 {
     double x0 = c[0];
     double y0 = c[1];
@@ -36,8 +36,6 @@ bool circleIntersects(double* c, double r, double* box, bool dooutput)
     anEdgeIsIn = anEdgeIsIn || (pldist(c, box[1], box[2], box[1], box[3], r));
     anEdgeIsIn = anEdgeIsIn || (pldist(c, box[0], box[2], box[1], box[2], r));
     anEdgeIsIn = anEdgeIsIn || (pldist(c, box[0], box[3], box[1], box[3], r));
-    //return aCornerIsIn;
-    //return aCornerIsIn;
     return aCornerIsIn || isContained || anEdgeIsIn;
 }
 double r = 0.01;
@@ -59,9 +57,7 @@ int main(int argc, char** argv)
     EXIT_WARN_IF_DIM_NOT(2);
     cmf::Initialize();
     cmf::ReadInput("input.ptl");
-    cmf::cmfout << "BEFORE" << cmf::cmfendl;
     cmf::CartesianMeshInputInfo inputInfo("Domain", cmf::mainInput);
-    cmf::cmfout << "AFTER" << cmf::cmfendl;
     cmf::CartesianMesh domain(inputInfo);
     //coords[0] = 0.11;
     //coords[1] = 0.52;
@@ -80,10 +76,6 @@ int main(int argc, char** argv)
         //std::cout << i.Node()->GetLevel() << std::endl;
     }
     int p = 0;
-    for (cmf::BlockIterator i(domain.Blocks(), [](cmf::RefinementTreeNode* n){return (n->IsTerminal());}); i.HasNext(); i++)
-    {
-        std::cout << "BLOCK " << p++ << " " << circle2(i.Node()) << std::endl;
-    }
     std::string filename = "output/main.tex";
     cmf::TikzObject picture;
     picture.Open(filename);
