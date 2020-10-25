@@ -24,6 +24,8 @@ namespace cmf
             virtual bool BoxIntersectsBoundary(double* bounds){};
             
         protected:
+            
+            /// @brief A name for the current type of geometry
             std::string geometryType;
     };
 }

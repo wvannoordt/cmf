@@ -14,6 +14,9 @@
 #include "PngDrawer.h"
 #include "BlockFilters.h"
 #include "AxisAlignedLongCylinder.h"
+#include "CmfGC.h"
+#include "CmfScreen.h"
+#include "SurfaceTriangulation.h"
 namespace cmf
 {
     extern PropTreeLib::PropertyTree mainInput;

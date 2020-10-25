@@ -1,1 +1,1 @@
-cmd: 'DIM=2 TESTS=drawMesh make test'
+cmd: 'DIM=3 TESTS=triangulation make test'
