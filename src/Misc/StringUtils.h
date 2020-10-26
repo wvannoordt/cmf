@@ -26,4 +26,17 @@ static inline bool FileExists(std::string filename)
     return f.good();
 }
 
+static inline std::string NiceCommaString(size_t num)
+{
+    std::string numstr = std::to_string(num);
+    std::string output = "";
+    for (int i = numstr.length()-1; i >= 0; i--)
+    {
+        output = numstr[i] + output;
+        if ((i!=0)&&(i!=numstr.length()-1)&&((numstr.length()-i)%3)==0) output = "," + output;
+    }
+    return output;
+}
+
+
 #endif

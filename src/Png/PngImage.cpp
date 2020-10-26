@@ -1,4 +1,5 @@
 #include "PngImage.h"
+#include "CmfGC.h"
 #define APH_SHIFT 24
 #define RED_SHIFT 16
 #define GRN_SHIFT 8
@@ -26,7 +27,7 @@ namespace cmf
         width  = width_in;
         hasSelfContainedBuffer = true;
         bufferRequiresDealloc = true;
-        imageBuffer = (int*)malloc(height * width * sizeof(int));
+        imageBuffer = (int*)Cmf_Alloc(height * width * sizeof(int));
         int num = 1;
         machineIsBigEndian = ! ( *(char *)&num == 1 );
     }
@@ -55,7 +56,7 @@ namespace cmf
         if (bufferRequiresDealloc)
         {
             bufferRequiresDealloc = false;
-            free(imageBuffer);
+            Cmf_Free(imageBuffer);
         }
     }
     
@@ -112,7 +113,7 @@ namespace cmf
         ubyte* buffer_in;
         size_t input_buffer_size = ((3*col + 1) * row) * sizeof(ubyte);
 
-        buffer_in = (ubyte*)malloc(input_buffer_size);
+        buffer_in = (ubyte*)Cmf_Alloc(input_buffer_size);
         //set line filter bytes
 
         int i, j;
@@ -135,7 +136,7 @@ namespace cmf
         int comp_size_write = comp_size;
         if (!machineIsBigEndian) FlipEndianness(&comp_size_write);
 
-        ubyte* comp_buffer_in = (ubyte*)malloc((4+comp_size)*sizeof(ubyte));
+        ubyte* comp_buffer_in = (ubyte*)Cmf_Alloc((4+comp_size)*sizeof(ubyte));
         std::copy(compressed_buffer_vec.begin(),compressed_buffer_vec.end(), comp_buffer_in + 4);
         *(comp_buffer_in+0) = 'I';
         *(comp_buffer_in+1) = 'D';
@@ -148,8 +149,8 @@ namespace cmf
         int crc32_data = checksum.ComputeChecksum(comp_buffer_in, 4+comp_size);
         if (!machineIsBigEndian) FlipEndianness(&crc32_data);
         fwrite(&crc32_data, 1, sizeof(int), fileWriter);
-        free(comp_buffer_in);
-        free(buffer_in);
+        Cmf_Free(comp_buffer_in);
+        Cmf_Free(buffer_in);
     }
 
     void PngImage::CompressMemory(void *in_data, size_t in_data_size, std::vector<uint8_t> &out_data)

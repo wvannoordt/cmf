@@ -46,8 +46,18 @@ namespace cmf
             /// @brief Destructor for SurfaceTriangulation class
             /// @author WVN
             ~SurfaceTriangulation(void);
+            
+            /// @brief Determines whether the provided box intersects the boundary of the geometry
+            /// @param bounds The bounds of the box to check (xmin, xmax, ymin, ymax, [zmin, zmax])
+            /// @author WVN
+            bool BoxIntersectsBoundary(double* bounds);
         
         private:
+            
+            /// @brief Outputs the bounding boxes in the lookup table as a point cloud
+            /// @param filename The file name to write to
+            /// @author WVN            
+            void OutputBoundingBoxesAsCloud(std::string filename);
             
             /// @brief Populates the triangulation data using the specified converter
             /// @param converter The provided ICmfGeometryConverter object
@@ -73,6 +83,42 @@ namespace cmf
             /// @param n Value to set
             /// @author WVN
             void SetNumFaces(size_t n);
+            
+            /// @brief Computes the boundinb box for the triangulation
+            /// @author WVN
+            void ComputeBoundingBox(void);
+            
+            /// @brief Computes the lookup table for the current geometry
+            /// @author WVN
+            void ComputeLookupTable(void);
+            
+            /// @brief Gets the bounding box at the specified index in the lookup table
+            /// @param idx Index input
+            /// @param coordsBox Bounding box output
+            /// @author WVN
+            void GetBoxAtIndex(int* idx, double* coordsBox);
+            
+            /// @brief Gets the index range (inclusive) from a bounding box
+            /// @param ijkLow Index output, lower, inclusive
+            /// @param ijkHigh Index output, upper, inclusive
+            /// @param boundingBox Bounding box input
+            /// @author WVN
+            void GetIndicesFromBoundingBox(double* boundingBox, int* ijkLow, int* ijkHigh);
+            
+            /// @brief dimensions of the lookup table
+            int lookupTableDim[CMF_DIM];
+            
+            /// @brief bounding box of the triangulation
+            double boundingBox[6];
+            
+            /// @brief Stores the startind index of the triangles in a given cell
+            int* lookupTableBinStart;
+            
+            /// @brief Stores the number of triangles in the corresponding cell in the lookup table
+            int* lookupTableBinCounts;
+            
+            /// @brief Stores the data for the lookup table
+            int* lookupTableData;
             
             /// @brief Determines if DefineTriangulation has been called
             bool isDefined;

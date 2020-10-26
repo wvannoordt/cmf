@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string>
+#include "CmfGC.h"
+#include "Utils.hx"
 namespace cmf
 {
     StlConverter::StlConverter(std::string filename)
@@ -17,7 +19,7 @@ namespace cmf
         WriteLine(1, "Reading STL file \"" + filename + "\"...");
         int num = 1;
         bigEndian = !(*(char*)&num==1);
-        if (bigEndian) CmfError("Unable to handle big-endian data for now. This whould be a simple fix.");
+        if (bigEndian) CmfError("Unable to handle big-endian data for now. This should be a simple fix.");
         requireFree = false;
         facetCount = -999;
         xmin =  1e30;
@@ -32,8 +34,8 @@ namespace cmf
     
     void StlConverter::Allocate(int num)
     {
-        normalData = (float*)malloc(3*num*sizeof(float));
-        vertexData = (float*)malloc(9*num*sizeof(float));
+        normalData = (float*)Cmf_Alloc(3*num*sizeof(float));
+        vertexData = (float*)Cmf_Alloc(9*num*sizeof(float));
         requireFree = true;
     }
     
@@ -89,9 +91,22 @@ namespace cmf
     void StlConverter::ConvertGeometry(SurfaceTriangulation* target)
     {
         WriteLine(3, "Converting to native geometry");
-        target->AllocatePointBuffer(3*facetCount*sizeof(double));
+        target->AllocatePointBuffer(9*facetCount*sizeof(double));
         target->AllocateNormalBuffer(3*facetCount*sizeof(double));
         target->SetNumFaces(facetCount);
+        //This is a temporary fix, will need to do duplicate elimination
+        for (size_t i = 0; i < 9*facetCount; i++)
+        {
+            target->points[i] = 100000.00000;
+        }
+        for (size_t i = 0; i < 9*facetCount; i++)
+        {
+            target->points[i] = (double)vertexData[i];
+        }
+        for (size_t i = 0; i < facetCount; i++)
+        {
+            target->normals[i] = (double)normalData[i];
+        }
     }
     
     StlConverter::~StlConverter(void)
@@ -99,8 +114,8 @@ namespace cmf
         if (requireFree)
         {
             WriteLine(3, "Free stl resources");
-            free(normalData);
-            free(vertexData);
+            Cmf_Free(normalData);
+            Cmf_Free(vertexData);
         }
     }
 }

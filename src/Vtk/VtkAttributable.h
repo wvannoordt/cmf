@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <cstring>
+#include "CmfGC.h"
 
 #define CMF_VTK_BUF_SIZE 4096
 #define CMF_VTK_MAX_STRING_SIZE 256
@@ -233,7 +234,7 @@ namespace cmf
                         CmfError("Attempted to allocate dataBuffer using attribute \"" + name + "\" of improper type " + AttrTypeStr(setType) + ".");
                     }
                     size_t allocsize = ((setType == VtkAttributableType::intType) ? (*((int*)data)) : (*((size_t*)data))) * GetBufferElementSize();
-                    dataBuffer = (char*)malloc(allocsize);
+                    dataBuffer = (char*)Cmf_Alloc(allocsize);
                     bufferIsAllocated = true;
                     allocatedSize = allocsize;
                 }
@@ -300,7 +301,7 @@ namespace cmf
                 if (bufferIsAllocated)
                 {
                     bufferIsAllocated = false;
-                    free(dataBuffer);
+                    Cmf_Free(dataBuffer);
                 }
             }
 
