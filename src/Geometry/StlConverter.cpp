@@ -12,6 +12,7 @@
 #include <string>
 #include "CmfGC.h"
 #include "Utils.hx"
+#include "DebugTools.hx"
 namespace cmf
 {
     StlConverter::StlConverter(std::string filename)
@@ -103,7 +104,7 @@ namespace cmf
         {
             target->points[i] = (double)vertexData[i];
         }
-        for (size_t i = 0; i < facetCount; i++)
+        for (size_t i = 0; i < 3*facetCount; i++)
         {
             target->normals[i] = (double)normalData[i];
         }

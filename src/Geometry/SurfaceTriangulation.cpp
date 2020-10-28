@@ -110,7 +110,7 @@ namespace cmf
     {
         //temporary
         WriteLine(0, "WARNING: HARDCODED VALUE FOR LOOKUP TABLE DIMENSIONS!");
-        __dloop(lookupTableDim[d]=80);
+        __dloop(lookupTableDim[d]=55);
         size_t totalNumCells = 1;
         __dloop(totalNumCells*=lookupTableDim[d]);
         lookupTableBinCounts = (int*)Cmf_Alloc(totalNumCells*sizeof(int));
@@ -126,15 +126,17 @@ namespace cmf
         int ijkLow[3];
         int ijkHigh[3];
         double gridBoxBounds[6];
-        //int debugCout = 0;
         int idx[3];
         int index;
         for (int countMode = 0; countMode<2; countMode++)
         {
-            if (countMode==1)
+            if (countMode==0)
             {
-                for (size_t face = 0; face < numFaces; face++) lookupTableBinCounts[face]=0;
-                for (size_t face = 0; face < numFaces; face++) lookupTableBinIdx[face]=0;
+                for (size_t cellIdxTemp = 0; cellIdxTemp < totalNumCells; cellIdxTemp++)
+                {
+                    lookupTableBinCounts[cellIdxTemp]=0;
+                    lookupTableBinIdx[cellIdxTemp]=0;
+                }
             }
             for (size_t face = 0; face < numFaces; face++)
             {
@@ -143,6 +145,8 @@ namespace cmf
                 p2 = points + 9*face+3;
                 p3 = points + 9*face+6;
                 normalVec  = normals + 3*face;
+                
+                
                 for (int d = 0; d < 3; d++)
                 {
                     ijkLow[d] = 0;
@@ -160,11 +164,6 @@ namespace cmf
                             int ijk[3]={i,j,k};
                             index = Idx2Dim3(lookupTableDim,ijk);
                             GetBoxAtIndex(ijk, gridBoxBounds);
-                            //if (debugCout++ == 12000)
-                            //{
-                            //    CmfError("A");
-                            //}
-                            //THIS REALLY NEEDS OPTIMIZING
                             if (TriangleIntersectsBox(p1, p2, p3, normalVec, gridBoxBounds))
                             {
                                 if (countMode==0)
@@ -174,7 +173,7 @@ namespace cmf
                                 }
                                 else
                                 {
-                                    lookupTableData[lookupTableBinStart[index]+lookupTableBinIdx[index]] = face;
+                                    lookupTableData[lookupTableBinStart[index]+lookupTableBinIdx[index]] = (int)face;
                                     lookupTableBinIdx[index]++;
                                 }
                             }
@@ -185,10 +184,10 @@ namespace cmf
             if (countMode==0)
             {
                 lookupTableData = (int*)Cmf_Alloc(totalLookupTableSize*sizeof(int));
-                lookupTableBinStart[0] = 0;
-                for (size_t cellIdx = 1; cellIdx < totalNumCells; cellIdx++)
+                for (int cellIdx = 0; cellIdx < totalNumCells; cellIdx++) lookupTableBinStart[cellIdx] = 0;
+                for (int cellIdx = 1; cellIdx < totalNumCells; cellIdx++)
                 {
-                    lookupTableBinStart[cellIdx] = lookupTableBinStart[cellIdx-1]+lookupTableBinCounts[cellIdx];
+                    lookupTableBinStart[cellIdx] = lookupTableBinStart[cellIdx-1]+lookupTableBinCounts[cellIdx-1];
                 }
             }
         }

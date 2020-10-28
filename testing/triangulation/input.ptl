@@ -1,0 +1,6 @@
+Domain
+{
+	blockDim = [2, 2, 2]
+	blockBounds = [-30,42,-37,50,11,78]
+	refinementConstraintType = @choose(1, factor2CompletelyConstrained, free)
+}

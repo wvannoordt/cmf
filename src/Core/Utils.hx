@@ -272,6 +272,7 @@ static inline bool TriangleIntersectsBox(double* p1, double* p2, double* p3, dou
     tbox[5] = CMFMAX(CMFMAX(p1[2], p2[2]), p3[2]);
     if (!BoxOverlap3(tbox, box)) return false;
     if (!PlaneIntersectsBox(p1, nvec, box)) return false;
+    //return true;
     double ei[3];
     double fj[3];
     double aij[3];
