@@ -17,9 +17,11 @@
 #include "CmfGC.h"
 #include "CmfScreen.h"
 #include "SurfaceTriangulation.h"
+#include "GlobalSettings.h"
 namespace cmf
 {
     extern PropTreeLib::PropertyTree mainInput;
+    extern GlobalSettings globalSettings;
     
     /// @brief Initializes CMF. Currently does nothing. It is intended that this function does nothing.
     /// @author WVN

@@ -1,5 +1,6 @@
 #include "CmfScreen.h"
 #include "CmfOutputStream.h"
+#include "cmf.h"
 namespace cmf
 {
     //Probably good to make this a struct...
@@ -9,20 +10,20 @@ namespace cmf
     
     void WriteLine_WithFileAndLine(int debugLevel, std::string message, int line, const char* file)
     {
-        if (globalOutputEnabledHere && (debugLevel<=globalDebugLevel))
+        if (globalSettings.globalOutputEnabledHere && (debugLevel<=globalSettings.debugLevel))
         {
             cmfout << "cmf :: " << message;
-            if (globalTrackOutputOrigins) cmfout << "\n >> (debug " << debugLevel << " from file " << file << ", line " << line << ")";
+            if (globalSettings.trackOutputOrigins) cmfout << "\n >> (debug " << globalSettings.debugLevel << " from file " << file << ", line " << line << ")";
             cmfout << cmfendl;
         }
     }
     
     void WriteLineStd_WithFileAndLine(int debugLevel, std::string message, int line, const char* file)
     {
-        if (globalOutputEnabledHere && (debugLevel<=globalDebugLevel))
+        if (globalSettings.globalOutputEnabledHere && (debugLevel<=globalSettings.debugLevel))
         {
             std::cout << "cmf :: " << message;
-            if (globalTrackOutputOrigins) std::cout << "\n >> (debug " << debugLevel << " from file " << file << ", line " << line << ")";
+            if (globalSettings.trackOutputOrigins) std::cout << "\n >> (debug " << globalSettings.debugLevel << " from file " << file << ", line " << line << ")";
             std::cout << std::endl;
         }
     }

@@ -1,0 +1,12 @@
+GlobalSettings
+{
+	debugLevel = 4
+	trackOutputOrigins = false
+}
+Domain
+{
+	blockDim = [3, 3]
+	blockBounds = [0,1,0,1]
+	meshDataDim = [4, 4]
+	refinementConstraintType = @choose(1, factor2CompletelyConstrained, free)
+}

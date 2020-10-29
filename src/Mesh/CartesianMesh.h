@@ -11,6 +11,7 @@
 #include "RefinementBlock.h"
 #include "ICmfMesh.h"
 #include "cmf.h"
+#include "CartesianMeshArrayHandler.h"
 
 namespace cmf
 {
@@ -27,6 +28,9 @@ namespace cmf
         /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
         RefinementConstraint::RefinementConstraint refinementConstraintType;
         
+        /// @brief An array of size CMF_DIM that represents the initial block data dimensions
+        int* meshDataDim;
+        
         /// @brief Constructor for the CartesianMeshInputInfo object.
         /// @param title_in title of the mesh
         /// @param inputTree PropertryTree to be read from
@@ -37,14 +41,19 @@ namespace cmf
             Parse();
         }
         
-        void Define()
+        void Define(void)
         {
             objectInput["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions");
+            
             objectInput["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds");
+            
             objectInput["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
                 = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
+            
+            objectInput["meshDataDim"].MapTo(&meshDataDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Dimensions of data");
         }
     };
+    
     class CartesianMesh : ICmfMesh
     {
         public:
@@ -60,6 +69,16 @@ namespace cmf
             /// @brief Returns the underlying RefinementBlock object
             /// @author WVN
             RefinementBlock* Blocks(void);
+            
+            /// @brief Returns the mesh array handler
+            /// @author WVN
+            CartesianMeshArrayHandler* GetArrayHandler(void);
+            
+            /// @brief Defines a variable with the given name
+            /// @param name The name of the variable
+            /// @author WVN
+            void DefineVariable(std::string name);
+            
         private:
             
             /// @brief contains the mesh blocks of the current mesh
@@ -71,8 +90,14 @@ namespace cmf
             /// @brief An array of size 2*CMF_DIM the represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
             double* blockBounds;
             
+            /// @brief An array of size CMF_DIM that represents the initial block data dimensions
+            int* meshDataDim;
+            
             /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
             RefinementConstraint::RefinementConstraint refinementConstraintType;
+            
+            /// @brief An oject for handling the storage of arrays on the current mesh
+            CartesianMeshArrayHandler arrayHandler;
     };
 }
 

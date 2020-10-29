@@ -4,6 +4,7 @@
 namespace cmf
 {
     PropTreeLib::PropertyTree mainInput;
+    GlobalSettings globalSettings;
     void Initialize(void)
     {
 

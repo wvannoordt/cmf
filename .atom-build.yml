@@ -1,1 +1,1 @@
-cmd: 'DIM=3 TESTS=triangulation make test'
+cmd: 'DIM=2 DOLATEXOUTPUT=0 TESTS=dataOnMesh make test'
