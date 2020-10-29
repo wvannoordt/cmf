@@ -7,13 +7,13 @@ int main(int argc, char** argv)
     EXIT_WARN_IF_DIM_NOT(2);
     cmf::Initialize();
     cmf::ReadInput("input.ptl");
-    cmf::CartesianMeshInputInfo inputInfo("Domain", cmf::mainInput);
+    cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
     std::string filename = "output/main.tex";
     cmf::TikzObject picture;
     picture.Open(filename);
     domain.Blocks()->Render(&picture);
     picture.Close();
-    cmf::Finalize();    
+    cmf::Finalize();
     return 0;
 }

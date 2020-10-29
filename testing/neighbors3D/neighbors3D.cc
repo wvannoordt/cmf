@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     int testVal;
     //cmfout.AddFileToStream("output/cmf.log");
     std::string outputName = "output/neigh.vtk";
-    
+
     userInput.SetAsSubtree(cmf::mainInput["user"]);
     userInput["allNeighs"].MapTo(&allNeighs) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
     userInput["level0"].MapTo(&level0) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     cmf::ReadInput("input.ptl");
     userInput.StrictParse();
     cmf::mainInput.DebugPrint();
-    cmf::CartesianMeshInputInfo inputInfo("Domain", cmf::mainInput);
+    cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
     double coords[3];
     coords[0] = 0.001;

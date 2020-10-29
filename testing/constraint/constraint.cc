@@ -65,8 +65,8 @@ int main(int argc, char** argv)
     EXIT_WARN_IF_DIM_NOT(2);
     cmf::Initialize();
     cmf::ReadInput("input.ptl");
-    cmf::CartesianMeshInputInfo inputInfoA("DomainA", cmf::mainInput);
-    cmf::CartesianMeshInputInfo inputInfoB("DomainB", cmf::mainInput);
+    cmf::CartesianMeshInputInfo inputInfoA(cmf::mainInput["DomainA"]);
+    cmf::CartesianMeshInputInfo inputInfoB(cmf::mainInput["DomainB"]);
     cmf::CartesianMesh domainA(inputInfoA);
     cmf::CartesianMesh domainB(inputInfoB);
 

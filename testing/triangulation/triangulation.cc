@@ -17,7 +17,7 @@ bool isect(cmf::RefinementTreeNode* n)
 {
     double* localBoundsBlock = n->GetBlockBounds();
     if (!(n->IsTerminal())) return false;
-    return (surface.BoxIntersectsBoundary(localBoundsBlock));    
+    return (surface.BoxIntersectsBoundary(localBoundsBlock));
 }
 
 
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 	return 0;
     cmf::Initialize();
     cmf::ReadInput("input.ptl");
-    cmf::CartesianMeshInputInfo inputInfo("Domain", cmf::mainInput);
+    cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
     cmf::globalDebugLevel = 4;
 	std::string filenameSTL = "goat.stl";
