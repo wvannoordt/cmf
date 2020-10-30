@@ -5,6 +5,7 @@
 #include "ICmfMeshArray.h"
 namespace cmf
 {
+    class CartesianMeshArrayHandler;
     /// @brief Defines a MeshArray object Cartesian grids
     /// @author WVN
     class CartesianMeshArray : public ICmfMeshArray
@@ -13,7 +14,7 @@ namespace cmf
             /// @brief Constructor
             /// @param name The name of the variable
             /// @author WVN
-            CartesianMeshArray(ArrayInfo info);
+            CartesianMeshArray(ArrayInfo info, CartesianMeshArrayHandler* handler_in);
             
             /// @brief Empty destructor
             /// @author WVN

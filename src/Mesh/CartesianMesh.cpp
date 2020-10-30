@@ -11,6 +11,7 @@ namespace cmf
         refinementConstraintType = input.refinementConstraintType;
         blocks = new RefinementBlock(blockDim, blockBounds, refinementConstraintType);
         meshDataDim = input.meshDataDim;
+        arrayHandler = new CartesianMeshArrayHandler(this);
     }
 
     RefinementBlock* CartesianMesh::Blocks(void)
@@ -18,9 +19,9 @@ namespace cmf
         return blocks;
     }
 
-    CartesianMeshArrayHandler* CartesianMesh::GetArrayHandler(void)
+    ICmfMeshArrayHandler* CartesianMesh::GetArrayHandler(void)
     {
-        return &arrayHandler;
+        return arrayHandler;
     }
 
     void CartesianMesh::DefineVariable(std::string name)
@@ -28,11 +29,12 @@ namespace cmf
         ArrayInfo info;
         info.name = name;
         info.rank = 0;
-        arrayHandler.CreateNewVariable(info);
+        arrayHandler->CreateNewVariable(info);
     }
 
     CartesianMesh::~CartesianMesh(void)
     {
+        delete arrayHandler;
         delete blocks;
     }
 }

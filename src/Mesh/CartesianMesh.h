@@ -54,8 +54,11 @@ namespace cmf
         }
     };
 
-    class CartesianMesh : ICmfMesh
+    /// @brief Mesh class for cartesian grids
+    /// @author WVN
+    class CartesianMesh : public ICmfMesh
     {
+        friend class CartesianMeshArrayHandler;
         public:
             /// @brief Constructor for the CartesianMesh object.
             /// @param input Input data for the
@@ -72,7 +75,7 @@ namespace cmf
 
             /// @brief Returns the mesh array handler
             /// @author WVN
-            CartesianMeshArrayHandler* GetArrayHandler(void);
+            ICmfMeshArrayHandler* GetArrayHandler(void);
 
             /// @brief Defines a variable with the given name
             /// @param name The name of the variable
@@ -95,9 +98,6 @@ namespace cmf
 
             /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
             RefinementConstraint::RefinementConstraint refinementConstraintType;
-
-            /// @brief An oject for handling the storage of arrays on the current mesh
-            CartesianMeshArrayHandler arrayHandler;
     };
 }
 

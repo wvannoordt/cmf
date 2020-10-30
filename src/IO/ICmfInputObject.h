@@ -28,7 +28,7 @@ namespace cmf
         /// @param title_in The title of this object, to be read from the input tree
         /// @param inputTree A PropertyTree to be read from. (See <a href="https://github.com/wvannoordt/PropTreeLib">PropTreeLib</a> )
         /// @author WVN
-        ICmfInputObject(PropTreeLib::PropertySection & objectInput_in) {objectInput = &objectInput_in;}
+        ICmfInputObject(PropTreeLib::PropertySection & objectInput_in) {title = objectInput_in.GetSectionName();objectInput = &objectInput_in;}
 
         /// @brief Defines a general input object to be read from an input file
         /// @param inputTree A PropertyTree to be read from. (See <a href="https://github.com/wvannoordt/PropTreeLib">PropTreeLib</a> )

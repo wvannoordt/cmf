@@ -5,6 +5,7 @@
 #include "CmfError.h"
 namespace cmf
 {
+    class ICmfMeshArrayHandler;
     /// @brief Defines a general MeshArray object for various grid types
     /// @author WVN
     class ICmfMeshArray
@@ -14,23 +15,19 @@ namespace cmf
             /// @param info Array information
             /// @param mesh_in The mesh over which this array is defined
             /// @author WVN
-            ICmfMeshArray(ArrayInfo info)
-            {
-                variableName = info.name;
-                if (info.rank > MAX_RANK) CmfError("Rank of variable \"" + variableName + "\" exceeds MAX_RANK (" + std::to_string(MAX_RANK) + "): recompile with greater limit.");
-                for (int i = 0; i < info.rank; i++)
-                {
-                    dims[i] = info.dimensions[i];
-                }
-            }
+            ICmfMeshArray(ArrayInfo info);
 
             /// @brief Explicitly release resources used by this array
             /// @author WVN
-            virtual void Destroy(void){}
+            virtual void Destroy(void);
+            
+            /// @brief Returns the handler for the current array
+            /// @author WVN
+            virtual ICmfMeshArrayHandler* GetHandler(void);
 
             /// @brief Empty destructor
             /// @author WVN
-            ~ICmfMeshArray(void){}
+            ~ICmfMeshArray(void);
 
         protected:
 
@@ -42,6 +39,9 @@ namespace cmf
 
             /// @brief The dimensions of this array
             int dims[MAX_RANK];
+            
+            /// @brief The handler responsible for this array
+            ICmfMeshArrayHandler* handler;
     };
 }
 

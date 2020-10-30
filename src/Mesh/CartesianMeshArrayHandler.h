@@ -6,6 +6,7 @@
 #include <map>
 namespace cmf
 {
+    class CartesianMesh;
     /// @brief Defines a MeshArrayHandler object for Cartesian meshes
     /// @author WVN
     class CartesianMeshArrayHandler : public ICmfMeshArrayHandler
@@ -13,7 +14,7 @@ namespace cmf
         public:
             /// @brief Constructor
             /// @author WVN
-            CartesianMeshArrayHandler(void);
+            CartesianMeshArrayHandler(CartesianMesh* mesh_in);
             
             /// @brief Destructor
             /// @author WVN
@@ -31,7 +32,8 @@ namespace cmf
         
         private:
             
-            
+            /// @brief The underlying mesh object
+            CartesianMesh* mesh;
             
     };
 }

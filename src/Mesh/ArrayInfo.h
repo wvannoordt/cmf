@@ -5,7 +5,7 @@
 #endif
 #include <string>
 namespace cmf
-{
+{    
     /// @brief Contains (mesh-independent) information about an array
     /// @author WVN
     struct ArrayInfo
