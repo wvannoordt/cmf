@@ -29,6 +29,7 @@ namespace cmf
         ArrayInfo info;
         info.name = name;
         info.rank = 0;
+        info.elementSize = sizeof(double);
         arrayHandler->CreateNewVariable(info);
     }
 
