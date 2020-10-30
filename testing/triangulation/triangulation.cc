@@ -20,7 +20,6 @@ bool isect(cmf::RefinementTreeNode* n)
     return (surface.BoxIntersectsBoundary(localBoundsBlock));
 }
 
-
 int main(int argc, char** argv)
 {
 	std::cout << "\n\nWARNING: Skipping triangulation test as no meshes are to be committed";
@@ -40,6 +39,7 @@ int main(int argc, char** argv)
         double* localBoundsBlock = i.Node()->GetBlockBounds();
         if (surface.BoxIntersectsBoundary(localBoundsBlock)) i.Node()->Refine(7);
     }
+	
 	std::cout << "OUTPUT VTK" << std::endl;
     domain.Blocks()->OutputDebugVtk("output/domain_007.vtk", isect);
     cmf::Finalize();
