@@ -2,6 +2,7 @@
 #define CMF_CARTESIAN_MESH_ARRAY_HANDLER
 #include "ICmfMeshArrayHandler.h"
 #include "CartesianMeshArray.h"
+#include "AmrFcnTypes.h"
 #include <string>
 #include <map>
 namespace cmf
@@ -11,6 +12,7 @@ namespace cmf
     /// @author WVN
     class CartesianMeshArrayHandler : public ICmfMeshArrayHandler
     {
+        friend class CartesianMeshArray;
         public:
             /// @brief Constructor
             /// @author WVN
@@ -22,8 +24,9 @@ namespace cmf
             
             /// @brief Creates a new variable with the given name
             /// @param info Information about the variable \see ArrayInfo
+            /// @param filter A block filter defining the domain of the variable
             /// @author WVN
-            void CreateNewVariable(ArrayInfo info);
+            CartesianMeshArray* CreateNewVariable(ArrayInfo info, NodeFilter_t filter);
             
             /// @brief Checks if a variable with the given name exists
             /// @param name The name to check

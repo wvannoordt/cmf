@@ -22,7 +22,7 @@ namespace cmf
 
             /// @brief Creates a new variable with the given name
             /// @author WVN
-            virtual void CreateNewVariable(ArrayInfo info);
+            virtual ICmfMeshArray* CreateNewVariable(ArrayInfo info);
 
             /// @brief Checks if a variable with the given name exists
             /// @param name The name to check

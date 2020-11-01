@@ -18,6 +18,7 @@
 #include "CmfScreen.h"
 #include "SurfaceTriangulation.h"
 #include "GlobalSettings.h"
+#include "CartesianMeshArray.h"
 namespace cmf
 {
     extern PropTreeLib::PropertyTree mainInput;

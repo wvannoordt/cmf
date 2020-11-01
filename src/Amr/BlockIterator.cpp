@@ -3,19 +3,19 @@
 #include "RefinementTreeNode.h"
 namespace cmf
 {
-    BlockIterator::BlockIterator(RefinementBlock* hostBlock_in)
+    BlockIterator::BlockIterator(IBlockIterable* hostBlock_in)
     {
         hostBlock = hostBlock_in;
-        allNodes = &(hostBlock_in->allNodes);
+        allNodes = hostBlock_in->GetAllNodes();
         index = 0;
         filter = BlockFilters::Terminal;
         isAtEnd = false;
     }
     
-    BlockIterator::BlockIterator(RefinementBlock* hostBlock_in, NodeFilter_t filter_in)
+    BlockIterator::BlockIterator(IBlockIterable* hostBlock_in, NodeFilter_t filter_in)
     {
         hostBlock = hostBlock_in;
-        allNodes = &(hostBlock_in->allNodes);
+        allNodes = hostBlock_in->GetAllNodes();
         index = 0;
         filter = filter_in;
         isAtEnd = false;

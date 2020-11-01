@@ -59,6 +59,7 @@ namespace cmf
     class CartesianMesh : public ICmfMesh
     {
         friend class CartesianMeshArrayHandler;
+        friend class CartesianMeshArray;
         public:
             /// @brief Constructor for the CartesianMesh object.
             /// @param input Input data for the
@@ -80,7 +81,26 @@ namespace cmf
             /// @brief Defines a variable with the given name
             /// @param name The name of the variable
             /// @author WVN
-            void DefineVariable(std::string name);
+            CartesianMeshArray* DefineVariable(std::string name);
+            
+            /// @brief Defines a variable with the given name
+            /// @param name The name of the variable
+            /// @param filter A block filter determining whether the block lies in the domain of the variable
+            /// @author WVN
+            CartesianMeshArray* DefineVariable(std::string name, NodeFilter_t filter);
+            
+            /// @brief Defines a variable with the given name
+            /// @param info An ArrayInfo struct defining the properties of the array
+            /// @author WVN
+            CartesianMeshArray* DefineVariable(ArrayInfo info);
+            
+            /// @brief Defines a variable with the given name
+            /// @param info An ArrayInfo struct defining the properties of the array
+            /// @param filter A block filter determining whether the block lies in the domain of the variable
+            /// @author WVN
+            CartesianMeshArray* DefineVariable(ArrayInfo info, NodeFilter_t filter);
+            
+            
 
         private:
 
@@ -98,6 +118,9 @@ namespace cmf
 
             /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
             RefinementConstraint::RefinementConstraint refinementConstraintType;
+            
+            /// @brief A handler object used to define arrays over the current mesh
+            CartesianMeshArrayHandler* arrayHandler;
     };
 }
 

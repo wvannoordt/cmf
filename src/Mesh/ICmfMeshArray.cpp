@@ -1,5 +1,5 @@
 #include "ICmfMeshArray.h"
-
+#include "CmfScreen.h"
 namespace cmf
 {
     ICmfMeshArray::ICmfMeshArray(ArrayInfo info)
@@ -10,6 +10,7 @@ namespace cmf
         {
             dims[i] = info.dimensions[i];
         }
+        elementSize = info.elementSize;
     }
     
     ICmfMeshArrayHandler* ICmfMeshArray::GetHandler(void)

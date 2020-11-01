@@ -50,11 +50,11 @@ namespace cmf
         
         for (int i = ilow; i < ihigh; i++)
         {
-            if (i < height)
+            if (i < height && i >= 0)
             {
                 for (int j = jlow; j < jhigh; j++)
                 {
-                    if (j < width)
+                    if (j < width && j >= 0)
                     {
                         image->AlphaSetPixel(i, j, color);
                     }
@@ -79,16 +79,15 @@ namespace cmf
         ihigh = CMFMAX(i1, i2);
         jlow  = CMFMIN(j1, j2);
         jhigh = CMFMAX(j1, j2);
-        
         for (int i = ilow; i < ihigh; i++)
         {
-            if (i < height)
+            if (i < height && i >= 0)
             {
                 for (int j = jlow; j < jhigh; j++)
                 {
                     int colorToDraw = fillColor;
                     if (CMFMIN(CMFMIN(i-ilow,ihigh-1-i),CMFMIN(j-jlow,jhigh-1-j))<borderWidth) colorToDraw=borderColor;
-                    if (j < width)
+                    if (j < width && j >= 0)
                     {
                         image->AlphaSetPixel(i, j, colorToDraw);
                     }

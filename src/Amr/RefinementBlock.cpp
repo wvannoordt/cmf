@@ -29,6 +29,21 @@ namespace cmf
     {
         return allNodes.size();
     }
+    
+    size_t RefinementBlock::Size(NodeFilter_t filter)
+    {
+        size_t count = 0;
+        for (size_t i = 0; i < allNodes.size(); i++)
+        {
+            if (filter(allNodes[i])) count++;
+        }
+        return count;
+    }
+    
+    std::vector<RefinementTreeNode*>* RefinementBlock::GetAllNodes(void)
+    {
+        return &allNodes;
+    }
 
     RefinementBlock::~RefinementBlock(void)
     {

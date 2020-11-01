@@ -1,6 +1,7 @@
 #include "CartesianMesh.h"
 #include "CmfScreen.h"
 #include "DebugTools.hx"
+#include "AmrFcnTypes.h"
 namespace cmf
 {
     CartesianMesh::CartesianMesh(CartesianMeshInputInfo input) : ICmfMesh(input)
@@ -24,13 +25,32 @@ namespace cmf
         return arrayHandler;
     }
 
-    void CartesianMesh::DefineVariable(std::string name)
+    CartesianMeshArray* CartesianMesh::DefineVariable(std::string name)
     {
         ArrayInfo info;
         info.name = name;
         info.rank = 0;
         info.elementSize = sizeof(double);
-        arrayHandler->CreateNewVariable(info);
+        return DefineVariable(info, BlockFilters::Terminal);
+    }
+    
+    CartesianMeshArray* CartesianMesh::DefineVariable(std::string name, NodeFilter_t filter)
+    {
+        ArrayInfo info;
+        info.name = name;
+        info.rank = 0;
+        info.elementSize = sizeof(double);
+        return DefineVariable(info, filter);
+    }
+    
+    CartesianMeshArray* CartesianMesh::DefineVariable(ArrayInfo info)
+    {
+        return DefineVariable(info, BlockFilters::Terminal);
+    }
+    
+    CartesianMeshArray* CartesianMesh::DefineVariable(ArrayInfo info, NodeFilter_t filter)
+    {
+        return arrayHandler->CreateNewVariable(info, filter);
     }
 
     CartesianMesh::~CartesianMesh(void)

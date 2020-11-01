@@ -10,13 +10,13 @@ namespace cmf
         mesh = mesh_in;
     }
     
-    void CartesianMeshArrayHandler::CreateNewVariable(ArrayInfo info)
+    CartesianMeshArray* CartesianMeshArrayHandler::CreateNewVariable(ArrayInfo info, NodeFilter_t filter)
     {
         if (VariableExists(info.name)) CmfError("Attempted to redefine variable \"" + info.name + "\" on mesh \"" + mesh->title + "\".");
-        varList.insert({info.name, new CartesianMeshArray(info, this)});
+        CartesianMeshArray* newArray = new CartesianMeshArray(info, this, filter);
+        varList.insert({info.name, newArray});
+        return newArray;
     }
-    
-    
     
     bool CartesianMeshArrayHandler::VariableExists(std::string name)
     {

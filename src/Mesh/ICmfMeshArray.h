@@ -40,8 +40,11 @@ namespace cmf
             /// @brief The dimensions of this array
             int dims[MAX_RANK];
             
-            /// @brief The handler responsible for this array
-            ICmfMeshArrayHandler* handler;
+            /// @brief The size of a single element
+            size_t elementSize;
+            
+            /// @brief The base pointer
+            void* ptr;
     };
 }
 

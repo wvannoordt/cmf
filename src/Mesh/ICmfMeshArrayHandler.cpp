@@ -12,9 +12,9 @@ namespace cmf
         Destroy();
     }
     
-    void ICmfMeshArrayHandler::CreateNewVariable(ArrayInfo info)
+    ICmfMeshArray* ICmfMeshArrayHandler::CreateNewVariable(ArrayInfo info)
     {
-        
+        return NULL;
     }
     
     bool ICmfMeshArrayHandler::VariableExists(std::string name)

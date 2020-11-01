@@ -8,14 +8,14 @@
 #include "RefinementTreeNode.h"
 #include "BlockIterator.h"
 #include "RefinementConstraint.h"
-
+#include "IBlockIterable.h"
 namespace cmf
 {
     class RefinementTreeNode;
     /// @brief Class that represents a grid and tree structure of RefinementTreeNode objects. Essentially represents a block structure for 
     /// a computational mesh
 	/// @author WVN
-    class RefinementBlock
+    class RefinementBlock : public IBlockIterable
     {
         public:
             /// @brief Constructor for the RefinementBlock object.
@@ -100,6 +100,17 @@ namespace cmf
             /// @brief Returns the total number of nodes that are contained within the current block
             /// @author WVN
             size_t Size(void);
+            
+            /// @brief Returns the total number of nodes that are contained within the current block
+            /// @param filter A filter to apply to the counted blocks
+            /// @author WVN
+            size_t Size(NodeFilter_t filter);
+            
+            /// @brief Returns a pointer to a list of all nodes
+            /// @author WVN
+            std::vector<RefinementTreeNode*>* GetAllNodes(void);
+            
+            
         private:
             
             /// @brief Creates the initial grid of RefinementTreeNode objects

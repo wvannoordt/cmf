@@ -5,6 +5,7 @@
 #include <ostream>
 #include "AmrFcnTypes.h"
 #include "CmfOutputStream.h"
+#include "IBlockIterable.h"
 namespace cmf
 {
     class RefinementBlock;
@@ -17,13 +18,13 @@ namespace cmf
             /// @brief Constructor for the iterator
             /// @param hostBlock_in The block to iterate over the nodes of
             /// @author WVN
-            BlockIterator(RefinementBlock* hostBlock_in);
+            BlockIterator(IBlockIterable* hostBlock_in);
             
             /// @brief Constructor for the iterator
             /// @param hostBlock_in The block to iterate over the nodes of
             /// @param filter_in A function pointer that, if returns false on a given node, causes the iterator to skip that node
             /// @author WVN
-            BlockIterator(RefinementBlock* hostBlock_in, NodeFilter_t filter_in);
+            BlockIterator(IBlockIterable* hostBlock_in, NodeFilter_t filter_in);
             
             /// @brief Destructor for the iterator
             /// @author WVN
@@ -62,7 +63,7 @@ namespace cmf
             void SeekFirst(void);
             
             /// @brief The block being iterated over
-            RefinementBlock* hostBlock;
+            IBlockIterable* hostBlock;
             
             /// @brief The current index with respect to allNodes
             size_t index;
