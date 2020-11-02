@@ -9,6 +9,8 @@
 #include "Utils.hx"
 #include "RefinementConstraint.h"
 #include "VtkFile.h"
+#include "CmfScreen.h"
+#include "StringUtils.h"
 
 namespace cmf
 {
@@ -172,6 +174,7 @@ namespace cmf
             for (int i = 0; i < totalNumTrunks; i++)
             {
                 trunks[i]->Destroy();
+                WriteLine(8, "Delete block " + PtrToStr(trunks[i]));
                 delete trunks[i];
             }
             delete[] trunks;

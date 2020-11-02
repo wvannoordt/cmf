@@ -11,6 +11,8 @@
 #include <vector>
 #include "VtkFile.h"
 #include "CmfError.h"
+#include "CmfScreen.h"
+#include "StringUtils.h"
 
 namespace cmf
 {
@@ -565,6 +567,7 @@ namespace cmf
             for (int i = 0; i < numSubNodes; i++)
             {
                 subNodes[i]->Destroy();
+                WriteLine(8, "Delete block " + PtrToStr(subNodes[i]));
                 delete subNodes[i];
             }
             delete [] subNodes;

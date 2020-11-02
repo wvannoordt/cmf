@@ -27,7 +27,7 @@ namespace cmf
 
             /// @brief Empty destructor
             /// @author WVN
-            ~ICmfMeshArray(void);
+            virtual ~ICmfMeshArray(void);
 
         protected:
 

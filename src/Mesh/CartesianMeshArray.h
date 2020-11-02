@@ -48,6 +48,10 @@ namespace cmf
             /// @brief Populates pointerMap with the appropriate block-to-pointer mapping
             /// @author WVN
             void DefinePointerMap(void);
+            
+            /// @brief Returns the name of this variable including the name of the mesh
+            /// @author WVN
+            std::string GetFullName(void);
         
             /// @brief Allows for direct indexing using a block iterator
             void* operator [] (BlockIterator& it);
@@ -76,7 +80,7 @@ namespace cmf
             /// @brief Tells whether or not the underlying pointer is allocated or not
             bool isAllocated;
             
-            /// @brief Nodes over which this variabel is defined
+            /// @brief Nodes over which this variable is defined
             std::vector<RefinementTreeNode*> definedNodes;
     };
 }

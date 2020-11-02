@@ -30,7 +30,17 @@ namespace cmf
     
     void CartesianMeshArray::GetDefinedNodes(void)
     {
-        for (BlockIterator i(handler->mesh->Blocks(), filter); i.HasNext(); i++) definedNodes.push_back(i.Node());
+        for (BlockIterator i(handler->mesh->Blocks(), filter); i.HasNext(); i++)
+        {
+            RefinementTreeNode* curNode = i.Node();
+            definedNodes.push_back(curNode);
+            WriteLine(8, "Define \"" + GetFullName() + "\" on block " + PtrToStr(curNode));
+        }
+    }
+    
+    std::string CartesianMeshArray::GetFullName(void)
+    {
+        return handler->mesh->title + "::" + variableName;
     }
     
     std::vector<RefinementTreeNode*>* CartesianMeshArray::GetAllNodes(void)
@@ -72,7 +82,7 @@ namespace cmf
     
     CartesianMeshArray::~CartesianMeshArray(void)
     {
-        
+        definedNodes.clear();
     }
     
     void CartesianMeshArray::Destroy(void)

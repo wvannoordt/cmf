@@ -15,18 +15,17 @@ int main(int argc, char** argv)
     coords[1] = 0.54;
     double radius = 0.1;
     cmf::AxisAlignedLongCylinder cyl(coords, radius, 2);
-    domain.Blocks()->RefineRandom();
+    //domain.Blocks()->RefineRandom();
     domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->GetLevel() > 2);});
 
-    for (cmf::BlockIterator lb(domain.Blocks(), cmf::BlockFilters::Terminal); lb.HasNext(); lb++)
+    /*for (cmf::BlockIterator lb(domain.Blocks(), cmf::BlockFilters::Terminal); lb.HasNext(); lb++)
     {
         if (cyl.BoxIntersectsBoundary(lb.Node()->GetBlockBounds())) lb.Node()->Refine(7);
     }
     domain.Blocks()->RefineRandom();
-    
-    
-    
+    */
     cmf::CartesianMeshArray dist = *(domain.DefineVariable("distance"));
+    /*
     int* meshDims = inputInfo.meshDataDim;
     double xi, yi, dx, dy;
     double cellBoundBox[4];
@@ -95,7 +94,7 @@ int main(int argc, char** argv)
         canvas.OutlineBox(bounds[0], bounds[1], bounds[2], bounds[3], 0, green, 1);
         num++;
     }
-    img.Write("output/domain.png");
+    img.Write("output/domain.png");*/
     cmf::Finalize();
     return 0;
 }

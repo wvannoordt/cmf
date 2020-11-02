@@ -5,8 +5,8 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <string>
-
+#include <sstream>
+#include <iostream>
 /// @brief Gets file extension from a file name
 /// @param filename The name of the file
 /// @author WVN
@@ -36,6 +36,14 @@ static inline std::string NiceCommaString(size_t num)
         if ((i!=0)&&(i!=numstr.length()-1)&&((numstr.length()-i)%3)==0) output = "," + output;
     }
     return output;
+}
+
+static inline std::string PtrToStr(const void* ptr)
+{
+    std::ostringstream address;
+    address << ptr;
+    std::string name = address.str();
+    return name;
 }
 
 
