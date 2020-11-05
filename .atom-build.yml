@@ -1,1 +1,1 @@
-cmd: 'DIM=2 DOLATEXOUTPUT=0 TESTS=dataOnMesh make test'
+cmd: 'DIM=2 DOLATEXOUTPUT=0 TESTS=exchangeData make test'

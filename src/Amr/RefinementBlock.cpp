@@ -135,6 +135,7 @@ namespace cmf
             idx[d] = (coords[d] - blockBounds[2*d])/(dx[d]);
             queryOutsideDomain = queryOutsideDomain  || (coords[d]<blockBounds[2*d]) || (coords[d]>=blockBounds[2*d+1]);
         }
+        return queryOutsideDomain;
     }
 
     bool RefinementBlock::PointIsInDomain(double coords[CMF_DIM])

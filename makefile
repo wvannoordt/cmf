@@ -116,7 +116,7 @@ COMPILE_TIME_OPT += -DCMF_ZLIB_EXT_ENABLE=${ZLIB_ENABLE}
 
 DEVICE_FLAGS := -O${OPTLEVEL} -x cu -rdc=true -Xcompiler -fPIC ${COMPILE_TIME_OPT} -dc
 DEVICE_DLINK_FLAGS := -Xcompiler -fPIC -rdc=true -dlink
-HOST_FLAGS := -O${OPTLEVEL} -x c++ -Wno-unknown-pragmas -fPIC -fpermissive -std=c++11 -c ${LCUDA}
+HOST_FLAGS := -O${OPTLEVEL} -x c++ -Wno-unknown-pragmas -fPIC -fpermissive -std=c++11 -Werror -c ${LCUDA}
 
 export CUDA_ENABLE
 

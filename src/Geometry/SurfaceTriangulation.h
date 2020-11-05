@@ -106,7 +106,7 @@ namespace cmf
             void GetIndicesFromBoundingBox(double* boundingBox, int* ijkLow, int* ijkHigh);
             
             /// @brief dimensions of the lookup table
-            int lookupTableDim[CMF_DIM];
+            int lookupTableDim[3];
             
             /// @brief bounding box of the triangulation
             double boundingBox[6];

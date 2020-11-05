@@ -40,7 +40,7 @@ namespace cmf
     
     std::string CartesianMeshArray::GetFullName(void)
     {
-        return handler->mesh->title + "::" + variableName;
+        return handler->mesh->title + "_" + variableName;
     }
     
     std::vector<RefinementTreeNode*>* CartesianMeshArray::GetAllNodes(void)

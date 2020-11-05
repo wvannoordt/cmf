@@ -21,6 +21,9 @@ namespace cmf
     {
         /// @brief An array of size CMF_DIM that represents the initial block dimensions
         int* blockDim;
+        
+        /// @brief An array of size CMF_DIM that represents the number of exchange cells (used to facilitate data exchange) in each direction
+        int* exchangeDim;
 
         /// @brief An array of size 2*CMF_DIM the represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
         double* blockBounds;
@@ -43,14 +46,12 @@ namespace cmf
 
         void Define(PropTreeLib::PropertySection& input)
         {
-            input["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions");
-
-            input["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds");
-
+            input["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 2;});
+            input["exchangeDim"].MapTo(&exchangeDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 0;});
+            input["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds", [](int i){return (double)(i&1);});
             input["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
                 = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
-
-            input["meshDataDim"].MapTo(&meshDataDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Dimensions of data");
+            input["meshDataDim"].MapTo(&meshDataDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Dimensions of data", [](int i){return 2;});
         }
     };
 

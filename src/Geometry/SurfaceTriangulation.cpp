@@ -263,8 +263,10 @@ namespace cmf
     {
         for (int d = 0; d < 3; d++)
         {
+            int l = 
             ijkLow[d]  = floor(lookupTableDim[d]*(boundingBoxIn[2*d]    -boundingBox[2*d])/(boundingBox[2*d+1]-boundingBox[2*d]));
-            ijkHigh[d] = CMFMIN(floor(lookupTableDim[d]*(boundingBoxIn[2*d+1]  -boundingBox[2*d])/(boundingBox[2*d+1]-boundingBox[2*d])),lookupTableDim[d]-1);
+            int u = floor(lookupTableDim[d]*(boundingBoxIn[2*d+1]-boundingBox[2*d])/(boundingBox[2*d+1]-boundingBox[2*d]));
+            ijkHigh[d] = CMFMIN(l,(lookupTableDim[d]-1));
         }
     }
     

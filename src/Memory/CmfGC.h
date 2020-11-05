@@ -47,7 +47,7 @@ namespace cmf
     /// @brief A wrapper for malloc()
     /// @param size Size to allocate
     /// @author WVN
-    static void* CmfAlloc_Internal(size_t size, const char* file, const int line) {cmfGC.CmfAlloc(size, file, line);}
+    static void* CmfAlloc_Internal(size_t size, const char* file, const int line) {return cmfGC.CmfAlloc(size, file, line);}
     
     /// @brief A wrapper for free()
     /// @param ptr Pointer to free

@@ -56,16 +56,17 @@ namespace cmf
         if (!FileExists(filename)) CmfError("Cannot find file \"" + filename + "\".");
         FILE* fileReader;
         fileReader = fopen(filename.c_str(), "r+b");
-        fread(header, sizeof(char), STL_HDR_SIZE, fileReader);
-        fread(&facetCount, sizeof(int), 1, fileReader);
+        size_t dummy2;
+        dummy2 = fread(header, sizeof(char), STL_HDR_SIZE, fileReader);
+        dummy2 = fread(&facetCount, sizeof(int), 1, fileReader);
         Allocate(facetCount);
 
         char dummy[2];
         for (int i = 0; i < facetCount; i++)
         {
-            fread(normalData+3*i, sizeof(float), 3, fileReader);
-            fread(vertexData+9*i, sizeof(float), 9, fileReader);
-            fread(dummy, sizeof(char), 2, fileReader);
+            dummy2 = fread(normalData+3*i, sizeof(float), 3, fileReader);
+            dummy2 = fread(vertexData+9*i, sizeof(float), 9, fileReader);
+            dummy2 = fread(dummy, sizeof(char), 2, fileReader);
 
             xmax = (vertexData[9*i+0]>xmax)?vertexData[9*i+0]:xmax;
             xmax = (vertexData[9*i+3]>xmax)?vertexData[9*i+3]:xmax;
