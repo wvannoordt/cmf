@@ -128,6 +128,7 @@ namespace cmf
         double gridBoxBounds[6];
         int idx[3];
         int index;
+        WriteLine(4, "Lookup table start");
         for (int countMode = 0; countMode<2; countMode++)
         {
             if (countMode==0)
@@ -263,9 +264,8 @@ namespace cmf
     {
         for (int d = 0; d < 3; d++)
         {
-            int l = 
-            ijkLow[d]  = floor(lookupTableDim[d]*(boundingBoxIn[2*d]    -boundingBox[2*d])/(boundingBox[2*d+1]-boundingBox[2*d]));
-            int u = floor(lookupTableDim[d]*(boundingBoxIn[2*d+1]-boundingBox[2*d])/(boundingBox[2*d+1]-boundingBox[2*d]));
+            ijkLow[d]  = floor(lookupTableDim[d]*(boundingBoxIn[2*d]-boundingBox[2*d])/(boundingBox[2*d+1]-boundingBox[2*d]));
+            int l = floor(lookupTableDim[d]*(boundingBoxIn[2*d+1]-boundingBox[2*d])/(boundingBox[2*d+1]-boundingBox[2*d]));
             ijkHigh[d] = CMFMIN(l,(lookupTableDim[d]-1));
         }
     }
