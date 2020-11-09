@@ -16,8 +16,8 @@ namespace cmf
         return NULL;
     }
     
-    ICmfMeshArray* ICmfMesh::DefineVariable(std::string name)
-    {
-        return NULL;
-    }
+    //ICmfMeshArray* ICmfMesh::DefineVariable(std::string name)
+    //{
+//        return NULL;
+//    }
 }

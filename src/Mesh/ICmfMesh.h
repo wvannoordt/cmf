@@ -40,7 +40,7 @@ namespace cmf
             /// @brief Defines a variable on the given mesh
             /// @param name The name of the variable
             /// @author WVN
-            virtual ICmfMeshArray* DefineVariable(std::string name);
+            virtual ICmfMeshArray& DefineVariable(std::string name)=0;
 
         protected:
             /// @brief Title of the mesh, used for debugging and output

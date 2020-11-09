@@ -25,7 +25,7 @@ namespace cmf
         return arrayHandler;
     }
 
-    CartesianMeshArray* CartesianMesh::DefineVariable(std::string name)
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name)
     {
         ArrayInfo info;
         info.name = name;
@@ -34,7 +34,7 @@ namespace cmf
         return DefineVariable(info, BlockFilters::Terminal);
     }
     
-    CartesianMeshArray* CartesianMesh::DefineVariable(std::string name, NodeFilter_t filter)
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, NodeFilter_t filter)
     {
         ArrayInfo info;
         info.name = name;
@@ -43,14 +43,14 @@ namespace cmf
         return DefineVariable(info, filter);
     }
     
-    CartesianMeshArray* CartesianMesh::DefineVariable(ArrayInfo info)
+    CartesianMeshArray& CartesianMesh::DefineVariable(ArrayInfo info)
     {
         return DefineVariable(info, BlockFilters::Terminal);
     }
     
-    CartesianMeshArray* CartesianMesh::DefineVariable(ArrayInfo info, NodeFilter_t filter)
+    CartesianMeshArray& CartesianMesh::DefineVariable(ArrayInfo info, NodeFilter_t filter)
     {
-        return arrayHandler->CreateNewVariable(info, filter);
+        return *(arrayHandler->CreateNewVariable(info, filter));
     }
 
     CartesianMesh::~CartesianMesh(void)

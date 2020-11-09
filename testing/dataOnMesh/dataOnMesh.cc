@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     }
     domain.Blocks()->RefineRandom();
     
-    cmf::CartesianMeshArray dist = *(domain.DefineVariable("distance"));
+    cmf::CartesianMeshArray dist = domain.DefineVariable("distance");
     
     int* meshDims = inputInfo.meshDataDim;
     double xi, yi, dx, dy;

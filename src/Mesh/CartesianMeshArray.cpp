@@ -87,7 +87,7 @@ namespace cmf
     
     void CartesianMeshArray::Destroy(void)
     {
-        WriteLine(4, "Destroying variable \"" + variableName + "\" + on mesh \"" + handler->mesh->title + "\"");
+        WriteLine(4, "Destroying variable \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\"");
         Cmf_Free(ptr);
     }
 }
