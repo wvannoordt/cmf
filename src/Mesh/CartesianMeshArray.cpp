@@ -76,7 +76,7 @@ namespace cmf
     size_t CartesianMeshArray::GetArraySizePerBlock(void)
     {
         size_t numCells = 1;
-        for (int d = 0; d < CMF_DIM; d++) numCells *= handler->mesh->meshDataDim[d];
+        for (int d = 0; d < CMF_DIM; d++) numCells *= (handler->mesh->meshDataDim[d] + 2*handler->mesh->exchangeDim[d]);
         return numCells * elementSize;
     }
     

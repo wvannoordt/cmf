@@ -1,0 +1,4 @@
+#ifndef CMF_BLOCK_INDEXING_H
+#define CMF_BLOCK_INDEXING_H
+
+#endif

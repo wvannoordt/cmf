@@ -181,6 +181,8 @@ namespace cmf
             {
                 if ((a==VtkAttributableType::intType) && (b==VtkAttributableType::longType)) return true;
                 if ((b==VtkAttributableType::intType) && (a==VtkAttributableType::longType)) return true;
+                if ((b==VtkAttributableType::longType) && (a==VtkAttributableType::longType)) return true;
+                if ((b==VtkAttributableType::intType) && (a==VtkAttributableType::intType)) return true;
                 return false;
             }
 

@@ -6,6 +6,15 @@
 #include "CmfScreen.h"
 namespace cmf
 {
+    namespace MeshType
+    {
+        enum MeshType
+        {
+            Cartesian,
+            Unstructured
+        };
+    }
+    
     /// @brief Defines a general input structs for a mesh
     /// @author WVN
     struct ICmfMeshInfo : ICmfInputObject
@@ -26,8 +35,9 @@ namespace cmf
         public:
             /// @brief Default input-info constructor for ICmfMesh
             /// @param input ICmfMeshInfo defining the current mesh
+            /// @param meshType_in the type of the currnet mesh
             /// @author WVN
-            ICmfMesh(ICmfMeshInfo input);
+            ICmfMesh(ICmfMeshInfo input, MeshType::MeshType meshType_in);
 
             /// @brief Empty destructor
             /// @author WVN
@@ -45,6 +55,9 @@ namespace cmf
         protected:
             /// @brief Title of the mesh, used for debugging and output
             std::string title;
+            
+            /// @brief The type of the mesh
+            MeshType::MeshType meshType;
     };
 }
 

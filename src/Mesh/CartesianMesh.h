@@ -10,11 +10,36 @@
 #include "RefinementConstraint.h"
 #include "RefinementBlock.h"
 #include "ICmfMesh.h"
-#include "cmf.h"
 #include "CartesianMeshArrayHandler.h"
 
 namespace cmf
 {
+    /// @brief A struct general block information that can be passed to a numerical kernel, used for indexing and computing coorintes
+    /// @author WVN
+    struct BlockInfo
+    {
+        //@brief dimensions of the data on the current block, excluding exchange cells
+        int dataDim[CMF_DIM];
+        
+        //@brief dimensions of the data on the current block, including exchange cells
+        int totalDataDim[CMF_DIM];
+        
+        //@brief dimensions of the exchange cells on the current block
+        int exchangeDim[CMF_DIM];
+        
+        //@brief bounding box of the current block
+        double blockBounds[2*CMF_DIM];
+        
+        //@brief The dimensions of the box in each coordinate
+        double blockSize[CMF_DIM];
+        
+        //@brief the mesh spacing of the current block
+        double dx[CMF_DIM];
+        
+        //@brief reciporocal of the mesh spacing of the current block
+        double dxInv[CMF_DIM];
+    };
+    
     /// @brief A struct containing all the input information for a Cartesian mesh
     /// @author WVN
     struct CartesianMeshInputInfo : ICmfMeshInfo
@@ -57,7 +82,7 @@ namespace cmf
 
     /// @brief Mesh class for cartesian grids
     /// @author WVN
-    class CartesianMesh : public ICmfMesh
+    class CartesianMesh : public ICmfMesh, public IBlockIterable
     {
         friend class CartesianMeshArrayHandler;
         friend class CartesianMeshArray;
@@ -101,7 +126,23 @@ namespace cmf
             /// @author WVN
             CartesianMeshArray& DefineVariable(ArrayInfo info, NodeFilter_t filter);
             
+            /// @brief Returns a BlockInfo struct computed from the givn block
+            /// @param node The block to have info returned for
+            /// @author WVN
+            BlockInfo GetBlockInfo(RefinementTreeNode* node);
             
+            /// @brief Returns a BlockInfo struct computed from the givn block
+            /// @param blockIter A block iterator that provides a block to get information for
+            /// @author WVN
+            BlockInfo GetBlockInfo(BlockIterator& blockIter);
+            
+            /// @brief Returns the total number of nodes that are contained within the iterable object
+            /// @author WVN
+            size_t Size(void);
+            
+            /// @author WVN
+            /// @brief Gets the list of blocks to be iterated over
+            std::vector<RefinementTreeNode*>* GetAllNodes(void);
 
         private:
 
@@ -116,6 +157,9 @@ namespace cmf
 
             /// @brief An array of size CMF_DIM that represents the initial block data dimensions
             int* meshDataDim;
+            
+            /// @brief An array of size CMF_DIM that represents the number of exchange cells (used to facilitate data exchange) in each direction
+            int* exchangeDim;
 
             /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
             RefinementConstraint::RefinementConstraint refinementConstraintType;

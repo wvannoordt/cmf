@@ -1,9 +1,10 @@
 #include "ICmfMesh.h"
 namespace cmf
 {
-    ICmfMesh::ICmfMesh(ICmfMeshInfo input)
+    ICmfMesh::ICmfMesh(ICmfMeshInfo input, MeshType::MeshType meshType_in)
     {
         title = input.title;
+        meshType = meshType_in;
     }
     
     ICmfMesh::~ICmfMesh(void)
@@ -15,9 +16,4 @@ namespace cmf
     {
         return NULL;
     }
-    
-    //ICmfMeshArray* ICmfMesh::DefineVariable(std::string name)
-    //{
-//        return NULL;
-//    }
 }

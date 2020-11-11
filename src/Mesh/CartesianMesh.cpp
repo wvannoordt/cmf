@@ -4,7 +4,7 @@
 #include "AmrFcnTypes.h"
 namespace cmf
 {
-    CartesianMesh::CartesianMesh(CartesianMeshInputInfo input) : ICmfMesh(input)
+    CartesianMesh::CartesianMesh(CartesianMeshInputInfo input) : ICmfMesh(input, MeshType::Cartesian)
     {
         title = input.title;
         blockDim = input.blockDim;
@@ -12,6 +12,7 @@ namespace cmf
         refinementConstraintType = input.refinementConstraintType;
         blocks = new RefinementBlock(blockDim, blockBounds, refinementConstraintType);
         meshDataDim = input.meshDataDim;
+        exchangeDim = input.exchangeDim;
         arrayHandler = new CartesianMeshArrayHandler(this);
     }
 
@@ -51,6 +52,39 @@ namespace cmf
     CartesianMeshArray& CartesianMesh::DefineVariable(ArrayInfo info, NodeFilter_t filter)
     {
         return *(arrayHandler->CreateNewVariable(info, filter));
+    }
+    
+    BlockInfo CartesianMesh::GetBlockInfo(RefinementTreeNode* node)
+    {
+        BlockInfo output;
+        double* blockBounds = node->GetBlockBounds();
+        for (int d = 0; d < CMF_DIM; d++)
+        {
+            output.dataDim[d] = meshDataDim[d];
+            output.exchangeDim[d] = exchangeDim[d];
+            output.blockBounds[2*d] = blockBounds[2*d];
+            output.blockBounds[2*d+1] = blockBounds[2*d+1];
+            output.blockSize[d] = blockBounds[2*d+1] - blockBounds[2*d];
+            output.dx[d] = output.blockSize[d] / meshDataDim[d];
+            output.dxInv[d] = 1.0 / output.dx[d];
+            output.totalDataDim[d] = meshDataDim[d]+2*exchangeDim[d];
+        }
+        return output;
+    }
+    
+    BlockInfo CartesianMesh::GetBlockInfo(BlockIterator& blockIter)
+    {
+        return GetBlockInfo(blockIter.Node());
+    }
+    
+    size_t CartesianMesh::Size(void)
+    {
+        return blocks->Size();
+    }
+    
+    std::vector<RefinementTreeNode*>* CartesianMesh::GetAllNodes(void)
+    {
+        return blocks->GetAllNodes();
     }
 
     CartesianMesh::~CartesianMesh(void)
