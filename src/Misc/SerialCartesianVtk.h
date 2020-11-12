@@ -8,7 +8,7 @@
 #include <vector>
 namespace cmf
 {
-    /// @brief A class for outputting an unstructured VTK file containing data
+    /// @brief A class for outputting an unstructured VTK file containing data. NOTE: this is generally very slow and should only be used for debugging
     /// @author WVN
     class SerialCartesianVtk
     {
