@@ -29,6 +29,15 @@ namespace cmf
             /// @brief Destructor
             /// @author WVN
             ~SerialCartesianVtk(void);
+            
+            /// @brief Writes the vtkFile
+            /// @author WVN
+            void Write(void);
+            
+            /// @brief Stream operator allowing mesh arrays to be placed into VtkData arrays in the current object
+            /// @param variable The variable to place on the Vtk mesh
+            /// @author WVN
+            SerialCartesianVtk& operator << (CartesianMeshArray& variable);
         
         private:
             
@@ -64,6 +73,9 @@ namespace cmf
             
             /// @brief Indicates whether or not the VtkFile must be deleted
             bool requireDelete;
+            
+            /// @brief Total number of points on the mesh
+            size_t totalNumPointsOnMesh;
     };
 }
 

@@ -11,18 +11,18 @@
 
 namespace cmf
 {
-    /// @brief Class representing a general VTK data chunk
+    /// @brief Class representing a general VTK scalar data chunk
     /// @author WVN
-    class VtkData : public VtkElement, public VtkHasAttributableCollection
+    class VtkScalar : public VtkElement, public VtkHasAttributableCollection
     {
         public:
-            /// @brief Constructor for VtkData
+            /// @brief Constructor for VtkScalar
             /// @author WVN
-            VtkData(void);
+            VtkScalar(void);
             
-            /// @brief Destructor for VtkData
+            /// @brief Destructor for VtkScalar
             /// @author WVN
-            ~VtkData(void);
+            ~VtkScalar(void);
             
             /// @brief Write data to file stream
             /// @param myfile Stream to be written to

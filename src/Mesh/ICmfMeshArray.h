@@ -28,6 +28,10 @@ namespace cmf
             /// @brief Empty destructor
             /// @author WVN
             virtual ~ICmfMeshArray(void);
+            
+            /// @brief Returns variableName
+            /// @author WVN
+            std::string GetVarName(void);
 
         protected:
 

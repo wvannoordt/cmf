@@ -2,6 +2,8 @@
 #include "CmfScreen.h"
 #include "DebugTools.hx"
 #include "AmrFcnTypes.h"
+#include "Utils.hx"
+#include "BlockIndexing.h"
 namespace cmf
 {
     CartesianMesh::CartesianMesh(CartesianMeshInputInfo input) : ICmfMesh(input, MeshType::Cartesian)
@@ -52,6 +54,43 @@ namespace cmf
     CartesianMeshArray& CartesianMesh::DefineVariable(ArrayInfo info, NodeFilter_t filter)
     {
         return *(arrayHandler->CreateNewVariable(info, filter));
+    }
+    
+    CartesianMeshArray& CartesianMesh::CreateCoordinateVariable(NodeFilter_t filter, int direction)
+    {
+        ArrayInfo info;
+        std::string name = "";
+        switch (direction)
+        {
+            case 0: {name = "x"; break;}
+            case 1: {name = "y"; break;}
+            case 2: {name = "z"; break;}
+            default: {CmfError("Attempted to create coordinate variable with invalid direction ID " + std::to_string(direction));}
+        }
+        info.name = name;
+        info.rank = 0;
+        info.elementSize = sizeof(double);
+        double coordval[3];
+        int idx[CMF_DIM];
+        CartesianMeshArray& coordArray = *(arrayHandler->CreateNewVariable(info, filter));
+        for (BlockIterator lb(this, filter); lb.HasNext(); lb++)
+        {
+            BlockInfo info = this->GetBlockInfo(lb);
+            double* coordBuffer = (double*)coordArray[lb];
+            cmf_pkloop(idx[2], info.exchangeDim[2], info){cmf_pjloop(idx[1], info.exchangeDim[1], info){cmf_piloop(idx[0], info.exchangeDim[0], info){
+                __dloop(coordval[d] = info.blockBounds[2*d]+((double)idx[d] + 0.5)*info.dx[d]);
+#if(!CMF_IS3D)
+                coordval[2] = 0.0;
+#endif
+                coordBuffer[cmf_idx(idx[0], idx[1], idx[2], info)] = coordval[direction];
+            }}}
+        }
+        return coordArray;
+    }
+    
+    CartesianMeshArray& CartesianMesh::CreateCoordinateVariable(int direction)
+    {
+        return CreateCoordinateVariable(BlockFilters::Terminal, direction);
     }
     
     BlockInfo CartesianMesh::GetBlockInfo(RefinementTreeNode* node)

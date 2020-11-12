@@ -18,6 +18,11 @@ namespace cmf
         return NULL;
     }
     
+    std::string ICmfMeshArray::GetVarName(void)
+    {
+        return variableName;
+    }
+    
     void ICmfMeshArray::Destroy(void)
     {
         

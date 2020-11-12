@@ -5,9 +5,9 @@ GlobalSettings
 }
 Domain
 {
-	blockDim = [3, 3, 3]
-	blockBounds = [0,1,0,1,0,1]
-	meshDataDim = [8, 8, 8]
+	blockDim = [2, 2, 2]
+	blockBounds = [0,1,-1,2,-2,3]
+	meshDataDim = [4, 4, 4]
 	exchangeDim = [0, 0, 0]
 	refinementConstraintType = @choose(0, factor2CompletelyConstrained, free)
 }

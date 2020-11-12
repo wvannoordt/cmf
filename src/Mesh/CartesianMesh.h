@@ -126,6 +126,17 @@ namespace cmf
             /// @author WVN
             CartesianMeshArray& DefineVariable(ArrayInfo info, NodeFilter_t filter);
             
+            /// @brief Defines a variable and fills it with the specified Cartesian coordinate
+            /// @param filter A block filter determining whether the block lies in the domain of the variable
+            /// @param direction The corrdinate to generate (0=x, 1=y, 2=z)
+            /// @author WVN
+            CartesianMeshArray& CreateCoordinateVariable(NodeFilter_t filter, int direction);
+            
+            /// @brief Defines a variable and fills it with the specified Cartesian coordinate
+            /// @param direction The corrdinate to generate (0=x, 1=y, 2=z)
+            /// @author WVN
+            CartesianMeshArray& CreateCoordinateVariable(int direction);
+            
             /// @brief Returns a BlockInfo struct computed from the givn block
             /// @param node The block to have info returned for
             /// @author WVN
@@ -143,6 +154,8 @@ namespace cmf
             /// @author WVN
             /// @brief Gets the list of blocks to be iterated over
             std::vector<RefinementTreeNode*>* GetAllNodes(void);
+            
+            
 
         private:
 

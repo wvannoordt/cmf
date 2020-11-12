@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include "VtkFileFormat.h"
-#include "VtkData.h"
+#include "VtkScalar.h"
 #include "VtkHeader.h"
 #include "VtkTopology.h"
 #include "VtkVersion.h"
@@ -67,7 +67,20 @@ namespace cmf
             /// @brief Returns the pointer to the underlying VtkTopology object.
             /// @author WVN
             VtkTopology* & Mesh(void);
+            
+            /// @brief Creates a VtkScalar with the given name
+            /// @param name The name of the new scalar
+            /// @param numPoints The number of points in the scalar field
+            /// @author WVN
+            VtkScalar* CreateScalar(std::string name, size_t numPoints);
+            
         private:
+            
+            /// @brief Writes the scalar header to the output file
+            /// @param myfile The file stream to write the header to
+            /// @author WVN
+            void WriteScalarHeader(std::ofstream& myfile);
+            
             /// @brief File name of the file to be written to
             std::string filename;
             
@@ -83,8 +96,14 @@ namespace cmf
             /// @brief The VTK topology object
             VtkTopology* topology;
             
+            /// @brief Indicates if the Vtk file has scalar data in it
+            bool hasScalarData;
+            
+            /// @brief The dimension of the scalar objects
+            size_t scalarDimension;
+            
             /// @brief A list of VTK data array objects
-            std::vector<VtkData*> data;
+            std::vector<VtkScalar*> scalars;
             
             /// @brief Set to ture in empty constructor
             bool isEmpty;

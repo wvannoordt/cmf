@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     coords[1] = 0.54;
     double radius = 0.1;
     cmf::AxisAlignedLongCylinder cyl(coords, radius, 2);
-    domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->GetLevel() > 1);});
+    domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->GetLevel() > 3);});
     if (doRefinement)
     {
         for (cmf::BlockIterator lb(domain.Blocks(), cmf::BlockFilters::Terminal); lb.HasNext(); lb++)
@@ -25,9 +25,14 @@ int main(int argc, char** argv)
         }
     }
     domain.Blocks()->OutputDebugVtk("output/mesh.vtk");
-    cmf::CartesianMeshArray dist = domain.DefineVariable("distance");
+    cmf::CartesianMeshArray x = domain.CreateCoordinateVariable(0);
+    cmf::CartesianMeshArray y = domain.CreateCoordinateVariable(1);
+    cmf::CartesianMeshArray z = domain.CreateCoordinateVariable(2);
     cmf::SerialCartesianVtk dataVtk(domain, "output/data.vtk");
-    
+    dataVtk << x;
+    dataVtk << y;
+    dataVtk << z;
+    dataVtk.Write();
     cmf::Finalize();
     return 0;
 }
