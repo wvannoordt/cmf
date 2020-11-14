@@ -1,7 +1,10 @@
 GlobalSettings
 {
-	debugLevel = 1
-	trackOutputOrigins = false
+	Display
+	{
+		debugLevel = 1
+		trackOutputOrigins = false
+	}
 }
 Domain
 {

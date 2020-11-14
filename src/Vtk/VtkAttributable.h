@@ -236,7 +236,10 @@ namespace cmf
                         CmfError("Attempted to allocate dataBuffer using attribute \"" + name + "\" of improper type " + AttrTypeStr(setType) + ".");
                     }
                     size_t allocsize = ((setType == VtkAttributableType::intType) ? (*((int*)data)) : (*((size_t*)data))) * GetBufferElementSize();
+                    //VTK buffers are all temporary: disallow stack allocation
+                    SetStackAllocationAllowed(false);
                     dataBuffer = (char*)Cmf_Alloc(allocsize);
+                    SetStackAllocationAllowed(true);
                     bufferIsAllocated = true;
                     allocatedSize = allocsize;
                 }

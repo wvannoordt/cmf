@@ -1,8 +1,22 @@
 #ifndef CONFIG_H_CMF
 #define CONFIG_H_CMF
 
+//Dimension of the simulation
 #ifndef CMF_DIM
 #define CMF_DIM 2
+#endif
+
+//Enables stack allocation for large(ish) arrays
+#ifndef CMF_ENABLE_STACK_BLOB
+#define CMF_ENABLE_STACK_BLOB 0
+#endif
+
+#if(CMF_ENABLE_STACK_BLOB)
+#ifndef CMF_STACK_BLOB_SIZE
+#define CMF_STACK_BLOB_SIZE 1000000
+#endif
+#else
+#define CMF_STACK_BLOB_SIZE 1
 #endif
 
 #if(CMF_DIM==2)

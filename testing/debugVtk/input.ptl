@@ -1,13 +1,20 @@
 GlobalSettings
 {
-	debugLevel = 5
-	trackOutputOrigins = false
+	Display
+	{
+		debugLevel = 5
+		trackOutputOrigins = false
+	}
+	Memory
+	{
+		allowStackAllocation = false
+	}
 }
 Domain
 {
 	blockDim = [2, 2, 2]
 	blockBounds = [0,1,-1,2,-2,3]
-	meshDataDim = [4, 4, 4]
+	meshDataDim = [16, 16, 16]
 	exchangeDim = [0, 0, 0]
 	refinementConstraintType = @choose(0, factor2CompletelyConstrained, free)
 }

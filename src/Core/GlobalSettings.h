@@ -16,6 +16,9 @@ namespace cmf
 
         /// @brief If set to true, will output file and line numbers for every call to WriteLine
         bool trackOutputOrigins;
+        
+        /// @brief If set to true, will enable the emulated stack
+        bool allowStackAllocation;
 
         /// @brief Constructor for the GlobalSettings object.
         /// @param title_in title of the mesh
@@ -42,8 +45,10 @@ namespace cmf
         /// @author WVN
         void Define(PropTreeLib::PropertySection& input)
         {
-            input["debugLevel"].MapTo(&debugLevel) = new PropTreeLib::Variables::PTLInteger(1, "Level of debug output written to screen");
-            input["trackOutputOrigins"].MapTo(&trackOutputOrigins) = new PropTreeLib::Variables::PTLBoolean(false, "Writes file and line number to screen along with output");
+            input["Display"]["debugLevel"].MapTo(&debugLevel) = new PropTreeLib::Variables::PTLInteger(1, "Level of debug output written to screen");
+            input["Display"]["trackOutputOrigins"].MapTo(&trackOutputOrigins) = new PropTreeLib::Variables::PTLBoolean(false, "Writes file and line number to screen along with output");
+            
+            input["Memory"]["allowStackAllocation"].MapTo(&allowStackAllocation) = new PropTreeLib::Variables::PTLBoolean(false, "If set to true, will enable the emulated stack (use \"false\" for better debugging)");
         }
     };
 }
