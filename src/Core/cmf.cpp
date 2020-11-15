@@ -19,6 +19,15 @@ namespace cmf
     {
 
     }
+    
+    bool IsParallel(void)
+    {
+#if(CMF_PARALLEL)
+        return true;
+#else
+        return false;
+#endif
+    }
 
     int GetDim(void)
     {

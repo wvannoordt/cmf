@@ -8,8 +8,6 @@ int main(int argc, char** argv)
     EXIT_WARN_IF_DIM_NOT(2);
     cmf::Initialize();
     cmf::ReadInput("input.ptl");
-    cmf::globalDebugLevel = 4;
-    cmf::globalTrackOutputOrigins = true;
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
     double bounds[4];

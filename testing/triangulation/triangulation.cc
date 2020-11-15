@@ -29,7 +29,6 @@ int main(int argc, char** argv)
     cmf::ReadInput("input.ptl");
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
-    cmf::globalDebugLevel = 4;
 	std::string filenameSTL = "goat.stl";
 	std::cout << "READING " << filenameSTL << std::endl;
     surface.DefineTriangulation(filenameSTL);

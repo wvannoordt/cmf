@@ -28,6 +28,11 @@ ifndef ZLIB_ENABLE
 ZLIB_ENABLE := 1
 endif
 
+ifndef PARALLEL
+PARALLEL := 1
+endif
+export PARALLEL
+
 ifndef DOLATEXOUTPUT
 DOLATEXOUTPUT := 0
 endif
@@ -80,7 +85,7 @@ TARGET := ${CURRENT_LIB_DIR}/lib${LIB_NAME}.a
 PY_EXE := $(shell which python3)
 CC_HOST := $(shell which mpicxx)
 CC_DEVICE :=  $(shell which nvcc) -ccbin=${CC_HOST}
-ifneq (${PARALLEL}, MPI)
+ifneq (${PARALLEL}, 1)
 CC_HOST := g++
 CC_DEVICE := none
 endif
@@ -112,6 +117,7 @@ COMPILE_TIME_OPT :=
 COMPILE_TIME_OPT += -DCMF_DIM=${DIM}
 COMPILE_TIME_OPT += -DCMF_ZLIB_EXT_ENABLE=${ZLIB_ENABLE}
 COMPILE_TIME_OPT += -DCMF_ENABLE_STACK_BLOB=1
+COMPILE_TIME_OPT += -DCMF_PARALLEL=${PARALLEL}
 
 
 

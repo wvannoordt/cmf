@@ -3,7 +3,7 @@
 #include "ICmfInputObject.h"
 #include "PropTreeLib.h"
 namespace cmf
-{
+{   
     /// @brief A struct for global settings for an instance of CMF
     /// @author WVN
     struct GlobalSettings : ICmfInputObject

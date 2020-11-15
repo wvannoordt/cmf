@@ -1,1 +1,1 @@
-cmd: 'DIM=3 DOLATEXOUTPUT=0 TESTS=debugVtk make test'
+cmd: 'DIM=3 DOLATEXOUTPUT=0 TESTS=parallel make test'

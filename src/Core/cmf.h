@@ -20,6 +20,8 @@
 #include "GlobalSettings.h"
 #include "CartesianMeshArray.h"
 #include "SerialCartesianVtk.h"
+#include "Parallel.h"
+#include "ParallelGroup.h"
 
 namespace cmf
 {
@@ -42,6 +44,10 @@ namespace cmf
     /// @brief Returns CMF_DIM, used to check that the host code is using the correct dimension (determined at compile time) of CMF.\see Config.h
     /// @author WVN
     int GetDim(void);
+    
+    /// @brief Returns true if CMF was compiled with parallel MPI support
+    /// @author WVN
+    bool IsParallel(void);
 }
 
 #endif
