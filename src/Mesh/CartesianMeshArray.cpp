@@ -30,7 +30,7 @@ namespace cmf
     
     void CartesianMeshArray::GetDefinedNodes(void)
     {
-        for (BlockIterator i(handler->mesh->Blocks(), filter); i.HasNext(); i++)
+        for (BlockIterator i(handler->mesh->Blocks(), filter, IterableMode::parallel); i.HasNext(); i++)
         {
             RefinementTreeNode* curNode = i.Node();
             definedNodes.push_back(curNode);
