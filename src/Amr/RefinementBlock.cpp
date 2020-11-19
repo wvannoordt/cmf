@@ -106,6 +106,11 @@ namespace cmf
     {
         refineLimiter = limiter_in;
     }
+    
+    void RefinementBlock::PostBlockIterationCallBack(void)
+    {
+        WriteLine(1, "WARNING: RefinementBlock::PostBlockIterationCallBack currently does nothing, but it probably should...");
+    }
 
     void RefinementBlock::RefineAt(double coords[CMF_DIM], char refinementType)
     {

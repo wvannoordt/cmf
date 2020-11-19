@@ -56,6 +56,10 @@ namespace cmf
             /// @brief Allows for direct indexing using a block iterator
             void* operator [] (BlockIterator& it);
             
+            /// @brief \see IBlockIterable::PostBlockIterationCallBack
+            /// @author WVN
+            void PostBlockIterationCallBack(void);
+            
         private:
             
             /// @brief Allocates the unferlying pointer

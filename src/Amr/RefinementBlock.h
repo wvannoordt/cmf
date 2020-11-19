@@ -81,6 +81,10 @@ namespace cmf
             /// @author WVN
             void SetRefineLimitCriterion(NodeFilter_t limiter_in);
             
+            /// @brief \see IBlockIterable::PostBlockIterationCallBack
+            /// @author WVN
+            void PostBlockIterationCallBack(void);
+            
             /// @brief Outputs a VTK file that contains only the node boxes. Used only for debugging/
             /// @param filename A ".vtk" filename to write to
             /// @author WVN

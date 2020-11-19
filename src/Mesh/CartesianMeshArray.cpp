@@ -38,6 +38,11 @@ namespace cmf
         }
     }
     
+    void CartesianMeshArray::PostBlockIterationCallBack(void)
+    {
+        handler->mesh->PostBlockIterationCallBack();
+    }
+    
     std::string CartesianMeshArray::GetFullName(void)
     {
         return handler->mesh->title + "_" + variableName;

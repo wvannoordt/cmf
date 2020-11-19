@@ -30,6 +30,12 @@ namespace cmf
             /// @param node The node to check
             virtual bool ParallelPartitionContainsNode(RefinementTreeNode* node) {return true;}
             
+            /// @author WVN
+            /// @brief This is called in the destructor of a BlockIterator. It is a callback function that handles all cleanup operations that happen after
+            /// refinements, such as variable interpolation and buffer expansion
+            virtual void PostBlockIterationCallBack(void)=0; //set to null here because every implementation of this interface should define this explicitly!!
+            
+            
     };
 }
 

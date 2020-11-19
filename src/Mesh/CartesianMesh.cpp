@@ -93,6 +93,11 @@ namespace cmf
         return CreateCoordinateVariable(BlockFilters::Terminal, direction);
     }
     
+    void CartesianMesh::PostBlockIterationCallBack(void)
+    {
+        WriteLine(0, "WARNING: CartesianMesh::PostBlockIterationCallBack is not yet implemented, it probably should be soon!");
+    }
+    
     bool CartesianMesh::ParallelPartitionContainsNode(RefinementTreeNode* node)
     {
         //temporary!
