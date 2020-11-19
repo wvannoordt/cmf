@@ -93,6 +93,12 @@ namespace cmf
         return CreateCoordinateVariable(BlockFilters::Terminal, direction);
     }
     
+    bool CartesianMesh::ParallelPartitionContainsNode(RefinementTreeNode* node)
+    {
+        //temporary!
+        return true;
+    }
+    
     BlockInfo CartesianMesh::GetBlockInfo(RefinementTreeNode* node)
     {
         BlockInfo output;

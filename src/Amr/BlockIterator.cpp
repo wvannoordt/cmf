@@ -5,31 +5,51 @@ namespace cmf
 {
     BlockIterator::BlockIterator(IBlockIterable* hostBlock_in)
     {
-        hostBlock = hostBlock_in;
-        allNodes = hostBlock_in->GetAllNodes();
-        index = 0;
-        filter = BlockFilters::Terminal;
-        isAtEnd = false;
+        Build(hostBlock_in, BlockFilters::Terminal, IterableMode::serial);
     }
     
     BlockIterator::BlockIterator(IBlockIterable* hostBlock_in, NodeFilter_t filter_in)
     {
-        hostBlock = hostBlock_in;
-        allNodes = hostBlock_in->GetAllNodes();
-        index = 0;
-        filter = filter_in;
-        isAtEnd = false;
-        SeekFirst();
+        Build(hostBlock_in, filter_in, IterableMode::serial);
+    }
+    
+    BlockIterator::BlockIterator(IBlockIterable* hostBlock_in, IterableMode::IterableMode mode_in)
+    {
+        Build(hostBlock_in, BlockFilters::Terminal, mode_in);
+    }
+    
+    BlockIterator::BlockIterator(IBlockIterable* hostBlock_in, NodeFilter_t filter_in, IterableMode::IterableMode mode_in)
+    {
+        Build(hostBlock_in, filter_in, mode_in);
     }
     
     void BlockIterator::SeekFirst(void)
     {
-        if (!filter((*allNodes)[index])){(*this)++;}
+        if ((parallelMode == IterableMode::parallel) && CMF_PARALLEL)
+        {
+            if (!(hostBlock->ParallelPartitionContainsNode((*allNodes)[index])&&filter((*allNodes)[index]))){(*this)++;}
+        }
+        else
+        {
+            if (!(filter((*allNodes)[index]))){(*this)++;}
+        }
+        
     }
     
     size_t BlockIterator::Size(void)
     {
         return hostBlock->Size();
+    }
+    
+    void BlockIterator::Build(IBlockIterable* hostBlock_in, NodeFilter_t filter_in, IterableMode::IterableMode mode_in)
+    {
+        hostBlock = hostBlock_in;
+        allNodes = hostBlock_in->GetAllNodes();
+        index = 0;
+        filter = filter_in;
+        parallelMode = mode_in;
+        isAtEnd = false;
+        SeekFirst();
     }
 
     BlockIterator::~BlockIterator(void)
@@ -41,7 +61,14 @@ namespace cmf
     {
         index++;
         isAtEnd = index>=allNodes->size();
-        while (!isAtEnd && !(filter((*allNodes)[index]))){index++;isAtEnd = (index>=allNodes->size());}
+        if ((parallelMode == IterableMode::parallel) && CMF_PARALLEL)
+        {
+            while (!isAtEnd && !(hostBlock->ParallelPartitionContainsNode((*allNodes)[index])&&filter((*allNodes)[index]))){index++;isAtEnd = (index>=allNodes->size());}
+        }
+        else
+        {
+            while (!isAtEnd && !(filter((*allNodes)[index]))){index++;isAtEnd = (index>=allNodes->size());}
+        }
         return *this;
     }
 

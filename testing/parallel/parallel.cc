@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     {
         if (cmf::globalGroup.Rank() == p)
         {
-            cmf::cmfout << "Input from process ID " << cmf::globalGroup.Rank() << ":" << cmf::cmfendl;
+            cmf::cmfout << "Output from process ID " << cmf::globalGroup.Rank() << ":" << cmf::cmfendl;
             cmf::mainInput.DebugPrint();
         }
         cmf::globalGroup.Synchronize();

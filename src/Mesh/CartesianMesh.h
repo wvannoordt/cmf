@@ -155,6 +155,11 @@ namespace cmf
             /// @brief Gets the list of blocks to be iterated over
             std::vector<RefinementTreeNode*>* GetAllNodes(void);
             
+            /// @author WVN
+            /// @brief Returns true if the mesh has this node in its parallel partition
+            /// @param node The node to check
+            bool ParallelPartitionContainsNode(RefinementTreeNode* node);
+            
             
 
         private:

@@ -6,9 +6,19 @@
 #include "AmrFcnTypes.h"
 #include "CmfOutputStream.h"
 #include "IBlockIterable.h"
+#include "CmfMPI.h"
 namespace cmf
 {
     class RefinementBlock;
+    
+    namespace IterableMode
+    {
+        enum IterableMode
+        {
+            parallel,
+            serial
+        };
+    }
     
     /// @brief A class that is used to iterate over the nodes in a block.
     /// @author WVN
@@ -25,6 +35,19 @@ namespace cmf
             /// @param filter_in A function pointer that, if returns false on a given node, causes the iterator to skip that node
             /// @author WVN
             BlockIterator(IBlockIterable* hostBlock_in, NodeFilter_t filter_in);
+            
+            /// @brief Constructor for the iterator
+            /// @param hostBlock_in The block to iterate over the nodes of
+            /// @param filter_in A function pointer that, if returns false on a given node, causes the iterator to skip that node
+            /// @param mode_in Indicates whether or not this iterator should loop over nodes that are not contained by the host block's parallel partition \see IterableMode
+            /// @author WVN
+            BlockIterator(IBlockIterable* hostBlock_in, NodeFilter_t filter_in, IterableMode::IterableMode mode_in);
+            
+            /// @brief Constructor for the iterator
+            /// @param hostBlock_in The block to iterate over the nodes of
+            /// @param mode_in Indicates whether or not this iterator should loop over nodes that are not contained by the host block's parallel partition \see IterableMode
+            /// @author WVN
+            BlockIterator(IBlockIterable* hostBlock_in, IterableMode::IterableMode mode_in);
             
             /// @brief Destructor for the iterator
             /// @author WVN
@@ -60,7 +83,15 @@ namespace cmf
             friend CmfOutputStream & operator << (CmfOutputStream &out, const BlockIterator &c) {out << c.index; return out;}
         private:
             /// @brief Moves to the first node that satisfies the filter
+            /// @author WVN
             void SeekFirst(void);
+            
+            /// @brief Acts as hidden constructor.
+            /// @param hostBlock_in The block to iterate over the nodes of
+            /// @param filter_in A function pointer that, if returns false on a given node, causes the iterator to skip that node
+            /// @param mode_in Indicates whether or not this iterator should loop over nodes that are not contained by the host block's parallel partition \see IterableMode
+            /// @author WVN
+            void Build(IBlockIterable* hostBlock_in, NodeFilter_t filter_in, IterableMode::IterableMode mode_in);
             
             /// @brief The block being iterated over
             IBlockIterable* hostBlock;
@@ -73,6 +104,9 @@ namespace cmf
             
             /// @brief The list of all relevant nodes
             std::vector<RefinementTreeNode*>* allNodes;
+            
+            /// @brief Either serial or parallel. If parallel, this iteraator only loops over nodes on the host block's parallel partition
+            IterableMode::IterableMode parallelMode;
             
             /// @brief Indicates whether or not the iterator has reached the end of the underlyin vector
             bool isAtEnd;
