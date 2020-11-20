@@ -108,7 +108,7 @@ namespace cmf
             /// @brief Either serial or parallel. If parallel, this iteraator only loops over nodes on the host block's parallel partition
             IterableMode::IterableMode parallelMode;
             
-            /// @brief Indicates whether or not the iterator has reached the end of the underlyin vector
+            /// @brief Indicates whether or not the iterator has reached the end of the underlying vector
             bool isAtEnd;
     };
 }

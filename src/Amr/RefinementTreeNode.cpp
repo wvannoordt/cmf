@@ -240,32 +240,41 @@ namespace cmf
 
     void RefinementTreeNode::Refine(char newRefinementType)
     {
+        //do nothing if the refinement limiter is hit
         if ((refineLimiter!=NULL) && (*refineLimiter!=NULL))
         {
             NodeFilter_t isLimited = *refineLimiter;
             if (isLimited(this)) return;
         }
         char effective = newRefinementType;
+        //reduce dimension if needed
         if (!CMF_IS3D) effective = newRefinementType&3;
         subNodeRefinementType = effective;
+        //This is no longer a terminal node
         isTerminal = false;
         deallocSubTrees = true;
         numSubNodes = NumberOfNewSubNodes(effective);
-        subNodes = new RefinementTreeNode* [numSubNodes];
+        subNodes = new RefinementTreeNode*[numSubNodes];
         char newRefinementOrientation = 0;
+        //Get the basis for the child numbering
         int basis = GetCoordBasis(effective);
         for (int i = 0; i < numSubNodes; i++)
         {
             newRefinementOrientation = (char)((i&1)*((basis&0x00ff0000)>>16) + ((i&2)>>1)*((basis&0x0000ff00)>>8) + ((i&4)>>2)*((basis&0x000000ff)));
             subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this, constraint, rootBlock);
+            //Add the node to the list of all nodes in the base tree
             rootBlock->RegisterNewNode(subNodes[i]);
         }
+        //new child nodes need neighbor relationships
         GenerateNeighborsOfChildAllNodes();
+        //The current node's neghbors should no longer have a neighbor relationship with this node, but rather with its children
         UpdateNeighborsOfNeighborsToChildNodes(subNodeRefinementType);
+        //Remove all neighbors of this node
         for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
         {
             it->first->RemoveNeighbor(this);
         }
+        //Recursively loop through neighboring nodes to check if the refinement constraint is violated
         for (int i = 0; i < numSubNodes; i++)
         {
             subNodes[i]->ResolveNewRefinementWithNeighbors();

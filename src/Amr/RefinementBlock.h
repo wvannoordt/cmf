@@ -12,6 +12,7 @@
 namespace cmf
 {
     class RefinementTreeNode;
+    class BlockIterator;
     /// @brief Class that represents a grid and tree structure of RefinementTreeNode objects. Essentially represents a block structure for 
     /// a computational mesh
 	/// @author WVN
@@ -81,9 +82,9 @@ namespace cmf
             /// @author WVN
             void SetRefineLimitCriterion(NodeFilter_t limiter_in);
             
-            /// @brief \see IBlockIterable::PostBlockIterationCallBack
+            /// @brief \see IBlockIterable::GetRefinementBlockObject
             /// @author WVN
-            void PostBlockIterationCallBack(void);
+            RefinementBlock* GetRefinementBlockObject(void);
             
             /// @brief Outputs a VTK file that contains only the node boxes. Used only for debugging/
             /// @param filename A ".vtk" filename to write to
@@ -114,6 +115,10 @@ namespace cmf
             /// @author WVN
             std::vector<RefinementTreeNode*>* GetAllNodes(void);
             
+            /// @brief Sets currentIterator to the provided value
+            /// @param iter A pointer to the iterator to set
+            /// @author WVN
+            void SetIterator(BlockIterator* iter);
             
         private:
             

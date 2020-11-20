@@ -56,9 +56,9 @@ namespace cmf
             /// @brief Allows for direct indexing using a block iterator
             void* operator [] (BlockIterator& it);
             
-            /// @brief \see IBlockIterable::PostBlockIterationCallBack
+            /// @brief \see IBlockIterable::GetRefinementBlockObject
             /// @author WVN
-            void PostBlockIterationCallBack(void);
+            RefinementBlock* GetRefinementBlockObject(void);
             
         private:
             

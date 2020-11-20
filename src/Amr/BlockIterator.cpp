@@ -54,7 +54,7 @@ namespace cmf
 
     BlockIterator::~BlockIterator(void)
     {
-        hostBlock->PostBlockIterationCallBack();
+
     }
 
     BlockIterator BlockIterator::operator++(int dummy)

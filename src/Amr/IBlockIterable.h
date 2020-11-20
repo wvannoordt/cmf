@@ -4,6 +4,7 @@
 namespace cmf
 {
     class RefinementTreeNode;
+    class RefinementBlock;
     class IBlockIterable
     {
         /// @brief Defines an object that can have its blocks iterated over
@@ -31,11 +32,9 @@ namespace cmf
             virtual bool ParallelPartitionContainsNode(RefinementTreeNode* node) {return true;}
             
             /// @author WVN
-            /// @brief This is called in the destructor of a BlockIterator. It is a callback function that handles all cleanup operations that happen after
+            /// @brief Returns the RefinementBlock object containing the nodes iterated over
             /// refinements, such as variable interpolation and buffer expansion
-            virtual void PostBlockIterationCallBack(void)=0; //set to null here because every implementation of this interface should define this explicitly!!
-            
-            
+            virtual RefinementBlock* GetRefinementBlockObject(void)=0; //set to null here because every implementation of this interface should define this explicitly!!
     };
 }
 

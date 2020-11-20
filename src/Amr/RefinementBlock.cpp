@@ -46,6 +46,11 @@ namespace cmf
     {
         return &allNodes;
     }
+    
+    RefinementBlock* RefinementBlock::GetRefinementBlockObject(void)
+    {
+        return this;
+    }
 
     RefinementBlock::~RefinementBlock(void)
     {
@@ -63,7 +68,7 @@ namespace cmf
             Dim2Idx(i, blockDim, idx);
             for (int d = 0; d < CMF_DIM; d++)
             {
-                localBounds[2*d] = blockBounds[2*d]+idx[d]*dx[d];
+                localBounds[2*d]   = blockBounds[2*d]+idx[d]*dx[d];
                 localBounds[2*d+1] = blockBounds[2*d]+(idx[d]+1)*dx[d];
             }
             trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL, refinementConstraintType, this);
@@ -105,11 +110,6 @@ namespace cmf
     void RefinementBlock::SetRefineLimitCriterion(NodeFilter_t limiter_in)
     {
         refineLimiter = limiter_in;
-    }
-    
-    void RefinementBlock::PostBlockIterationCallBack(void)
-    {
-        WriteLine(1, "WARNING: RefinementBlock::PostBlockIterationCallBack currently does nothing, but it probably should...");
     }
 
     void RefinementBlock::RefineAt(double coords[CMF_DIM], char refinementType)

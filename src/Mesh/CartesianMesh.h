@@ -160,11 +160,9 @@ namespace cmf
             /// @param node The node to check
             bool ParallelPartitionContainsNode(RefinementTreeNode* node);
             
-            /// @brief \see IBlockIterable::PostBlockIterationCallBack
+            /// @brief \see IBlockIterable::GetRefinementBlockObject
             /// @author WVN
-            void PostBlockIterationCallBack(void);
-            
-            
+            RefinementBlock* GetRefinementBlockObject(void);
 
         private:
 

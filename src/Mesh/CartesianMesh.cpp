@@ -93,9 +93,9 @@ namespace cmf
         return CreateCoordinateVariable(BlockFilters::Terminal, direction);
     }
     
-    void CartesianMesh::PostBlockIterationCallBack(void)
+    RefinementBlock* CartesianMesh::GetRefinementBlockObject(void)
     {
-        WriteLine(0, "WARNING: CartesianMesh::PostBlockIterationCallBack is not yet implemented, it probably should be soon!");
+        return Blocks();
     }
     
     bool CartesianMesh::ParallelPartitionContainsNode(RefinementTreeNode* node)

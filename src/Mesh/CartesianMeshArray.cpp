@@ -38,9 +38,9 @@ namespace cmf
         }
     }
     
-    void CartesianMeshArray::PostBlockIterationCallBack(void)
+    RefinementBlock* CartesianMeshArray::GetRefinementBlockObject(void)
     {
-        handler->mesh->PostBlockIterationCallBack();
+        handler->mesh->Blocks();
     }
     
     std::string CartesianMeshArray::GetFullName(void)
