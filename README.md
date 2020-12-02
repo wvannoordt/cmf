@@ -1,5 +1,7 @@
 # CMF (CHAMPS Modernized Framework)
 
+![logo](https://i.imgur.com/uoku28l.png)
+
 A parallel-hybrid framework for computational physics simulations
 
 ## Purpose
