@@ -1,5 +1,6 @@
 #include "ParallelGroup.h"
 #include "CmfScreen.h"
+#include "CmfGC.h"
 #include "cmf.h"
 namespace cmf
 {
@@ -10,6 +11,8 @@ namespace cmf
         processId = 0;
         processCount = 1;
         communicator = defaultCommunicator;
+        workArray = NULL;
+        deallocWorkArray = false;
     }
     
     
@@ -25,6 +28,10 @@ namespace cmf
         CMF_MPI_CHECK(MPI_Comm_size(comm, &processCount));
         isRoot = (processId==0);
         globalSettings.globalOutputEnabledHere = isRoot;
+        deallocWorkArray = true;
+        SetStackAllocationAllowed(false);
+        workArray = Cmf_Alloc(processCount*sizeof(size_t));
+        SetStackAllocationAllowed(true);
     }
     
     ParallelGroup::~ParallelGroup(void)
@@ -39,11 +46,35 @@ namespace cmf
                 CMF_MPI_CHECK(MPI_Finalize());
             }
         }
+        if (deallocWorkArray)
+        {
+            Cmf_Free(workArray);
+            deallocWorkArray = false;
+        }
     }
     
     void ParallelGroup::Synchronize(void)
     {
         CMF_MPI_CHECK(MPI_Barrier(communicator));
+    }
+    
+    bool ParallelGroup::HasSameValue(int n)
+    {
+        int* sharedArray = (int*)SharedValues(n);
+        bool output = true;
+        for (int i = 0; i < processCount; i++) output = output && (sharedArray[i] == n);
+        return output;
+    }
+    
+    void* ParallelGroup::SharedValues(int n)
+    {
+        AllGather(&n, 1, parallelInt, workArray, 1, parallelInt);
+        return workArray;
+    }
+    
+    void ParallelGroup::AllGather(const void *sendbuf, int sendcount, ParallelDataType sendtype, void *recvbuf, int recvcount, ParallelDataType recvtype)
+    {
+        CMF_MPI_CHECK(MPI_Allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, communicator));
     }
     
     int ParallelGroup::Rank(void)

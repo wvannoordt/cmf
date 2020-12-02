@@ -39,6 +39,26 @@ namespace cmf
             /// @brief Waits for all processes, similar to MPI_Barrier.
             /// @author WVN
             void Synchronize(void);
+            
+            /// @brief Indicates whether or not this parallel pool agrees on the given value
+            /// @param n The value to check
+            /// @author WVN
+            bool HasSameValue(int n);
+            
+            /// @brief Returns an array with the value given by process i stored at location i \pre Note that the returned array is only valid until the next call of this function!
+            /// @param n The value to share
+            /// @author WVN
+            void* SharedValues(int n);
+            
+            /// @brief Eqivalent to <a href="https://www.mpich.org/static/docs/v3.2/www3/MPI_Allgather.html">MPI_Allgather</a>
+            /// @param sendbuf starting address of send buffer
+            /// @param sendcount number of elements in send buffer
+            /// @param sendtype data type of send buffer elements
+            /// @param recvbuf starting address of received buffer
+            /// @param recvcount number of elements received from any process
+            /// @param recvtype data type of receive buffer elements
+            /// @author WVN
+            void AllGather(const void *sendbuf, int sendcount, ParallelDataType sendtype, void *recvbuf, int recvcount, ParallelDataType recvtype);
         
         private:
             
@@ -52,7 +72,13 @@ namespace cmf
             bool isRoot;
             
             /// @brief The underlying communicator object
-            CmfParallelCommunicator communicator;        
+            CmfParallelCommunicator communicator;
+            
+            /// @brief An array used as a work array for simple exchanges
+            void* workArray;
+            
+            /// @brief Indicates whether workArray requires freeing
+            bool deallocWorkArray;
     };
 
     /// @brief The default parallel group for global parallel operations

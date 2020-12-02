@@ -302,6 +302,15 @@ namespace cmf
             }
         }
     }
+    
+    int RefinementTreeNode::GetHashableValue(void)
+    {
+        int output = level + refineOrientation*directionLevels[0] + refineType*directionLevels[1];
+#if(CMF_IS3D)
+        output += numSubNodes*directionLevels[2];
+#endif
+        return output;
+    }
 
     void RefinementTreeNode::GenerateEdgeRelationshipFromOrientations(char refFrom, char refTo, char refineType, int* dispVector)
     {

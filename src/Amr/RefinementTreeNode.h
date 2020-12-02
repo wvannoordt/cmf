@@ -207,6 +207,10 @@ namespace cmf
             /// @author WVN
             void Unlock(void);
             
+            /// @brief Returns an integer that can be used to augment the hash of the base block.
+            /// @author WVN
+            int GetHashableValue(void);
+            
             /// @brief Returns true if the current node is locked.
             /// \see Unlock Lock
             /// @author WVN
@@ -347,8 +351,10 @@ namespace cmf
             
             /// @brief Deprecated
             int iteratorIndex;
+            
             friend class NeighborIterator;
             friend class BlockIterator;
+            friend class RefinementBlock;
     };
 }
 

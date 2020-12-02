@@ -24,6 +24,8 @@ namespace cmf
         totalNumTrunks = 1;
         for (int i = 0; i < CMF_DIM; i++) totalNumTrunks*=blockDim[i];
         for (int d = 0; d < CMF_DIM; d++) dx[d] = (blockBounds[2*d+1]-blockBounds[2*d])/blockDim[d];
+        __dloop(this->AugmentHash(blockDim[d]));
+        this->AugmentHash(totalNumTrunks);
         DefineTrunks();
     }
     
@@ -62,7 +64,7 @@ namespace cmf
         deallocTrunks = true;
         trunks = new RefinementTreeNode* [totalNumTrunks];
         double localBounds[2*CMF_DIM];
-        int idx[CMF_DIM];
+        int idx[CMF_DIM];        
         for (int i = 0; i < totalNumTrunks; i++)
         {
             Dim2Idx(i, blockDim, idx);
@@ -105,6 +107,7 @@ namespace cmf
     void RefinementBlock::RegisterNewNode(RefinementTreeNode* newNode)
     {
         allNodes.push_back(newNode);
+        this->AugmentHash(newNode->GetHashableValue());
     }
 
     void RefinementBlock::SetRefineLimitCriterion(NodeFilter_t limiter_in)

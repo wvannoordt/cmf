@@ -9,6 +9,7 @@
 #include "BlockIterator.h"
 #include "RefinementConstraint.h"
 #include "IBlockIterable.h"
+#include "ICmfHashable.h"
 namespace cmf
 {
     class RefinementTreeNode;
@@ -16,7 +17,7 @@ namespace cmf
     /// @brief Class that represents a grid and tree structure of RefinementTreeNode objects. Essentially represents a block structure for 
     /// a computational mesh
 	/// @author WVN
-    class RefinementBlock : public IBlockIterable
+    class RefinementBlock : public IBlockIterable, public ICmfHashable
     {
         public:
             /// @brief Constructor for the RefinementBlock object.
@@ -157,8 +158,9 @@ namespace cmf
             
             /// @brief A list of pointers to all nodes contained within this refinement block
             std::vector<RefinementTreeNode*> allNodes;
-        friend class RefinementTreeNode;
-        friend class BlockIterator;
+            
+            friend class RefinementTreeNode;
+            friend class BlockIterator;
     };
 }
 
