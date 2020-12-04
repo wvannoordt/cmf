@@ -2,7 +2,7 @@
 
 ![logo](https://i.imgur.com/uoku28l.png)
 
-A parallel-hybrid framework for computational physics simulations
+A flexible parallel-hybrid framework for computational physics simulations.
 
 ## Purpose
 

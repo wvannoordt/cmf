@@ -13,6 +13,7 @@ namespace cmf
         communicator = defaultCommunicator;
         workArray = NULL;
         deallocWorkArray = false;
+        isInitialized = false;
     }
     
     
@@ -32,6 +33,7 @@ namespace cmf
         SetStackAllocationAllowed(false);
         workArray = Cmf_Alloc(processCount*sizeof(size_t));
         SetStackAllocationAllowed(true);
+        isInitialized = true;
     }
     
     ParallelGroup::~ParallelGroup(void)
@@ -60,6 +62,7 @@ namespace cmf
     
     bool ParallelGroup::HasSameValue(int n)
     {
+        if (!isInitialized) return true;
         int* sharedArray = (int*)SharedValues(n);
         bool output = true;
         for (int i = 0; i < processCount; i++) output = output && (sharedArray[i] == n);

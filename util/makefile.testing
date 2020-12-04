@@ -24,6 +24,15 @@ else
 DOLATEXOUTPUTTARGET :=
 endif
 
+ifndef GPROF_ENABLE
+GPROF_ENABLE := 0
+endif
+ifeq (${GPROF_ENABLE}, 1)
+GPROF_FLAG := -pg
+else
+GPROF_FLAG :=
+endif
+
 ifndef DIM
 DIM := 2
 endif
@@ -35,7 +44,7 @@ else
 MPIRUN := 
 endif
 
-COMPFLAGS :=
+COMPFLAGS := ${GPROF_FLAG}
 COMPFLAGS += -DCMF_DIM=${DIM}
 
 main: setup

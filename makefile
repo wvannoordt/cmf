@@ -38,6 +38,15 @@ DOLATEXOUTPUT := 0
 endif
 export DOLATEXOUTPUT
 
+ifndef GPROF_ENABLE
+GPROF_ENABLE := 0
+endif
+
+ifeq (${GPROF_ENABLE}, 1)
+GPROF_FLAG := -pg
+else
+GPROF_FLAG :=
+endif
 
 CURRENT_BASEIDIR   = $(shell pwd)
 CURRENT_SRC_DIR   := ${CURRENT_BASEIDIR}/src
@@ -123,7 +132,7 @@ COMPILE_TIME_OPT += -DCMF_PARALLEL=${PARALLEL}
 
 DEVICE_FLAGS := -O${OPTLEVEL} -x cu -rdc=true -Xcompiler -fPIC ${COMPILE_TIME_OPT} -dc
 DEVICE_DLINK_FLAGS := -Xcompiler -fPIC -rdc=true -dlink
-HOST_FLAGS := -O${OPTLEVEL} -x c++ -Wno-unknown-pragmas -fPIC -fpermissive -std=c++11 -Werror -c ${LCUDA}
+HOST_FLAGS := -O${OPTLEVEL} -x c++ -Wno-unknown-pragmas -fPIC -fpermissive -std=c++11 -Werror -c ${LCUDA} ${GPROF_FLAG}
 
 export CUDA_ENABLE
 
@@ -174,7 +183,7 @@ export DIM
 .PHONY: final docs
 
 final: ${DO_CLEAN} PTL setup ${TARGETNAME_CUDA} ${TARGETNAME_HYBRID_D} ${LINK_STEP} ${TARGETNAME_HYBRID_H} ${TARGETNAME_HOST}
-	${CC_HOST} -fPIC -shared ${CURRENT_OBJ_DIR}/*.o ${CURRENT_IFLAGS} ${IFLAGS_DEPENDENCIES} ${COMPILE_TIME_OPT} ${LZLIB} ${LCUDA} ${LFLAGS_DEPENDENCIES} -o ${TARGET}
+	${CC_HOST} -fPIC -shared ${GPROF_FLAG} ${CURRENT_OBJ_DIR}/*.o ${CURRENT_IFLAGS} ${IFLAGS_DEPENDENCIES} ${COMPILE_TIME_OPT} ${LZLIB} ${LCUDA} ${LFLAGS_DEPENDENCIES} -o ${TARGET}
 
 .SECONDEXPANSION:
 ${TARGETNAME_HYBRID_D}: ${CURRENT_OBJ_DIR}/%.o : $$(filter $$(MP)/$$*,$$(SRC_FILES_HYBRID_D))

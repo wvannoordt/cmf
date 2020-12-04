@@ -79,6 +79,9 @@ namespace cmf
             
             /// @brief Indicates whether workArray requires freeing
             bool deallocWorkArray;
+            
+            /// @brief Indicates the parallel group has been created using CreateGroup
+            bool isInitialized;
     };
 
     /// @brief The default parallel group for global parallel operations
