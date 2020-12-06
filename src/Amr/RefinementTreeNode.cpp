@@ -240,6 +240,8 @@ namespace cmf
 
     void RefinementTreeNode::Refine(char newRefinementType)
     {
+        //do nothing if the node is not a terminal node
+        if (!this->IsTerminal()) return;
         //do nothing if the refinement limiter is hit
         if ((refineLimiter!=NULL) && (*refineLimiter!=NULL))
         {
