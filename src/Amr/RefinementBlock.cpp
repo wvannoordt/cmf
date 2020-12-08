@@ -20,6 +20,7 @@ namespace cmf
         blockBounds = blockBounds_in;
         refinementConstraintType = constraint_in;
         refineLimiter = NULL;
+        crashOnQueryOutsideDomain = false;
         srand((unsigned int)time(NULL));
         totalNumTrunks = 1;
         for (int i = 0; i < CMF_DIM; i++) totalNumTrunks*=blockDim[i];
@@ -32,6 +33,11 @@ namespace cmf
     size_t RefinementBlock::Size(void)
     {
         return allNodes.size();
+    }
+    
+    void RefinementBlock::NoCrashOnQueryOutsideDomain(void)
+    {
+        crashOnQueryOutsideDomain = true;
     }
     
     size_t RefinementBlock::Size(NodeFilter_t filter)
@@ -52,6 +58,11 @@ namespace cmf
     RefinementBlock* RefinementBlock::GetRefinementBlockObject(void)
     {
         return this;
+    }
+    
+    double* RefinementBlock::GetBlockBounds(void)
+    {
+        return blockBounds;
     }
 
     RefinementBlock::~RefinementBlock(void)
@@ -127,7 +138,10 @@ namespace cmf
     RefinementTreeNode* RefinementBlock::GetNodeAt(double coords[CMF_DIM])
     {
         int idx[CMF_DIM];
-        if (!PointIsInDomain(coords, idx)) return trunks[Idx2Dim(blockDim, idx)]->RecursiveGetNodeAt(coords);
+        if (PointIsInDomain(coords, idx))
+        {
+            return trunks[Idx2Dim(blockDim, idx)]->RecursiveGetNodeAt(coords);
+        }
         else
         {
             HandleRefinementQueryOutsideDomain(coords);
@@ -143,7 +157,7 @@ namespace cmf
             idx[d] = (coords[d] - blockBounds[2*d])/(dx[d]);
             queryOutsideDomain = queryOutsideDomain  || (coords[d]<blockBounds[2*d]) || (coords[d]>=blockBounds[2*d+1]);
         }
-        return queryOutsideDomain;
+        return !queryOutsideDomain;
     }
 
     bool RefinementBlock::PointIsInDomain(double coords[CMF_DIM])
@@ -154,7 +168,16 @@ namespace cmf
 
     void RefinementBlock::HandleRefinementQueryOutsideDomain(double coords[CMF_DIM])
     {
-        //Extend domain? crash? ignore?
+        if (!crashOnQueryOutsideDomain)
+        {            
+            std::string queryCoords = "(" + std::to_string(coords[0]);
+            for (int i = 1; i < CMF_DIM; i++)
+            {
+                queryCoords = queryCoords + ", " + std::to_string(coords[i]);
+            }
+            queryCoords = queryCoords + ")";
+            CmfError("Attempted to fetch a node outside the domain with coordiantes " + queryCoords + ".");
+        }
     }
 
     void RefinementBlock::RefineAll(char refinementType)
@@ -199,6 +222,7 @@ namespace cmf
     //This is for debugging only. For any real VTK output, an externl iterator should be used.
     void RefinementBlock::OutputDebugVtk(std::string filename, NodeFilter_t filter)
     {
+        int debug = 0;
         VtkFile output(filename, VtkFormatType::ascii, VtkTopologyType::unstructuredGrid);
         int totalNumBlocks = 0;
         for (int i = 0; i < totalNumTrunks; i++) trunks[i]->RecursiveCountTerminal(&totalNumBlocks, filter);
@@ -234,5 +258,29 @@ namespace cmf
         }
         picture->PopLineType();
     }
-
+    
+    void RefinementBlock::OutputNodesToVtk(const std::vector<RefinementTreeNode*>& nodeList, std::string filename)
+    {
+        VtkFile output(filename, VtkFormatType::ascii, VtkTopologyType::unstructuredGrid);
+        int totalNumBlocks = nodeList.size();
+        output.Mesh()->Component("DATASET")->SetAttribute("numPoints",   (CMF_IS3D?8:4)*totalNumBlocks);
+        output.Mesh()->Component("DATASET")->SetAttribute("bufferCount", 3*(CMF_IS3D?8:4)*totalNumBlocks);
+        output.Mesh()->Component("DATASET")->SetAttribute("stride", 3);
+        output.Mesh()->Component("CELLS")->SetAttribute("numPoints", totalNumBlocks);
+        output.Mesh()->Component("CELLS")->SetAttribute("bufferCount", (CMF_IS3D?9:5)*totalNumBlocks);
+        output.Mesh()->Component("CELLS")->SetAttribute("totalEntries", (CMF_IS3D?9:5)*totalNumBlocks);
+        output.Mesh()->Component("CELLS")->SetAttribute("stride", (CMF_IS3D?9:5));
+        output.Mesh()->Component("CELL_TYPES")->SetAttribute("numPoints", totalNumBlocks);
+        output.Mesh()->Component("CELL_TYPES")->SetAttribute("bufferCount", totalNumBlocks);
+        output.Mesh()->Component("CELL_TYPES")->SetAttribute("stride", 1);
+        VtkBuffer points(output.Mesh()->Component("DATASET"));
+        VtkBuffer edges(output.Mesh()->Component("CELLS"));
+        VtkBuffer cellTypes(output.Mesh()->Component("CELL_TYPES"));
+        int dummy = 0;
+        for (int i = 0; i < totalNumBlocks; i++)
+        {
+            nodeList[i]->WriteBlockDataToVtkBuffers(points, edges, cellTypes, &dummy);
+        }
+        output.Write();
+    }
 }

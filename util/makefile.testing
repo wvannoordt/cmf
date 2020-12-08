@@ -43,6 +43,9 @@ VALG :=
 else
 MPIRUN := 
 endif
+ifeq (${PARALLEL_PROCESSES}, 1)
+MPIRUN := 
+endif
 
 COMPFLAGS := ${GPROF_FLAG}
 COMPFLAGS += -DCMF_DIM=${DIM}

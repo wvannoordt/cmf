@@ -1,5 +1,6 @@
 #include "AxisAlignedLongCylinder.h"
 #include "Utils.hx"
+#include "CmfError.h"
 namespace cmf
 {
     AxisAlignedLongCylinder::AxisAlignedLongCylinder(double* point_in, double radius_in, int axisAlignment_in)
@@ -8,6 +9,11 @@ namespace cmf
         point[0] = 0.0;
         point[1] = 0.0;
         axisAlignment = axisAlignment_in;
+        if (axisAlignment_in >= CMF_DIM)
+        {
+            CmfError("AxisAlignedLongCylinder was passed an invalid coordiante axis \"" 
+                + std::to_string(axisAlignment_in) + "\" (should be less than " + std::to_string(CMF_DIM) + ")");
+        }
         for (int d = 0; d < CMF_DIM; d++)
         {
             if (d!=axisAlignment)

@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     coords[0] = 0.23;
     coords[1] = 0.54;
     double radius = 0.1;
-    cmf::AxisAlignedLongCylinder cyl(coords, radius, 2);
+    cmf::AxisAlignedLongCylinder cyl(coords, radius, 1);
     //domain.Blocks()->RefineRandom();
     domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->GetLevel() > 2);});
 

@@ -121,6 +121,21 @@ namespace cmf
             /// @author WVN
             void SetIterator(BlockIterator* iter);
             
+            /// @brief Returns an array of size 2*CMF_DIM representing the bounding box of the current refinement box.
+            /// Returned as (xmin, xmax, ymin, ymax, [zmin, zmax])
+            /// @author WVN
+            double* GetBlockBounds(void);
+            
+            /// @brief Outputs a list of nodes to a vtk file
+            /// @param nodeList A list of nodes to be output
+            /// @param filename The name of the file to be output, should have a ".vtk" file extension
+            /// @author WVN
+            static void OutputNodesToVtk(const std::vector<RefinementTreeNode*>& nodeList, std::string filename);
+            
+            /// @brief Prevents an error from being thrown when HandleRefinementQueryOutsideDomain is called \see HandleRefinementQueryOutsideDomain
+            /// @author WVN
+            void NoCrashOnQueryOutsideDomain(void);
+            
         private:
             
             /// @brief Creates the initial grid of RefinementTreeNode objects
@@ -149,6 +164,9 @@ namespace cmf
             
             /// @brief Set to true when trunks array is allocated
             bool deallocTrunks;
+            
+            /// @brief If true, coordinate queries outside domain will not cause crashes
+            bool crashOnQueryOutsideDomain;
             
             /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
             RefinementConstraint::RefinementConstraint refinementConstraintType;

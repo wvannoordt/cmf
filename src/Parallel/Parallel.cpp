@@ -17,10 +17,13 @@ namespace cmf
             {
                 WriteLine(1, "WARNING: MPI has been initialized by the with no arguments");
             }
-            WriteLine(2, "Initialize MPI");
             CMF_MPI_CHECK(MPI_Init(argc,argv));
         }
         globalGroup.CreateGroup();
+        if (handleMpiFinalizationInternally)
+        {
+            WriteLine(2, "Initialized MPI");
+        }
 #else
         CmfError("Attempted to call CreateParallelContext, but CMF was compiled without parallel support!");
         handleMpiFinalizationInternally = true;

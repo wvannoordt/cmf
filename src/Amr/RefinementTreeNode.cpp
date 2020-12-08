@@ -50,6 +50,7 @@ namespace cmf
         {
             refineLimiter = NULL;
         }
+        nodeTag = 0;
     }
 
     void RefinementTreeNode::InheritDomainBoundaryInfo(void)
@@ -126,7 +127,7 @@ namespace cmf
         }
     }
 
-    void RefinementTreeNode::ResolveNewRefinementWithNeighbors(void)
+    void RefinementTreeNode::ResolveNewRefinementWithNeighbors(int recursiveLevel)
     {
         std::vector<RefinementTreeNode*> nodes;
         std::vector<bool> refineRequired;
@@ -147,7 +148,7 @@ namespace cmf
         {
             if (refineRequired[i])
             {
-                nodes[i]->Refine(refineTypes[i]);
+                nodes[i]->RefineRecursive(refineTypes[i], recursiveLevel+1);
             }
         }
         this->Unlock();
@@ -237,8 +238,13 @@ namespace cmf
             }
         }
     }
-
+    
     void RefinementTreeNode::Refine(char newRefinementType)
+    {
+        RefineRecursive(newRefinementType, 0);
+    }
+
+    void RefinementTreeNode::RefineRecursive(char newRefinementType, int recursiveLevel)
     {
         //do nothing if the node is not a terminal node
         if (!this->IsTerminal()) return;
@@ -279,7 +285,7 @@ namespace cmf
         //Recursively loop through neighboring nodes to check if the refinement constraint is violated
         for (int i = 0; i < numSubNodes; i++)
         {
-            subNodes[i]->ResolveNewRefinementWithNeighbors();
+            subNodes[i]->ResolveNewRefinementWithNeighbors(recursiveLevel);
         }
     }
 

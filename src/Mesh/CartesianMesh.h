@@ -11,6 +11,7 @@
 #include "RefinementBlock.h"
 #include "ICmfMesh.h"
 #include "CartesianMeshArrayHandler.h"
+#include "ParallelGroup.h"
 
 namespace cmf
 {
@@ -163,6 +164,11 @@ namespace cmf
             /// @brief \see IBlockIterable::GetRefinementBlockObject
             /// @author WVN
             RefinementBlock* GetRefinementBlockObject(void);
+            
+            /// @brief Throws an error if the block structure varies between ranks on the relevant
+            /// ParallelGroup \see ParallelGroup
+            /// @author WVN
+            void AssertSynchronizeBlocks(void);
 
         private:
 
@@ -186,6 +192,9 @@ namespace cmf
             
             /// @brief A handler object used to define arrays over the current mesh
             CartesianMeshArrayHandler* arrayHandler;
+            
+            /// @brief The parallel group that processes this mesh
+            ParallelGroup* meshGroup;
     };
 }
 

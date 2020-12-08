@@ -15,6 +15,7 @@ int main(int argc, char** argv)
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
     domain.Blocks()->SetRefineLimitCriterion(limit);
+    domain.Blocks()->NoCrashOnQueryOutsideDomain();
     double coords[2];
     double nvec[2];
     double tvec[2];

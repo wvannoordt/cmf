@@ -82,8 +82,9 @@ namespace cmf
             /// should be refined. Note that this is called recursively through Refine until the RefinementConstraint is satisfied, so
             /// the call stack can become quite large.
             /// \see RefineRequiredFromRelationship Refine
+            /// @param recursiveLevel The level of recursion
             /// @author WVN
-            void ResolveNewRefinementWithNeighbors(void);
+            void ResolveNewRefinementWithNeighbors(int recursiveLevel);
             
             /// @brief Creates a neighbor relationship between the current block and target, and creates
             /// a NodeEdge with correspnding data. Does not check to see if the relationship already
@@ -185,6 +186,7 @@ namespace cmf
             /// @param points VtkBuffer object representing the point buffer. Point coordinates are streamed into this
             /// @param edges VtkBuffer object representing the adjacency buffer. Point indices are streamed into this
             /// @param cellTypes VtkBuffer object representing the point buffer. Cell type IDs are streamed into this
+            /// @param num Accumulates a running total of the number of blocks written. Generally can be passed a dummy variable.
             /// \see VtkFile VtkBuffer VtkCellType
             /// @author WVN
             void WriteBlockDataToVtkBuffers(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes, int* num);
@@ -215,6 +217,12 @@ namespace cmf
             /// \see Unlock Lock
             /// @author WVN
             bool NodeIsLocked(void);
+            
+            /// @brief Internal, recursive version of Refine(). \see Refine
+            /// @param newRefinementType A char interpreted as a 3-vector of bits indicating refinement directions
+            /// @param recursiveLevel A char interpreted as a 3-vector of bits indicating refinement directions
+            /// @author WVN
+            void RefineRecursive(char newRefinementType, int recursiveLevel);
             
             /// @brief Determines, based on the current RefinementConstraint, whether toBeRefined should be refined
             /// based on the NodeEdge relationship with newChildNode. If so, sets newRefTypeOut to the appropriate
@@ -351,6 +359,9 @@ namespace cmf
             
             /// @brief Deprecated
             int iteratorIndex;
+            
+            /// @brief A value that can be used to identify this node in a VTK output
+            int nodeTag;
             
             friend class NeighborIterator;
             friend class BlockIterator;

@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     point[0] = 0.5*(bounds[0] + bounds[1]) + 0.3;
     point[1] = 0.5*(bounds[2] + bounds[3]);
 
-    cmf::AxisAlignedLongCylinder cylinder(point, 0.3, 2);
+    cmf::AxisAlignedLongCylinder cylinder(point, 0.3, 1);
     domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->GetLevel() > 4);});
     for (cmf::BlockIterator i(domain.Blocks(), cmf::BlockFilters::Terminal); i.HasNext(); i++)
     {

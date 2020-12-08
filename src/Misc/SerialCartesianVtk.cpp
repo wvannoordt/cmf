@@ -99,6 +99,7 @@ namespace cmf
         double cellBounds[2*CMF_DIM];
         double cellCorner[CMF_DIM];
         int currentPointIdx = 0;
+        WriteLine(5, "SerialCartesianVtk building grid...");
         for (BlockIterator lb(mesh, filter); lb.HasNext(); lb++)
         {
             BlockInfo info = mesh->GetBlockInfo(lb);
@@ -122,5 +123,6 @@ namespace cmf
                 }
             }}}
         }
+        WriteLine(5, "Done.");
     }
 }

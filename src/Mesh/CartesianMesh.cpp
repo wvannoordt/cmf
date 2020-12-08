@@ -16,6 +16,7 @@ namespace cmf
         meshDataDim = input.meshDataDim;
         exchangeDim = input.exchangeDim;
         arrayHandler = new CartesianMeshArrayHandler(this);
+        meshGroup = &globalGroup;
     }
 
     RefinementBlock* CartesianMesh::Blocks(void)
@@ -120,6 +121,15 @@ namespace cmf
             output.totalDataDim[d] = meshDataDim[d]+2*exchangeDim[d];
         }
         return output;
+    }
+    
+    void CartesianMesh::AssertSynchronizeBlocks(void)
+    {
+        bool syncedHash = meshGroup->HasSameValue(blocks->GetHash());
+        if (!syncedHash)
+        {
+            CmfError("AssertSynchronizeBlocks failed in CartesianMesh with name \"" + title + "\": Ensure that refinements happen on every rank!!");
+        }
     }
     
     BlockInfo CartesianMesh::GetBlockInfo(BlockIterator& blockIter)

@@ -8,7 +8,7 @@ namespace cmf
         if (globalSettings.globalOutputEnabledHere && (debugLevel<=globalSettings.debugLevel))
         {
             cmfout << "cmf :: " << message;
-            if (globalSettings.trackOutputOrigins) cmfout << "\n >> (debug " << globalSettings.debugLevel << " from file " << file << ", line " << line << ")";
+            if (globalSettings.trackOutputOrigins) cmfout << "\n >> (debug " << debugLevel << " from file " << file << ", line " << line << ")";
             cmfout << cmfendl;
         }
     }
@@ -18,7 +18,7 @@ namespace cmf
         if (globalSettings.globalOutputEnabledHere && (debugLevel<=globalSettings.debugLevel))
         {
             std::cout << "cmf :: " << message;
-            if (globalSettings.trackOutputOrigins) std::cout << "\n >> (debug " << globalSettings.debugLevel << " from file " << file << ", line " << line << ")";
+            if (globalSettings.trackOutputOrigins) std::cout << "\n >> (debug " << debugLevel << " from file " << file << ", line " << line << ")";
             std::cout << std::endl;
         }
     }
@@ -28,7 +28,7 @@ namespace cmf
         if ((debugLevel<=globalSettings.debugLevel))
         {
             cmfout << "cmf :: " << message;
-            if (globalSettings.trackOutputOrigins) cmfout << "\n >> (debug " << globalSettings.debugLevel << " from file " << file << ", line " << line << ")";
+            if (globalSettings.trackOutputOrigins) cmfout << "\n >> (debug " << debugLevel << " from file " << file << ", line " << line << ")";
             cmfout << cmfendl;
         }
     }
@@ -38,7 +38,7 @@ namespace cmf
         if ((debugLevel<=globalSettings.debugLevel))
         {
             std::cout << "cmf :: " << message;
-            if (globalSettings.trackOutputOrigins) std::cout << "\n >> (debug " << globalSettings.debugLevel << " from file " << file << ", line " << line << ")";
+            if (globalSettings.trackOutputOrigins) std::cout << "\n >> (debug " << debugLevel << " from file " << file << ", line " << line << ")";
             std::cout << std::endl;
         }
     }
