@@ -3,6 +3,7 @@
 #include "StringUtils.h"
 #include <iostream>
 #include "DebugTools.hx"
+#include "ParallelGroup.h"
 #include "cmf.h"
 
 namespace cmf
@@ -32,8 +33,12 @@ namespace cmf
 #endif
         totalAlloc++;
         allocSize += size;
-        if (!stackAlloc) {WriteLine(5, "Allocating buffer, cumulative size: " + NiceCommaString(allocSize));}
-        else {WriteLine(5, "Allocating (stack) buffer, cumulative size: " + NiceCommaString(allocSize));}
+        size_t allocSizeGlobal = allocSize;
+#if(CMF_PARALLEL)
+        globalGroup.AllReduce(&allocSize, &allocSizeGlobal, 1, parallelLong, parallelSum);
+#endif
+        if (!stackAlloc) {WriteLine(5, "Allocating buffer, cumulative size: " + NiceCommaString(allocSizeGlobal));}
+        else {WriteLine(5, "Allocating (stack) buffer, cumulative size: " + NiceCommaString(allocSizeGlobal));}
         std::string filestr(file);
         WriteLine(6, "From file " + filestr + ", line " + std::to_string(line));
         if (stackAlloc)

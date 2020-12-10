@@ -85,6 +85,11 @@ namespace cmf
         CMF_MPI_CHECK(MPI_Allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, communicator));
     }
     
+    void ParallelGroup::AllReduce(const void *sendbuf, void *recvbuf, int count, ParallelDataType datatype, ParallelOperation op)
+    {
+        CMF_MPI_CHECK(MPI_Allreduce(sendbuf, recvbuf, count, datatype, op, communicator));
+    }
+    
     int ParallelGroup::Rank(void)
     {
         return processId;

@@ -63,6 +63,15 @@ namespace cmf
             /// @param recvtype data type of receive buffer elements
             /// @author WVN
             void AllGather(const void *sendbuf, int sendcount, ParallelDataType sendtype, void *recvbuf, int recvcount, ParallelDataType recvtype);
+            
+            /// @brief Eqivalent to <a href="https://www.mpich.org/static/docs/latest/www3/MPI_Allreduce.html">MPI_Allreduce</a>
+            /// @param sendbuf starting address of send buffer
+            /// @param recvbuf starting address of received buffer
+            /// @param count number of elements received from any process
+            /// @param datatype data type of send buffer elements
+            /// @param op parallel operation
+            /// @author WVN
+            void AllReduce(const void *sendbuf, void *recvbuf, int count, ParallelDataType datatype, ParallelOperation op);
         
         private:
             
