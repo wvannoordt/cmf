@@ -42,6 +42,9 @@ CMF provides a stream output class with a global instance `cmfout`, used the sam
 `cmfout` can be configured to output to log files as well as the terminal, and is what `WriteLine` uses internally. There should be no use of `std::cout` at all, and
 the usage of `cmfout` should be restricted to instances where errors are thrown.
 
+Excessive output should be avoided, as it does not provide useful information to the user. Any information-rich output should be logged as a file that can be
+processed separately.
+
 ## Input Options
 
 CMF makes use of `PropTreeLib`, which is a script-like, JSON-like input file reader specifically designed for use in scientific computing. Classes such as `CartesianMesh`
@@ -83,5 +86,6 @@ shuld generally be minimized.
 - The selection of methods should not be assigned to an integer. If a differentiating class is not appropriate, then any
   method selection should be implemented using an enumeration with a corresponding string function.
 - There should be no files output unless explicitly enabled or as a consequence of a crash. No files should be output to the current directory explicitly.
+- Avoid deallocating memory only to immediately re-allocate it, unless it is part of an isolated resizing or repartitioning operation.
 
 ## Header Files

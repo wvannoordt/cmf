@@ -17,6 +17,8 @@ namespace cmf
         exchangeDim = input.exchangeDim;
         arrayHandler = new CartesianMeshArrayHandler(this);
         meshGroup = &globalGroup;
+        hasParallelPartition = false;
+        partition = NULL;
     }
 
     RefinementBlock* CartesianMesh::Blocks(void)
@@ -123,6 +125,12 @@ namespace cmf
         return output;
     }
     
+    void CartesianMesh::CreateParallelPartition(CartesianMeshParallelPartitionInfo& partitionInfo)
+    {
+        hasParallelPartition = true;
+        partition = new CartesianMeshParallelPartition(this, partitionInfo);
+    }
+    
     void CartesianMesh::AssertSynchronizeBlocks(void)
     {
         bool syncedHash = meshGroup->HasSameValue(blocks->GetHash());
@@ -146,10 +154,20 @@ namespace cmf
     {
         return blocks->GetAllNodes();
     }
+    
+    std::string CartesianMesh::GetTitle(void)
+    {
+        return title;
+    }
 
     CartesianMesh::~CartesianMesh(void)
     {
         delete arrayHandler;
         delete blocks;
+        if (hasParallelPartition)
+        {
+            hasParallelPartition = false;
+            delete partition;
+        }
     }
 }

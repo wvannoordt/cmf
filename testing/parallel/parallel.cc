@@ -20,9 +20,11 @@ int main(int argc, char** argv)
     User["doRefinement"].MapTo(&doRefinement) = new PropTreeLib::Variables::PTLBoolean(false, "Perform refinemet");
     User.StrictParse();
     
+    cmf::CartesianMeshParallelPartitionInfo domainPartition(cmf::mainInput["Domain"]["Partition"]); // note that if the order of this and the declaration
+    // of inputInfo is switched, PTL will be sad :(
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
-    //The partitioning object should be created here, or after the refinement is complete.
+    domain.CreateParallelPartition(domainPartition);
     double coords[3];
     //coords[0] = 0.2 + 0.4*(1-cmf::globalGroup.Rank()); // <-- will cause the later assertion to fail.
     coords[0] = 0.52;

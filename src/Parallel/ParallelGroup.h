@@ -28,6 +28,10 @@ namespace cmf
             /// @author WVN
             void CreateGroup(CmfParallelCommunicator comm);
             
+            /// @brief Returns isInitialized
+            /// @author WVN
+            bool IsInitialized(void);
+            
             /// @brief Returns the process ID of the current process
             /// @author WVN
             int Rank(void);

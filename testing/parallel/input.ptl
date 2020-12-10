@@ -2,7 +2,7 @@ GlobalSettings
 {
 	Display
 	{
-		debugLevel = 6
+		debugLevel = 4
 		trackOutputOrigins = false
 	}
 	Memory
@@ -17,6 +17,10 @@ Domain
 	meshDataDim = [16, 16, 16]
 	exchangeDim = [0, 0, 0]
 	refinementConstraintType = @choose(0, factor2CompletelyConstrained, free)
+	Partition
+	{
+		partitionType = uniform
+	}
 }
 User
 {

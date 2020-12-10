@@ -12,6 +12,7 @@
 #include "ICmfMesh.h"
 #include "CartesianMeshArrayHandler.h"
 #include "ParallelGroup.h"
+#include "CartesianMeshParallelPartition.h"
 
 namespace cmf
 {
@@ -70,6 +71,9 @@ namespace cmf
             Parse();
         }
 
+        /// @brief Defines the object from the input secton
+        /// @param input The section to be read from
+        /// @author WVN
         void Define(PropTreeLib::PropertySection& input)
         {
             input["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 2;});
@@ -169,6 +173,15 @@ namespace cmf
             /// ParallelGroup \see ParallelGroup
             /// @author WVN
             void AssertSynchronizeBlocks(void);
+            
+            /// @author WVN
+            /// @brief Creates a parallel partition for the current mesh
+            /// @param partitionInfo the input struct containing parameters to create the paralle partition
+            void CreateParallelPartition(CartesianMeshParallelPartitionInfo& partitionInfo);
+            
+            /// @author WVN
+            /// @brief Returns the title of the mesh
+            std::string GetTitle(void);
 
         private:
 
@@ -195,6 +208,14 @@ namespace cmf
             
             /// @brief The parallel group that processes this mesh
             ParallelGroup* meshGroup;
+            
+            /// @brief Indicates whether the mesh has been partitioned
+            bool hasParallelPartition;
+            
+            /// @brief Parallel partiion object for the current mesh
+            CartesianMeshParallelPartition* partition;
+        
+            friend class CartesianMeshParallelPartition;
     };
 }
 

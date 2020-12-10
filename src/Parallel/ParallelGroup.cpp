@@ -55,6 +55,11 @@ namespace cmf
         }
     }
     
+    bool ParallelGroup::IsInitialized(void)
+    {
+        return isInitialized;
+    }
+    
     void ParallelGroup::Synchronize(void)
     {
         CMF_MPI_CHECK(MPI_Barrier(communicator));

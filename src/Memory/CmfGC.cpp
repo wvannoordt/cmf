@@ -19,9 +19,9 @@ namespace cmf
     
     CmfGC::~CmfGC(void)
     {
-        WriteLineStd(4, "Freeing resources");
-        WriteLineStd(4, "Total allocs: " + NiceCommaString(totalAlloc));
-        WriteLineStd(4, "Total frees: " + NiceCommaString(totalFree));
+        WriteLineStd(3, "Freeing resources");
+        WriteLineStd(3, "Total allocs: " + NiceCommaString(totalAlloc));
+        WriteLineStd(3, "Total frees: " + NiceCommaString(totalFree));
     }
     
     void* CmfGC::CmfAlloc(size_t size, const char* file, const int line, bool allowStackAllocation)
