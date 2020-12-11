@@ -2,6 +2,10 @@
 #define CMF_CARTESIAN_PARALLEL_PARTITION_INFO_H
 #include "ICmfInputObject.h"
 #include "CartesianPartitionType.h"
+#include "RefinementTreeNode.h"
+#include "ICartesianPartitionBuilder.h"
+#include "CartesianUniformPartition.h"
+#include <map>
 namespace cmf
 {
     
@@ -48,6 +52,11 @@ namespace cmf
             /// @author WVN
             ~CartesianMeshParallelPartition(void);
             
+            /// @brief Returns true if the current rank is responsible for the given node
+            /// @param node The node to evaluate
+            /// @author WVN
+            bool Mine(RefinementTreeNode* node);
+            
         private:
             
             /// @brief Translates a CartesianMeshParallelPartitionInfo to the information 
@@ -60,6 +69,15 @@ namespace cmf
             
             /// @brief The type of partition used to partition the mesh
             CartesianPartitionType::CartesianPartitionType partitionType;
+            
+            /// @brief The parallel partition data
+            std::map<RefinementTreeNode*, int> partition;
+            
+            /// @brief The object responsible for assigning existing and new blocks to the parallel partition
+            ICartesianPartitionBuilder* builder;
+            
+            /// @brief Indicates whether or not builder must be deleted
+            bool deleteBuilder;
     };
 }
 

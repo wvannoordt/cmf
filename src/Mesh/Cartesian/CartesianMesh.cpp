@@ -80,13 +80,20 @@ namespace cmf
         {
             BlockInfo info = this->GetBlockInfo(lb);
             double* coordBuffer = (double*)coordArray[lb];
-            cmf_pkloop(idx[2], info.exchangeDim[2], info){cmf_pjloop(idx[1], info.exchangeDim[1], info){cmf_piloop(idx[0], info.exchangeDim[0], info){
-                __dloop(coordval[d] = info.blockBounds[2*d]+((double)idx[d] + 0.5)*info.dx[d]);
+            cmf_pkloop(idx[2], info.exchangeDim[2], info)
+            {
+                cmf_pjloop(idx[1], info.exchangeDim[1], info)
+                {
+                    cmf_piloop(idx[0], info.exchangeDim[0], info)
+                    {
+                        __dloop(coordval[d] = info.blockBounds[2*d]+((double)idx[d] + 0.5)*info.dx[d]);
 #if(!CMF_IS3D)
-                coordval[2] = 0.0;
+                        coordval[2] = 0.0;
 #endif
-                coordBuffer[cmf_idx(idx[0], idx[1], idx[2], info)] = coordval[direction];
-            }}}
+                        coordBuffer[cmf_idx(idx[0], idx[1], idx[2], info)] = coordval[direction];
+                    }
+                }
+            }
         }
         return coordArray;
     }
