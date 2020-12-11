@@ -101,9 +101,9 @@ namespace cmf
                 VtkBuffer edges(output.Mesh()->Component("CELLS"));
                 VtkBuffer cellTypes(output.Mesh()->Component("CELL_TYPES"));
                 int dummy = 0;
-                for (int i = 0; i < totalNumTrunks; i++)
+                for (int i = 0; i < totalNumBlocks; i++)
                 {
-                    trunks[i]->WriteBlockDataToVtkBuffers(points, edges, cellTypes, &dummy);
+                    nodes[i]->WriteBlockDataToVtkBuffers(points, edges, cellTypes, &dummy);
                 }
                 output.Write();
             }
