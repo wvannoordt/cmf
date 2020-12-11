@@ -14,6 +14,7 @@ namespace cmf
 {
     class RefinementTreeNode;
     class BlockIterator;
+    class IPostRefinementCallback;
     /// @brief Class that represents a grid and tree structure of RefinementTreeNode objects. Essentially represents a block structure for 
     /// a computational mesh
 	/// @author WVN
@@ -136,6 +137,16 @@ namespace cmf
             /// @author WVN
             void NoCrashOnQueryOutsideDomain(void);
             
+            /// @brief Calls all post-refinement callback functions in postRefinementCallbackObjects
+            /// @author WVN
+            void PostRefinementCallbacks(void);
+            
+            /// @brief Adds a IPostRefinementCallback object to the post-refinement call list. Returns the
+            /// index/position of the added object in the list
+            /// @param obj The object to add
+            /// @author WVN
+            int AddPostRefinementCallbackObject(IPostRefinementCallback* obj);
+            
         private:
             
             /// @brief Creates the initial grid of RefinementTreeNode objects
@@ -176,6 +187,12 @@ namespace cmf
             
             /// @brief A list of pointers to all nodes contained within this refinement block
             std::vector<RefinementTreeNode*> allNodes;
+            
+            /// @brief A list of nodes that are buffered for processing by post-refinement callbacks
+            std::vector<RefinementTreeNode*> newlyRefinedNodes;
+            
+            /// @brief A list of objects that have refinement callbacks to be processed after refinements
+            std::vector<IPostRefinementCallback*> postRefinementCallbackObjects;
             
             friend class RefinementTreeNode;
             friend class BlockIterator;

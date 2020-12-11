@@ -24,6 +24,7 @@ namespace cmf
         {
             WriteLine(2, "Initialized MPI");
         }
+        WriteLine(1, "Parallel group created of size " + std::to_string(globalGroup.Size()));
 #else
         CmfError("Attempted to call CreateParallelContext, but CMF was compiled without parallel support!");
         handleMpiFinalizationInternally = true;

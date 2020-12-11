@@ -76,7 +76,7 @@ namespace cmf
         double coordval[3];
         int idx[CMF_DIM];
         CartesianMeshArray& coordArray = *(arrayHandler->CreateNewVariable(info, filter));
-        for (BlockIterator lb(this, filter); lb.HasNext(); lb++)
+        for (BlockIterator lb(this, filter, IterableMode::parallel); lb.HasNext(); lb++)
         {
             BlockInfo info = this->GetBlockInfo(lb);
             double* coordBuffer = (double*)coordArray[lb];
@@ -110,8 +110,8 @@ namespace cmf
     
     bool CartesianMesh::ParallelPartitionContainsNode(RefinementTreeNode* node)
     {
-        //temporary!
-        return true;
+        if (!partition) return true;
+        return partition->Mine(node);
     }
     
     BlockInfo CartesianMesh::GetBlockInfo(RefinementTreeNode* node)
@@ -145,6 +145,7 @@ namespace cmf
         {
             CmfError("AssertSynchronizeBlocks failed in CartesianMesh with name \"" + title + "\": Ensure that refinements happen on every rank!!");
         }
+        WriteLine(4, "Cartesian mesh \"" + title + "\" is sychronized");
     }
     
     BlockInfo CartesianMesh::GetBlockInfo(BlockIterator& blockIter)

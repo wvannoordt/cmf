@@ -11,7 +11,7 @@
 #include "VtkFile.h"
 #include "CmfScreen.h"
 #include "StringUtils.h"
-
+#include "IPostRefinementCallback.h"
 namespace cmf
 {
     RefinementBlock::RefinementBlock(int* blockDim_in, double* blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in)
@@ -88,6 +88,8 @@ namespace cmf
             RegisterNewNode(trunks[i]);
             trunks[i]->SetRefineLimiter(&refineLimiter);
         }
+        //This is added because it is assumed that any post-refinemet callback object is registered afterwards
+        newlyRefinedNodes.clear();
         for (int i = 0; i < totalNumTrunks; i++)
         {
             int blockIndex[CMF_DIM];
@@ -119,11 +121,27 @@ namespace cmf
     {
         allNodes.push_back(newNode);
         this->AugmentHash(newNode->GetHashableValue());
+        newlyRefinedNodes.push_back(newNode);
     }
 
     void RefinementBlock::SetRefineLimitCriterion(NodeFilter_t limiter_in)
     {
         refineLimiter = limiter_in;
+    }
+    
+    int RefinementBlock::AddPostRefinementCallbackObject(IPostRefinementCallback* obj)
+    {
+        postRefinementCallbackObjects.push_back(obj);
+        return (postRefinementCallbackObjects.size()-1);
+    }
+    
+    void RefinementBlock::PostRefinementCallbacks(void)
+    {
+        for (int i = 0; i < postRefinementCallbackObjects.size(); i++)
+        {
+            postRefinementCallbackObjects[i]->OnPostRefinementCallback(newlyRefinedNodes);
+        }
+        newlyRefinedNodes.clear();
     }
 
     void RefinementBlock::RefineAt(double coords[CMF_DIM], char refinementType)

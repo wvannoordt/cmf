@@ -15,6 +15,7 @@ namespace cmf
         deleteBuilder = false;
         mesh = mesh_in;
         partitionType = (CartesianPartitionType::CartesianPartitionType)inputInfo.partitionType;
+        RegisterToBlocks(mesh->Blocks());
         WriteLine(1, "Partition Cartesian mesh \"" + mesh->GetTitle()
             + "\" with strategy \"" + CartesianPartitionTypeStr(inputInfo.partitionType) + "\"");
         if (!mesh->meshGroup->IsInitialized())
@@ -30,7 +31,17 @@ namespace cmf
                 break;
             }
         }
-        builder->CreatePartition(partition, mesh);
+        builder->CreatePartition(&partition, mesh);
+    }
+    
+    void CartesianMeshParallelPartition::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)
+    {
+        WriteLine(3, "\"" + mesh->GetTitle() + "\" parallel partition handling new blocks");
+        for (int i = 0; i < newNodes.size(); i++)
+        {
+            builder->AddNewNode(newNodes[i]);
+        }
+        mesh->AssertSynchronizeBlocks();
     }
     
     bool CartesianMeshParallelPartition::Mine(RefinementTreeNode* node)
@@ -42,7 +53,7 @@ namespace cmf
         }
         else
         {
-            return (partition[node] == mesh->meshGroup->Rank());
+            return (partition[node].rank == mesh->meshGroup->Rank());
         }
     }
     

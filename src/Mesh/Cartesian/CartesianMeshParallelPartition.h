@@ -5,6 +5,8 @@
 #include "RefinementTreeNode.h"
 #include "ICartesianPartitionBuilder.h"
 #include "CartesianUniformPartition.h"
+#include "BlockPartitionInfo.h"
+#include "IPostRefinementCallback.h"
 #include <map>
 namespace cmf
 {
@@ -39,7 +41,7 @@ namespace cmf
     
     /// @brief A class defining a parallel-hybrid partition over a cartesian mesh
     /// @author WVN
-    class CartesianMeshParallelPartition
+    class CartesianMeshParallelPartition : public IPostRefinementCallback
     {
         public:
             /// @brief Constructor for CartesianMeshParallelPartition
@@ -57,6 +59,11 @@ namespace cmf
             /// @author WVN
             bool Mine(RefinementTreeNode* node);
             
+            /// @brief The callback function for new nodes
+            /// @param newNodes The newly refined nodes to be handled
+            /// @author WVN
+            void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes);
+            
         private:
             
             /// @brief Translates a CartesianMeshParallelPartitionInfo to the information 
@@ -71,7 +78,7 @@ namespace cmf
             CartesianPartitionType::CartesianPartitionType partitionType;
             
             /// @brief The parallel partition data
-            std::map<RefinementTreeNode*, int> partition;
+            std::map<RefinementTreeNode*, BlockPartitionInfo> partition;
             
             /// @brief The object responsible for assigning existing and new blocks to the parallel partition
             ICartesianPartitionBuilder* builder;

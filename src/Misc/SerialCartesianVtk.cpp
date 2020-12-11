@@ -53,7 +53,7 @@ namespace cmf
         newScalar->Component("SCALARS")->SetAttribute("stride", 1);
         VtkBuffer scalarData(newScalar->Component("SCALARS"));
         int idx[CMF_DIM];
-        for (BlockIterator lb(mesh, filter); lb.HasNext(); lb++)
+        for (BlockIterator lb(mesh, filter, IterableMode::parallel); lb.HasNext(); lb++)
         {
             BlockInfo info = mesh->GetBlockInfo(lb);
             double* buf = (double*)variable[lb];
@@ -69,7 +69,7 @@ namespace cmf
         size_t totalNumPoints = 0;
         int numBlocks = 0;
         int i = 0;
-        for (BlockIterator lb(mesh, filter); lb.HasNext(); lb++)
+        for (BlockIterator lb(mesh, filter, IterableMode::parallel); lb.HasNext(); lb++)
         {
             blocks.push_back(lb.Node());
             BlockInfo info = mesh->GetBlockInfo(lb);
@@ -100,7 +100,7 @@ namespace cmf
         double cellCorner[CMF_DIM];
         int currentPointIdx = 0;
         WriteLine(5, "SerialCartesianVtk building grid...");
-        for (BlockIterator lb(mesh, filter); lb.HasNext(); lb++)
+        for (BlockIterator lb(mesh, filter, IterableMode::parallel); lb.HasNext(); lb++)
         {
             BlockInfo info = mesh->GetBlockInfo(lb);
             int localPoints = 1;

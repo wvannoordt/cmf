@@ -11,14 +11,14 @@ namespace cmf
         isAllocated = false;
         handler = handler_in;
         filter = filter_in;
-        Allocate();
         GetDefinedNodes();
+        Allocate();
         DefinePointerMap();
     }
     
     void CartesianMeshArray::Allocate(void)
     {
-        size_t numBlocksToAllocate = handler->mesh->Blocks()->Size(filter);
+        size_t numBlocksToAllocate = definedNodes.size();
         size_t totalAllocSize = numBlocksToAllocate*GetArraySizePerBlock();
         WriteLine(4, 
             "Defining variable \"" + variableName + "\" on mesh \"" + 
@@ -30,7 +30,7 @@ namespace cmf
     
     void CartesianMeshArray::GetDefinedNodes(void)
     {
-        for (BlockIterator i(handler->mesh->Blocks(), filter, IterableMode::parallel); i.HasNext(); i++)
+        for (BlockIterator i(handler->mesh, filter, IterableMode::parallel); i.HasNext(); i++)
         {
             RefinementTreeNode* curNode = i.Node();
             definedNodes.push_back(curNode);

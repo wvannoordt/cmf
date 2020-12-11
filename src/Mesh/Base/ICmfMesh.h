@@ -4,6 +4,7 @@
 #include "ICmfInputObject.h"
 #include "ICmfMeshArrayHandler.h"
 #include "CmfScreen.h"
+#include "ParallelGroup.h"
 namespace cmf
 {
     namespace MeshType
@@ -42,6 +43,10 @@ namespace cmf
             /// @brief Empty destructor
             /// @author WVN
             ~ICmfMesh(void);
+            
+            /// @brief Returns the parallel group responsible for this mesh
+            /// @author WVN
+            ParallelGroup* GetGroup(void) {return meshGroup;}
 
             /// @brief Returns the array handler object for the given mesh
             /// @author WVN
@@ -58,6 +63,9 @@ namespace cmf
             
             /// @brief The type of the mesh
             MeshType::MeshType meshType;
+            
+            /// @brief The parallel group that processes this mesh
+            ParallelGroup* meshGroup;
     };
 }
 

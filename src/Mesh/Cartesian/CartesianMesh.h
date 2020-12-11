@@ -206,9 +206,6 @@ namespace cmf
             /// @brief A handler object used to define arrays over the current mesh
             CartesianMeshArrayHandler* arrayHandler;
             
-            /// @brief The parallel group that processes this mesh
-            ParallelGroup* meshGroup;
-            
             /// @brief Indicates whether the mesh has been partitioned
             bool hasParallelPartition;
             

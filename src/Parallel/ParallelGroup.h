@@ -54,6 +54,21 @@ namespace cmf
             /// @author WVN
             void* SharedValues(int n);
             
+            /// @brief Returns the sum of the values on all ranks
+            /// @param val The value to sum
+            /// @author WVN
+            size_t Sum(size_t val);
+            
+            /// @brief Returns the sum of the values on all ranks
+            /// @param val The value to sum
+            /// @author WVN
+            double Sum(double val);
+            
+            /// @brief Returns the sum of the values on all ranks
+            /// @param val The value to sum
+            /// @author WVN
+            int Sum(int val);
+            
             /// @brief Eqivalent to <a href="https://www.mpich.org/static/docs/v3.2/www3/MPI_Allgather.html">MPI_Allgather</a>
             /// @param sendbuf starting address of send buffer
             /// @param sendcount number of elements in send buffer
@@ -72,6 +87,10 @@ namespace cmf
             /// @param op parallel operation
             /// @author WVN
             void AllReduce(const void *sendbuf, void *recvbuf, int count, ParallelDataType datatype, ParallelOperation op);
+            
+            /// @brief Initializes MPI if required
+            /// @author WVN
+            void MpiAutoInitIfRequired(void);
         
         private:
             
@@ -95,6 +114,15 @@ namespace cmf
             
             /// @brief Indicates the parallel group has been created using CreateGroup
             bool isInitialized;
+            
+            /// @brief Indicates whether the parallel group is operating in serial mode
+            bool serialMode;
+            
+            /// @brief Indicates whether or not MPI was initialized on the first MPI call
+            bool autoInitialized;
+            
+            /// @brief Indicates whether or not MpiAutoInitIfRequired has been called
+            bool mpiAutoInitIfRequiredCalled;
     };
 
     /// @brief The default parallel group for global parallel operations
