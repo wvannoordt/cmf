@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include "PropTreeLib.h"
+#include "PTL.h"
 #include "cmf.h"
 #include "RefinementBlock.h"
 #include "RefinementTreeNode.h"

@@ -27,7 +27,7 @@ namespace cmf
         /// @param title_in title of the mesh
         /// @param inputTree PropertryTree to be read from
         /// @author WVN
-        ICmfMeshInfo(PropTreeLib::PropertySection& inputTree)
+        ICmfMeshInfo(PTL::PropertySection& inputTree)
             : ICmfInputObject(inputTree){}
     };
 

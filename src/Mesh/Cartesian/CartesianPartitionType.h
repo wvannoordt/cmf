@@ -1,7 +1,7 @@
 #ifndef CMF_CART_PARTITION_TYPE_H
 #define CMF_CART_PARTITION_TYPE_H
 #include <string>
-#include "PropTreeLib.h"
+#include "PTL.h"
 namespace cmf
 {
     namespace CartesianPartitionType

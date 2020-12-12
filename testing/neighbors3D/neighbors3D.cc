@@ -17,15 +17,15 @@ int main(int argc, char** argv)
     std::string outputName = "output/neigh.vtk";
 
     cmf::ReadInput("input.ptl");
-    PropTreeLib::PropertySection userInput = cmf::mainInput["user"];
-    userInput["allNeighs"].MapTo(&allNeighs) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
-    userInput["level0"].MapTo(&level0) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
-    userInput["doRefinement"].MapTo(&doRefinement) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
-    userInput["testDir"].MapTo(&testDir) = new PropTreeLib::Variables::PTLEnum("x", "x:y:z", "dummy");
-    userInput["testVal"].MapTo(&testVal) = new PropTreeLib::Variables::PTLInteger(-1, "dummy");
+    PTL::PropertySection userInput = cmf::mainInput["user"];
+    userInput["allNeighs"].MapTo(&allNeighs) = new PTL::Variables::PTLBoolean(false, "dummy");
+    userInput["level0"].MapTo(&level0) = new PTL::Variables::PTLBoolean(false, "dummy");
+    userInput["doRefinement"].MapTo(&doRefinement) = new PTL::Variables::PTLBoolean(false, "dummy");
+    userInput["testDir"].MapTo(&testDir) = new PTL::Variables::PTLEnum("x", "x:y:z", "dummy");
+    userInput["testVal"].MapTo(&testVal) = new PTL::Variables::PTLInteger(-1, "dummy");
     testDir = 0;
     testVal = 0;
-    //userInput["outputName"].MapTo(&outputName) = new PropTreeLib::Variables::PTLString("output/neigh.vtk", "dummy");
+    //userInput["outputName"].MapTo(&outputName) = new PTL::Variables::PTLString("output/neigh.vtk", "dummy");
     userInput.StrictParse();
     cmf::mainInput.DebugPrint();
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);

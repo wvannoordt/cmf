@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include "AmrFcnTypes.h"
-#include "PropTreeLib.h"
+#include "PTL.h"
 #include "RefinementTreeNode.h"
 #include "BlockIterator.h"
 #include "RefinementConstraint.h"
@@ -65,7 +65,7 @@ namespace cmf
         /// @param title_in title of the mesh
         /// @param inputTree PropertryTree to be read from
         /// @author WVN
-        CartesianMeshInputInfo(PropTreeLib::PropertySection& inputTree) : ICmfMeshInfo(inputTree)
+        CartesianMeshInputInfo(PTL::PropertySection& inputTree) : ICmfMeshInfo(inputTree)
         {
             Define(*objectInput);
             Parse();
@@ -74,14 +74,14 @@ namespace cmf
         /// @brief Defines the object from the input secton
         /// @param input The section to be read from
         /// @author WVN
-        void Define(PropTreeLib::PropertySection& input)
+        void Define(PTL::PropertySection& input)
         {
-            input["blockDim"].MapTo(&blockDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 2;});
-            input["exchangeDim"].MapTo(&exchangeDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 0;});
-            input["blockBounds"].MapTo(&blockBounds) = new PropTreeLib::Variables::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds", [](int i){return (double)(i&1);});
+            input["blockDim"].MapTo(&blockDim) = new PTL::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 2;});
+            input["exchangeDim"].MapTo(&exchangeDim) = new PTL::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 0;});
+            input["blockBounds"].MapTo(&blockBounds) = new PTL::Variables::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds", [](int i){return (double)(i&1);});
             input["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
-                = new PropTreeLib::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
-            input["meshDataDim"].MapTo(&meshDataDim) = new PropTreeLib::Variables::PTLStaticIntegerArray(CMF_DIM, "Dimensions of data", [](int i){return 2;});
+                = new PTL::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
+            input["meshDataDim"].MapTo(&meshDataDim) = new PTL::Variables::PTLStaticIntegerArray(CMF_DIM, "Dimensions of data", [](int i){return 2;});
         }
     };
 

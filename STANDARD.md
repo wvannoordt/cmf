@@ -47,9 +47,9 @@ processed separately.
 
 ## Input Options
 
-CMF makes use of `PropTreeLib`, which is a script-like, JSON-like input file reader specifically designed for use in scientific computing. Classes such as `CartesianMesh`
+CMF makes use of `PTL`, which is a script-like, JSON-like input file reader specifically designed for use in scientific computing. Classes such as `CartesianMesh`
 are constructed using quite a lot of information, so constructor structs are provided to build these objects (e.g. `CartesianMeshInputInfo`). These can be constructed directly
-in an external application, but should also inherit the `ICmfInputObject` interface. `PropTreeLib` is designed to provide a simple and easy-to-use input file interface, and
+in an external application, but should also inherit the `ICmfInputObject` interface. `PTL` is designed to provide a simple and easy-to-use input file interface, and
 so should be used for user-provided settings when possible and appropriate.
 
 ## Error Handling
@@ -69,7 +69,7 @@ should be made using the corresponding `Cmf_Free` function. There is currently n
 
 ## External Dependencies
 
-CMF has only one core dependency: `PropTreeLib`. Any other external dependency should be included in a way that allows users to compile CMF with or without that dependency. The current
+CMF has only one core dependency: `PTL`. Any other external dependency should be included in a way that allows users to compile CMF with or without that dependency. The current
 approach is to use wrapper classes for each dependency that is included, for example the `ParallelGroup` class, which is like a wrapper for all `MPI` operations. The makefile should be
 modified to include a preprocessor flag to enable each dependency, e.g. compiling with `-DPARRALEL=1` for MPI. Dependencies will not be packaged with CMF, and external dependencies
 shuld generally be minimized.

@@ -23,7 +23,7 @@ namespace cmf
         /// @brief Constructor for the CartesianMeshInputInfo object.
         /// @param inputSection Section to be read from
         /// @author WVN
-        CartesianMeshParallelPartitionInfo(PropTreeLib::PropertySection& inputSection) : ICmfInputObject(inputSection)
+        CartesianMeshParallelPartitionInfo(PTL::PropertySection& inputSection) : ICmfInputObject(inputSection)
         {
             Define(*objectInput);
             Parse();
@@ -32,10 +32,10 @@ namespace cmf
         /// @brief Defines the object from the input secton
         /// @param input The section to be read from
         /// @author WVN
-        void Define(PropTreeLib::PropertySection& input)
+        void Define(PTL::PropertySection& input)
         {
             input["partitionType"].MapTo(&partitionType)
-                = new PropTreeLib::Variables::PTLAutoEnum(CartesianPartitionType::uniform, CartesianPartitionTypeStr, "The partitioning approach used to partition the Cartesian mesh");
+                = new PTL::Variables::PTLAutoEnum(CartesianPartitionType::uniform, CartesianPartitionTypeStr, "The partitioning approach used to partition the Cartesian mesh");
         }
     };
     

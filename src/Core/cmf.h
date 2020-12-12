@@ -4,7 +4,7 @@
 #include "CmfError.h"
 #include <string>
 #include "Config.h"
-#include "PropTreeLib.h"
+#include "PTL.h"
 #include "CartesianMesh.h"
 #include "RefinementBlock.h"
 #include "RefinementTreeNode.h"
@@ -25,14 +25,14 @@
 
 namespace cmf
 {
-    extern PropTreeLib::PropertyTree mainInput;
+    extern PTL::PropertyTree mainInput;
     extern GlobalSettings globalSettings;
     
     /// @brief Initializes CMF. Currently does nothing. It is intended that this function does nothing.
     /// @author WVN
     void Initialize(void);
     
-    /// @brief Reads the input file (PTL format) specified by filename. PTL format is specific to <a href="https://github.com/wvannoordt/PropTreeLib">PropTreeLib</a>.
+    /// @brief Reads the input file (PTL format) specified by filename. PTL format is specific to <a href="https://github.com/wvannoordt/PTL">PTL</a>.
     /// @param filename The name if the input file to be read
     /// @author WVN
     void ReadInput(std::string filename);

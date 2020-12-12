@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include "AmrFcnTypes.h"
-#include "PropTreeLib.h"
+#include "PTL.h"
 #include "RefinementTreeNode.h"
 #include "BlockIterator.h"
 #include "RefinementConstraint.h"

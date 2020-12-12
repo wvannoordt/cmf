@@ -14,9 +14,9 @@ int main(int argc, char** argv)
     cmf::ReadInput("input.ptl");
     cmf::globalSettings = cmf::GlobalSettings(cmf::mainInput["GlobalSettings"]);
     cmf::CreateParallelContext(&argc, &argv);
-    PropTreeLib::PropertySection User = cmf::mainInput["User"];
-    User["sampleCoords"].MapTo(&sampleCoords) = new PropTreeLib::Variables::PTLStaticDoubleArray(cmf::GetDim(), "Sampling coordinates", [](int i){return 0.01;});
-    User["doRefinement"].MapTo(&doRefinement) = new PropTreeLib::Variables::PTLBoolean(false, "Perform refinemet");
+    PTL::PropertySection User = cmf::mainInput["User"];
+    User["sampleCoords"].MapTo(&sampleCoords) = new PTL::Variables::PTLStaticDoubleArray(cmf::GetDim(), "Sampling coordinates", [](int i){return 0.01;});
+    User["doRefinement"].MapTo(&doRefinement) = new PTL::Variables::PTLBoolean(false, "Perform refinemet");
     User.StrictParse();
     
     cmf::CartesianMeshParallelPartitionInfo domainPartition(cmf::mainInput["Domain"]["Partition"]); // note that if the order of this and the declaration

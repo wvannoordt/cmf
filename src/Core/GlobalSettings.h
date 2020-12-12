@@ -1,7 +1,7 @@
 #ifndef CMF_GLOBAL_SETTINGS_H
 #define CMF_GLOBAL_SETTINGS_H
 #include "ICmfInputObject.h"
-#include "PropTreeLib.h"
+#include "PTL.h"
 namespace cmf
 {   
     /// @brief A struct for global settings for an instance of CMF
@@ -24,7 +24,7 @@ namespace cmf
         /// @param title_in title of the mesh
         /// @param inputTree PropertryTree to be read from
         /// @author WVN
-        GlobalSettings(PropTreeLib::PropertySection& inputTree) : ICmfInputObject(inputTree)
+        GlobalSettings(PTL::PropertySection& inputTree) : ICmfInputObject(inputTree)
         {
             globalOutputEnabledHere = true;
             Define(*objectInput);
@@ -43,12 +43,12 @@ namespace cmf
 
         /// @brief Defines the input variables
         /// @author WVN
-        void Define(PropTreeLib::PropertySection& input)
+        void Define(PTL::PropertySection& input)
         {
-            input["Display"]["debugLevel"].MapTo(&debugLevel) = new PropTreeLib::Variables::PTLInteger(1, "Level of debug output written to screen");
-            input["Display"]["trackOutputOrigins"].MapTo(&trackOutputOrigins) = new PropTreeLib::Variables::PTLBoolean(false, "Writes file and line number to screen along with output");
+            input["Display"]["debugLevel"].MapTo(&debugLevel) = new PTL::Variables::PTLInteger(1, "Level of debug output written to screen");
+            input["Display"]["trackOutputOrigins"].MapTo(&trackOutputOrigins) = new PTL::Variables::PTLBoolean(false, "Writes file and line number to screen along with output");
             
-            input["Memory"]["allowStackAllocation"].MapTo(&allowStackAllocation) = new PropTreeLib::Variables::PTLBoolean(false, "If set to true, will enable the emulated stack (use \"false\" for better debugging)");
+            input["Memory"]["allowStackAllocation"].MapTo(&allowStackAllocation) = new PTL::Variables::PTLBoolean(false, "If set to true, will enable the emulated stack (use \"false\" for better debugging)");
         }
     };
 }

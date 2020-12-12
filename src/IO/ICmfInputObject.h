@@ -1,7 +1,7 @@
 #ifndef ICMF_INPUT_OBJECT_H
 #define ICMF_INPUT_OBJECT_H
 #include <string>
-#include "PropTreeLib.h"
+#include "PTL.h"
 #include "CmfError.h"
 namespace cmf
 {
@@ -13,7 +13,7 @@ namespace cmf
         std::string title;
 
         /// @brief A PropertyTree local to this object
-        PropTreeLib::PropertySection* objectInput;
+        PTL::PropertySection* objectInput;
 
         /// @brief Parses the options in the input file
         /// @author WVN
@@ -26,14 +26,14 @@ namespace cmf
 
         /// @brief Constructor for a general inpt object
         /// @param title_in The title of this object, to be read from the input tree
-        /// @param inputTree A PropertyTree to be read from. (See <a href="https://github.com/wvannoordt/PropTreeLib">PropTreeLib</a> )
+        /// @param inputTree A PropertyTree to be read from. (See <a href="https://github.com/wvannoordt/PTL">PTL</a> )
         /// @author WVN
-        ICmfInputObject(PropTreeLib::PropertySection & objectInput_in) {title = objectInput_in.GetSectionName();objectInput = &objectInput_in;}
+        ICmfInputObject(PTL::PropertySection & objectInput_in) {title = objectInput_in.GetSectionName();objectInput = &objectInput_in;}
 
         /// @brief Defines a general input object to be read from an input file
-        /// @param inputTree A PropertyTree to be read from. (See <a href="https://github.com/wvannoordt/PropTreeLib">PropTreeLib</a> )
+        /// @param inputTree A PropertyTree to be read from. (See <a href="https://github.com/wvannoordt/PTL">PTL</a> )
         /// @author WVN
-        virtual void Define(PropTreeLib::PropertySection& input) {}
+        virtual void Define(PTL::PropertySection& input) {}
     };
 }
 

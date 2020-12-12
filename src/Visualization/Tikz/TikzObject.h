@@ -2,7 +2,7 @@
 #define TikzObject_H
 
 #include <string>
-#include "PropTreeLib.h"
+#include "PTL.h"
 #include <iostream>
 #include <fstream>
 #include <fstream>

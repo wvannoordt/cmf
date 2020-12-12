@@ -1,9 +1,9 @@
-#include "PropTreeLib.h"
+#include "PTL.h"
 #include "cmf.h"
 #include <string>
 namespace cmf
 {
-    PropTreeLib::PropertyTree mainInput;
+    PTL::PropertyTree mainInput;
     GlobalSettings globalSettings;
     void Initialize(void)
     {
