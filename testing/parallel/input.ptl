@@ -12,7 +12,7 @@ GlobalSettings
 }
 Domain
 {
-	blockDim = [2, 2, 2]
+	blockDim = [6, 7, 4]
 	blockBounds = [0,1,0,1,0,1]
 	meshDataDim = [16, 16, 16]
 	exchangeDim = [0, 0, 0]

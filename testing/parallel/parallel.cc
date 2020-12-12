@@ -3,7 +3,7 @@
 #include "cmf.h"
 #include "cmftestutils.h"
 #include <chrono>
-#define LEVEL 4
+#define LEVEL 2
 int main(int argc, char** argv)
 {
     EXIT_WARN_IF_PARALLEL;
@@ -32,6 +32,7 @@ int main(int argc, char** argv)
     double radius = 0.1;
     cmf::AxisAlignedLongCylinder cyl(coords, radius, 0);
     domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->GetLevel() > LEVEL);});
+    int z = 1;
     if (doRefinement)
     {
         for (cmf::BlockIterator lb(domain.Blocks(), cmf::BlockFilters::Terminal); lb.HasNext(); lb++)
@@ -40,7 +41,8 @@ int main(int argc, char** argv)
             bool intersect = cyl.BoxIntersectsBoundary(bounds);
             if (intersect)
             {
-                lb.Node()->Refine(7);
+                lb.Node()->Refine(z++);
+                if (z==8) z=1;
             }
         }
         domain.Blocks()->PostRefinementCallbacks();
