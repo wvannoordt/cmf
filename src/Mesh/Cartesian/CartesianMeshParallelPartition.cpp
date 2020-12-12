@@ -3,6 +3,7 @@
 #include "CartesianMesh.h"
 #include "CmfError.h"
 #include "ParallelGroup.h"
+#include "BlockVtk.h"
 namespace cmf
 {
     CartesianMeshParallelPartition::CartesianMeshParallelPartition(CartesianMesh* mesh_in, CartesianMeshParallelPartitionInfo& inputInfo)
@@ -42,6 +43,20 @@ namespace cmf
             builder->AddNewNode(newNodes[i]);
         }
         mesh->AssertSynchronizeBlocks();
+    }
+    
+    void CartesianMeshParallelPartition::OutputPartitionToVtk(std::string filename)
+    {
+        if (mesh->GetGroup()->IsRoot())
+        {
+            BlockVtk output;
+            for (BlockIterator lb(mesh, BlockFilters::Terminal, IterableMode::serial); lb.HasNext(); lb++)
+            {
+                output << lb.Node();
+                output["rank"] << (double)partition[lb.Node()].rank;
+            }
+            output.Write(filename);
+        }
     }
     
     bool CartesianMeshParallelPartition::Mine(RefinementTreeNode* node)

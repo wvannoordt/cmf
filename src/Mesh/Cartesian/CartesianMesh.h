@@ -177,7 +177,7 @@ namespace cmf
             /// @author WVN
             /// @brief Creates a parallel partition for the current mesh
             /// @param partitionInfo the input struct containing parameters to create the paralle partition
-            void CreateParallelPartition(CartesianMeshParallelPartitionInfo& partitionInfo);
+            CartesianMeshParallelPartition* CreateParallelPartition(CartesianMeshParallelPartitionInfo& partitionInfo);
             
             /// @author WVN
             /// @brief Returns the title of the mesh

@@ -132,10 +132,11 @@ namespace cmf
         return output;
     }
     
-    void CartesianMesh::CreateParallelPartition(CartesianMeshParallelPartitionInfo& partitionInfo)
+    CartesianMeshParallelPartition* CartesianMesh::CreateParallelPartition(CartesianMeshParallelPartitionInfo& partitionInfo)
     {
         hasParallelPartition = true;
         partition = new CartesianMeshParallelPartition(this, partitionInfo);
+        return partition;
     }
     
     void CartesianMesh::AssertSynchronizeBlocks(void)

@@ -115,6 +115,11 @@ namespace cmf
         }
     }
     
+    bool ParallelGroup::IsRoot(void)
+    {
+        return isRoot;
+    }
+    
     size_t ParallelGroup::Sum(size_t val)
     {
         if (serialMode) return val;

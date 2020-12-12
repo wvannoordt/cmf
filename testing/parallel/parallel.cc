@@ -3,7 +3,7 @@
 #include "cmf.h"
 #include "cmftestutils.h"
 #include <chrono>
-#define LEVEL 2
+#define LEVEL 4
 int main(int argc, char** argv)
 {
     EXIT_WARN_IF_PARALLEL;
@@ -14,7 +14,6 @@ int main(int argc, char** argv)
     cmf::ReadInput("input.ptl");
     cmf::globalSettings = cmf::GlobalSettings(cmf::mainInput["GlobalSettings"]);
     cmf::CreateParallelContext(&argc, &argv);
-    
     PropTreeLib::PropertySection User = cmf::mainInput["User"];
     User["sampleCoords"].MapTo(&sampleCoords) = new PropTreeLib::Variables::PTLStaticDoubleArray(cmf::GetDim(), "Sampling coordinates", [](int i){return 0.01;});
     User["doRefinement"].MapTo(&doRefinement) = new PropTreeLib::Variables::PTLBoolean(false, "Perform refinemet");
@@ -24,14 +23,14 @@ int main(int argc, char** argv)
     // of inputInfo is switched, PTL will be sad :(
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
-    domain.CreateParallelPartition(domainPartition);
+    cmf::CartesianMeshParallelPartition* partition = domain.CreateParallelPartition(domainPartition);
     double coords[3];
     //coords[0] = 0.2 + 0.4*(1-cmf::globalGroup.Rank()); // <-- will cause the later assertion to fail.
-    coords[0] = 0.52;
-    coords[1] = 0.58;
-    coords[2] = 0.51231;
+    coords[0] = 0.5;
+    coords[1] = 0.5;
+    coords[2] = 0.5;
     double radius = 0.1;
-    cmf::AxisAlignedLongCylinder cyl(coords, radius, 2);
+    cmf::AxisAlignedLongCylinder cyl(coords, radius, 0);
     domain.Blocks()->SetRefineLimitCriterion([](cmf::RefinementTreeNode* n){return (n->GetLevel() > LEVEL);});
     if (doRefinement)
     {
@@ -44,8 +43,9 @@ int main(int argc, char** argv)
                 lb.Node()->Refine(7);
             }
         }
+        domain.Blocks()->PostRefinementCallbacks();
     }
-    domain.AssertSynchronizeBlocks();
+    partition->OutputPartitionToVtk("output/partition.vtk");
     cmf::CartesianMeshArray x = domain.CreateCoordinateVariable(0);
     return 0;
 }

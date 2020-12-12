@@ -91,6 +91,10 @@ namespace cmf
             /// @brief Initializes MPI if required
             /// @author WVN
             void MpiAutoInitIfRequired(void);
+            
+            /// @brief Returns isRoot
+            /// @author WVN
+            bool IsRoot(void);
         
         private:
             

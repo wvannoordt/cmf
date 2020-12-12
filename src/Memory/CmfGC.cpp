@@ -33,9 +33,8 @@ namespace cmf
 #endif
         totalAlloc++;
         allocSize += size;
-        size_t allocSizeGlobal = globalGroup.Sum(allocSize);
-        if (!stackAlloc) {WriteLine(5, "Allocating buffer, cumulative size: " + NiceCommaString(allocSizeGlobal));}
-        else {WriteLine(5, "Allocating (stack) buffer, cumulative size: " + NiceCommaString(allocSizeGlobal));}
+        if (!stackAlloc) {WriteLine(5, "Allocating buffer, cumulative size: " + NiceCommaString(allocSize));}
+        else {WriteLine(5, "Allocating (stack) buffer, cumulative size: " + NiceCommaString(allocSize));}
         std::string filestr(file);
         WriteLine(6, "From file " + filestr + ", line " + std::to_string(line));
         if (stackAlloc)

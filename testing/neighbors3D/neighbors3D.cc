@@ -8,7 +8,6 @@ int main(int argc, char** argv)
 {
     EXIT_WARN_IF_DIM_NOT(3);
     cmf::Initialize();
-    PropTreeLib::PropertyTree userInput;
     bool allNeighs;
     bool level0;
     bool doRefinement;
@@ -17,14 +16,16 @@ int main(int argc, char** argv)
     //cmfout.AddFileToStream("output/cmf.log");
     std::string outputName = "output/neigh.vtk";
 
-    userInput.SetAsSubtree(cmf::mainInput["user"]);
+    cmf::ReadInput("input.ptl");
+    PropTreeLib::PropertySection userInput = cmf::mainInput["user"];
     userInput["allNeighs"].MapTo(&allNeighs) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
     userInput["level0"].MapTo(&level0) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
     userInput["doRefinement"].MapTo(&doRefinement) = new PropTreeLib::Variables::PTLBoolean(false, "dummy");
     userInput["testDir"].MapTo(&testDir) = new PropTreeLib::Variables::PTLEnum("x", "x:y:z", "dummy");
     userInput["testVal"].MapTo(&testVal) = new PropTreeLib::Variables::PTLInteger(-1, "dummy");
+    testDir = 0;
+    testVal = 0;
     //userInput["outputName"].MapTo(&outputName) = new PropTreeLib::Variables::PTLString("output/neigh.vtk", "dummy");
-    cmf::ReadInput("input.ptl");
     userInput.StrictParse();
     cmf::mainInput.DebugPrint();
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);

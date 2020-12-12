@@ -27,7 +27,14 @@ namespace cmf
             /// @author WVN
             void operator << (double d) {data.push_back(d);}
             
+            /// @brief Returns the size of the data
+            /// @author WVN
             size_t Size(void) {return data.size();}
+            
+            /// @brief Returns data[i]
+            /// @param i Index
+            /// @author WVN
+            double operator [] (size_t i) {return data[i];}
             
         private:
             /// @brief The name of the scalar
@@ -104,6 +111,18 @@ namespace cmf
                 for (int i = 0; i < totalNumBlocks; i++)
                 {
                     nodes[i]->WriteBlockDataToVtkBuffers(points, edges, cellTypes, &dummy);
+                }
+                for (std::map<std::string, BlockVtkDouble*>::iterator it = doubleScalars.begin(); it != doubleScalars.end(); it++)
+                {
+                    VtkScalar* sBuf = output.CreateScalar(it->first, totalNumBlocks);
+                    sBuf->Component("SCALARS")->SetAttribute("bufferCount", totalNumBlocks);
+                    sBuf->Component("SCALARS")->SetAttribute("numPoints", totalNumBlocks);
+                    sBuf->Component("SCALARS")->SetAttribute("stride", 1);
+                    VtkBuffer scalarData(sBuf->Component("SCALARS"));
+                    for (int i = 0; i < totalNumBlocks; i++)
+                    {
+                        scalarData << (*(it->second))[i];
+                    }
                 }
                 output.Write();
             }

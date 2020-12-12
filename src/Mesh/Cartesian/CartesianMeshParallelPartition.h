@@ -64,6 +64,11 @@ namespace cmf
             /// @author WVN
             void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes);
             
+            /// @brief Outputs the parallel partition to a VTK file
+            /// @param filename The file to be written to
+            /// @author WVN
+            void OutputPartitionToVtk(std::string filename);
+            
         private:
             
             /// @brief Translates a CartesianMeshParallelPartitionInfo to the information 

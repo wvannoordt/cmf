@@ -44,11 +44,8 @@ int main(int argc, char** argv)
         for (int i = 0; i < 4; i++)
         {
             localBounds[i] = localBoundsBlock[i];
-            //Test the output system
-            WriteLine(2, "Copying buffer value " + std::to_string(i))
         }
         canvas.OutlineBox(localBounds[0], localBounds[1], localBounds[2], localBounds[3], 0, green, 1);
-        WriteLine(1, "Draw block " + std::to_string(u++));
     }
     img.Write("output/domain.png");
     cmf::Finalize();
