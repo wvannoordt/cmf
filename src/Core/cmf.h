@@ -22,6 +22,7 @@
 #include "SerialCartesianVtk.h"
 #include "Parallel.h"
 #include "ParallelGroup.h"
+#include "BlockIndexing.h"
 
 namespace cmf
 {

@@ -142,12 +142,12 @@ namespace cmf
             /// @author WVN
             CartesianMeshArray& CreateCoordinateVariable(int direction);
             
-            /// @brief Returns a BlockInfo struct computed from the givn block
+            /// @brief Returns a BlockInfo struct computed from the given block
             /// @param node The block to have info returned for
             /// @author WVN
             BlockInfo GetBlockInfo(RefinementTreeNode* node);
             
-            /// @brief Returns a BlockInfo struct computed from the givn block
+            /// @brief Returns a BlockInfo struct computed from the given block
             /// @param blockIter A block iterator that provides a block to get information for
             /// @author WVN
             BlockInfo GetBlockInfo(BlockIterator& blockIter);
@@ -182,6 +182,11 @@ namespace cmf
             /// @author WVN
             /// @brief Returns the title of the mesh
             std::string GetTitle(void);
+            
+            /// @author WVN
+            /// @brief Returns a mesh array with the given name
+            /// @param name The name of the array to fetch
+            CartesianMeshArray& operator [] (std::string name);
 
         private:
 

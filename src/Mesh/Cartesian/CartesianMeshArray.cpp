@@ -81,8 +81,10 @@ namespace cmf
     size_t CartesianMeshArray::GetArraySizePerBlock(void)
     {
         size_t numCells = 1;
+        int rankMult = 1;
+        for (int i = 0; i < rank; i++) rankMult *= dims[i];
         for (int d = 0; d < CMF_DIM; d++) numCells *= (handler->mesh->meshDataDim[d] + 2*handler->mesh->exchangeDim[d]);
-        return numCells * elementSize;
+        return numCells * elementSize * rankMult;
     }
     
     CartesianMeshArray::~CartesianMeshArray(void)

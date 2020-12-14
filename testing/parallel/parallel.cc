@@ -49,5 +49,6 @@ int main(int argc, char** argv)
     }
     partition->OutputPartitionToVtk("output/partition.vtk");
     cmf::CartesianMeshArray x = domain.CreateCoordinateVariable(0);
+    cmf::CartesianMeshArray array = domain.CreateNewVariable("myArray");
     return 0;
 }

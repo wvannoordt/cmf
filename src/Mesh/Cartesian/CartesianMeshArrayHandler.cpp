@@ -23,6 +23,12 @@ namespace cmf
         return (varList.find(name)!=varList.end());
     }
     
+    CartesianMeshArray* CartesianMeshArrayHandler::GetVariable(std::string name)
+    {
+        if (!VariableExists(name)) CmfError("The mesh \"" + mesh->GetTitle() + "\" attempted to fetch a non-existent variable \"" + name + "\".");
+        return (CartesianMeshArray*)varList[name];
+    }
+    
     CartesianMeshArrayHandler::~CartesianMeshArrayHandler(void)
     {
         

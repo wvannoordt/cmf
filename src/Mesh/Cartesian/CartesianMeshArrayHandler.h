@@ -28,6 +28,11 @@ namespace cmf
             /// @author WVN
             CartesianMeshArray* CreateNewVariable(ArrayInfo info, NodeFilter_t filter);
             
+            /// @brief Retrieves a variable with the given name
+            /// @param name The name of the variable to fetch
+            /// @author WVN
+            CartesianMeshArray* GetVariable(std::string name);
+            
             /// @brief Checks if a variable with the given name exists
             /// @param name The name to check
             /// @author WVN

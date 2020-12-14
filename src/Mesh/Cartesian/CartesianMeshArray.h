@@ -54,6 +54,8 @@ namespace cmf
             std::string GetFullName(void);
         
             /// @brief Allows for direct indexing using a block iterator
+            /// @param it The block iterator to index with
+            /// @author WVN
             void* operator [] (BlockIterator& it);
             
             /// @brief \see IBlockIterable::GetRefinementBlockObject

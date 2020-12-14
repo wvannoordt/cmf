@@ -139,6 +139,11 @@ namespace cmf
         return partition;
     }
     
+    CartesianMeshArray& CartesianMesh::operator [] (std::string name)
+    {
+        return *(arrayHandler->GetVariable(name));
+    }
+    
     void CartesianMesh::AssertSynchronizeBlocks(void)
     {
         bool syncedHash = meshGroup->HasSameValue(blocks->GetHash());

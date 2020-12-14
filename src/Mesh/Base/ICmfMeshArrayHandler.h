@@ -21,8 +21,14 @@ namespace cmf
             ~ICmfMeshArrayHandler(void);
 
             /// @brief Creates a new variable with the given name
+            /// @param info The constructor information for the current array
             /// @author WVN
             virtual ICmfMeshArray* CreateNewVariable(ArrayInfo info);
+            
+            /// @brief Returns the variable with the given name
+            /// @param name The name of the variable to fetch
+            /// @author WVN
+            virtual ICmfMeshArray* GetVariable(std::string name)=0;
 
             /// @brief Checks if a variable with the given name exists
             /// @param name The name to check
