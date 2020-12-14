@@ -71,6 +71,9 @@ namespace cmf
                 nodes.push_back(node);
             }
             
+            /// @brief Indexing operator for retrieving scalars. Creates the scalar if it isn't found
+            /// @param query The variable to fetch
+            /// @author WVN
             BlockVtkDouble& operator [] (std::string query)
             {
                 if (doubleScalars.find(query) == doubleScalars.end())
