@@ -30,9 +30,9 @@ int main(int argc, char** argv)
     }
     domain.Blocks()->OutputDebugVtk("output/mesh.vtk");
     auto start = std::chrono::high_resolution_clock::now();
-    cmf::CartesianMeshArray x = domain.CreateCoordinateVariable(0);
-    cmf::CartesianMeshArray y = domain.CreateCoordinateVariable(1);
-    cmf::CartesianMeshArray z = domain.CreateCoordinateVariable(2);
+    cmf::CartesianMeshArray& x = domain.CreateCoordinateVariable(0);
+    cmf::CartesianMeshArray& y = domain.CreateCoordinateVariable(1);
+    cmf::CartesianMeshArray& z = domain.CreateCoordinateVariable(2);
     auto finish = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = finish - start;
     double timeMS = 1000*elapsed.count();

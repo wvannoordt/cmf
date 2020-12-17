@@ -23,6 +23,7 @@
 #include "Parallel.h"
 #include "ParallelGroup.h"
 #include "BlockIndexing.h"
+#include "SvgImage.h"
 
 namespace cmf
 {

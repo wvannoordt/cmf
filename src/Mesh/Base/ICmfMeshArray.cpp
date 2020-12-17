@@ -10,6 +10,7 @@ namespace cmf
         {
             dims[i] = info.dimensions[i];
         }
+        rank = info.rank;
         elementSize = info.elementSize;
     }
     
