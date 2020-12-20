@@ -40,6 +40,21 @@ namespace cmf
         fillColor = color;
     }
     
+    std::vector<SvgElementGroup*>& SvgImage::GetGroups(void)
+    {
+        return elementGroups;
+    }
+    
+    std::vector<std::string>& SvgImage::GetGroupNames(void)
+    {
+        return elementNames;
+    }
+    
+    std::map<std::string, int>& SvgImage::GetGroupTable(void)
+    {
+        return elementLocations;
+    }
+    
     void SvgImage::Write(std::string filename)
     {
         SvgFileStream stream;
@@ -75,15 +90,15 @@ namespace cmf
         stream.Close();
     }
     
-    SvgElementGroup* SvgImage::operator [] (std::string name)
+    SvgElementGroup& SvgImage::operator [] (std::string name)
     {
         if (!HasGroup(name))
         {
-            return CreateGroup(name);
+            return *CreateGroup(name);
         }
         else
         {
-            return GetGroup(name);
+            return *GetGroup(name);
         }
     }
     

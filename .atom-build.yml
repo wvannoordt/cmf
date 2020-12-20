@@ -1,1 +1,1 @@
-cmd: 'DIM=3 DOLATEXOUTPUT=0 PARALLEL=1 TESTS=svg make test'
+cmd: 'DIM=3 DOLATEXOUTPUT=0 PARALLEL=1 TESTS=svg make test && eog ./testing/svg//output/test.svg'

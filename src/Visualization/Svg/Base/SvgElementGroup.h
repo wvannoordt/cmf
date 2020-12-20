@@ -36,6 +36,27 @@ namespace cmf
             /// @author WVN
             SvgElementGroup* GetGroup(void){return this;}
             
+            
+            /// @brief Advances the item one position within its container
+            /// @author WVN
+            void BringForward(void);
+            
+            /// @brief Advances the item to the front of its container
+            /// @author WVN
+            void BringToFront(void);
+            
+            /// @brief Retreats the item one position within its container
+            /// @author WVN
+            void SendBackward(void);
+            
+            /// @brief Sends the item to the first position within its container
+            /// @author WVN
+            void SendToBack(void);
+            
+            /// @brief Returns the lisst of groupd
+            /// @author WVN
+            std::vector<SvgElement*>& GetElements(void);
+            
         private:
             /// @brief The name of this group
             std::string groupName;
@@ -57,7 +78,7 @@ namespace cmf
                 elem->isExternallyCreated = true;
                 elements.push_back(elem);
             }
-            
+            friend class SvgElement;
             friend class SvgElementHandler;
     };
 }

@@ -1,5 +1,5 @@
 #include "SvgManipulateItem.h"
-
+#include "SvgElementHandler.h"
 namespace cmf
 {
     SvgManipulateItem::SvgManipulateItem(void)
@@ -19,5 +19,4 @@ namespace cmf
     {
         return visible;
     }
-    
 }

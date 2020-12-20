@@ -39,7 +39,22 @@ namespace cmf
             /// @param pos The value to set
             /// @author WVN
             void SetPosition(int pos) {containerPosition = pos;}
-                    
+            
+            /// @brief Advances the item one position within its container
+            /// @author WVN
+            virtual void BringForward(void)=0;
+            
+            /// @brief Advances the item to the front of its container
+            /// @author WVN
+            virtual void BringToFront(void)=0;
+            /// @brief Retreats the item one position within its container
+            /// @author WVN
+            virtual void SendBackward(void)=0;
+            
+            /// @brief Sends the item to the first position within its container
+            /// @author WVN
+            virtual void SendToBack(void)=0;
+            
         protected:
             
             /// @brief Indicates whether the item is visible
@@ -47,6 +62,11 @@ namespace cmf
             
             /// @brief Indicates the position of the current manipulateable element within its container
             int containerPosition;
+            
+            /// @brief Indicates whether or not this item is a group or not
+            bool isGroup;
+        
+        friend class SvgElementHandler;
     };
 }
 

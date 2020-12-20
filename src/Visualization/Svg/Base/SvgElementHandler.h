@@ -6,7 +6,7 @@
 #include "SvgRectangle.h"
 namespace cmf
 {
-    
+    class SvgManipulateItem;
     class SvgElementGroup;
     class SvgImage;
     /// @brief Class that represents an object that can create and manipulate SvgElement objects

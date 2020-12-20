@@ -58,7 +58,7 @@ namespace cmf
             /// @brief Returns a group by name and creates it if it does not already exist
             /// @param name The name of the group to return
         	/// @author WVN
-            SvgElementGroup* operator [] (std::string name);
+            SvgElementGroup& operator [] (std::string name);
             
             /// @brief Writes the image to a file
             /// @param filename The name of the file to write
@@ -82,6 +82,18 @@ namespace cmf
             /// @param name The name to check
         	/// @author WVN
             bool NameIsReserved(std::string name);
+            
+            /// @brief Returns the list of groups
+            /// @author WVN
+            std::vector<SvgElementGroup*>& GetGroups(void);
+            
+            /// @brief Returns the list of group names
+            /// @author WVN
+            std::vector<std::string>& GetGroupNames(void);
+            
+            /// @brief Returns the table of group layer IDs
+            /// @author WVN
+            std::map<std::string, int>& GetGroupTable(void);
             
         private:
             
