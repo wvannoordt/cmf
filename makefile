@@ -42,6 +42,10 @@ ifndef GPROF_ENABLE
 GPROF_ENABLE := 0
 endif
 
+ifndef CUDA_ENABLE
+CUDA_ENABLE := 0
+endif
+
 ifeq (${GPROF_ENABLE}, 1)
 GPROF_FLAG := -pg
 else
@@ -127,6 +131,7 @@ COMPILE_TIME_OPT += -DCMF_DIM=${DIM}
 COMPILE_TIME_OPT += -DCMF_ZLIB_EXT_ENABLE=${ZLIB_ENABLE}
 COMPILE_TIME_OPT += -DCMF_ENABLE_STACK_BLOB=1
 COMPILE_TIME_OPT += -DCMF_PARALLEL=${PARALLEL}
+COMPILE_TIME_OPT += -DCUDA_ENABLE=${CUDA_ENABLE}
 
 
 
@@ -145,19 +150,21 @@ endif
 DO_CLEAN :=
 ifeq (1, ${CUDA_ENABLE})
 ifeq (,$(wildcard ${CU_O_TARGET_NAME}))
-DO_CLEAN := clean
+#DO_CLEAN := clean
 endif
 endif
 
 ifeq (0, ${CUDA_ENABLE})
 ifneq (,$(wildcard ${CU_O_TARGET_NAME}))
-DO_CLEAN := clean
+#DO_CLEAN := clean
 endif
 endif
 
 ifeq (0, ${CUDA_ENABLE})
 SRC_FILES_HYBRID_D :=
 endif
+
+CURRENT_IFLAGS += ${ICUDA}
 
 
 TARGETNAME_HYBRID_H := $(addprefix ${CURRENT_OBJ_DIR}/,$(addsuffix .o,$(notdir ${SRC_FILES_HYBRID_H})))

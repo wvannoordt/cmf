@@ -26,6 +26,32 @@ static inline bool FileExists(std::string filename)
     return f.good();
 }
 
+static inline std::string UnitString(size_t quantity, std::string unit, size_t pitch)
+{
+    int numOrders = 0;
+    std::string prefixes[7];
+    prefixes[0] = "";
+    prefixes[1] = "K";
+    prefixes[2] = "M";
+    prefixes[3] = "G";
+    prefixes[4] = "T";
+    prefixes[5] = "P";
+    prefixes[6] = "P";
+    double dq = (double)quantity;
+    while (dq > pitch)
+    {
+        numOrders++;
+        dq/=pitch;
+        if (numOrders==6) break;
+    }
+    return std::to_string(dq) + " " + prefixes[numOrders] + unit;
+}
+
+static inline std::string UnitString(size_t quantity, std::string unit)
+{
+    return UnitString(quantity, unit, 1000);
+}
+
 static inline std::string NiceCommaString(size_t num)
 {
     std::string numstr = std::to_string(num);

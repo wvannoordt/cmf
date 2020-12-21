@@ -17,14 +17,14 @@ int main(int argc, char** argv)
     // cmf::SvgRectangle* rect4 = image["greens"].AddRectangle(270, 189, 450, 505);
     cmf::SvgRectangle* rect3 = image["layer1"].AddRectangle(588, 189, 839, 505);
     cmf::SvgRectangle* rect4 = image["layer1"].AddRectangle(270, 189, 450, 505);
-    image["layer1"].SetVisibility(false);
+    // image["layer1"].SetVisibility(false);
     
     rect3->SetFillColor("green");
     rect4->SetFillColor("green");
-    
+    rect1->BringToFront();
     // rect3->SendToBack();
     // rect4->SendToBack();
-    // image["greens"].SendToBack(); // gives seg faults
+    image["layer1"].SendToBack();
     
     rect2->SetFillOpacity(0.4);
     rect2->SetFillColor("red");

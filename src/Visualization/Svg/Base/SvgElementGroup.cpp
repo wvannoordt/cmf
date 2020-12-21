@@ -85,10 +85,10 @@ namespace cmf
         std::vector<std::string>& names = hostImage->GetGroupNames();
         int myPosition = containerPosition;
         if (myPosition == 0) return;
-        elements.insert(elements.begin(), this);
         elements.erase(elements.begin() + myPosition);
-        names.insert(names.begin(), this->groupName);
+        elements.insert(elements.begin(), this);
         names.erase(names.begin() + myPosition);
+        names.insert(names.begin(), this->groupName);
         for (int i = 0; i <= myPosition; i++)
         {
             elements[i]->containerPosition = i;

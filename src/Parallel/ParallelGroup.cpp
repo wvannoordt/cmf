@@ -16,12 +16,18 @@ namespace cmf
         isInitialized = false;
         serialMode = true;
         mpiAutoInitIfRequiredCalled = false;
+        deleteCudaDeviceHandler = false;
     }
     
     
     void ParallelGroup::CreateGroup(void)
     {
         CreateGroup(defaultCommunicator);
+        if (CUDA_ENABLE)
+        {
+            deleteCudaDeviceHandler = true;
+            deviceHandler = new CudaDeviceHandler();
+        }
     }
     
     void ParallelGroup::CreateGroup(CmfParallelCommunicator comm)
@@ -42,6 +48,11 @@ namespace cmf
     
     ParallelGroup::~ParallelGroup(void)
     {
+        if (deleteCudaDeviceHandler)
+        {
+            deleteCudaDeviceHandler = false;
+            delete deviceHandler;
+        }
         if (handleMpiFinalizationInternally)
         {
             int flag;

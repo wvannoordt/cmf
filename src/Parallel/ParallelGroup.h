@@ -3,6 +3,7 @@
 #include "CmfMPI.h"
 #include "Parallel.h"
 #include "ParallelTypes.h"
+#include "CudaDeviceHandler.h"
 namespace cmf
 {
     /// @brief Class defining a parrallel group around a parallel communicator.
@@ -127,6 +128,12 @@ namespace cmf
             
             /// @brief Indicates whether or not MpiAutoInitIfRequired has been called
             bool mpiAutoInitIfRequiredCalled;
+            
+            /// @brief A handler object for CUDA gpu devices attached to the current node
+            CudaDeviceHandler* deviceHandler;
+            
+            /// @brief Indicates whether or not this parallelgroup needs to delete the deviceHandler
+            bool deleteCudaDeviceHandler;
     };
 
     /// @brief The default parallel group for global parallel operations
