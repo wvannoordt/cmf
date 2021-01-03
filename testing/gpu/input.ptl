@@ -3,7 +3,7 @@ GlobalSettings
 {
 	Display
 	{
-		debugLevel = 5
+		debugLevel = 7
 		trackOutputOrigins = false
 	}
 	Memory

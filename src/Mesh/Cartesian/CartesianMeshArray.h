@@ -62,6 +62,10 @@ namespace cmf
             /// @author WVN
             RefinementBlock* GetRefinementBlockObject(void);
             
+            /// @brief Performs data exchanges to and from neighboring blocks
+            /// @author WVN
+            void Exchange(void);
+            
         private:
             
             /// @brief Allocates the unferlying pointer

@@ -36,6 +36,20 @@ int main(int argc, char** argv)
         node->Refine(7);
         domain.Blocks()->PostRefinementCallbacks();
     }
+    
+    int minTimeStep = 0;
+    int maxTimeStep = 50;
+    for (int i = minTimeStep; i <= maxTimeStep; i++)
+    {
+        if (cmf::globalGroup.IsRoot())
+        {
+            std::cout << "Step " << i << std::endl;
+            //Do exchanges
+            domain["x"].Exchange();
+            
+        }
+    }
+    
     if (outputFile)
     {
         if (cmf::globalGroup.IsRoot())

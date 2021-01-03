@@ -28,13 +28,18 @@ namespace cmf
         ptr = Cmf_Alloc(totalAllocSize);
     }
     
+    void CartesianMeshArray::Exchange(void)
+    {
+        WriteLine(7, "Exchange \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\"");
+    }
+    
     void CartesianMeshArray::GetDefinedNodes(void)
     {
         for (BlockIterator i(handler->mesh, filter, IterableMode::parallel); i.HasNext(); i++)
         {
             RefinementTreeNode* curNode = i.Node();
             definedNodes.push_back(curNode);
-            WriteLine(8, "Define \"" + GetFullName() + "\" on block " + PtrToStr(curNode));
+            WriteLine(9, "Define \"" + GetFullName() + "\" on block " + PtrToStr(curNode));
         }
     }
     

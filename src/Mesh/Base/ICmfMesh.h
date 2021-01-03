@@ -56,6 +56,11 @@ namespace cmf
             /// @param name The name of the variable
             /// @author WVN
             virtual ICmfMeshArray& DefineVariable(std::string name)=0;
+            
+            /// @author WVN
+            /// @brief Returns a mesh array with the given name
+            /// @param name The name of the array to fetch
+            virtual ICmfMeshArray& operator [] (std::string name)=0;
 
         protected:
             /// @brief Title of the mesh, used for debugging and output

@@ -32,6 +32,10 @@ namespace cmf
             /// @brief Returns variableName
             /// @author WVN
             std::string GetVarName(void);
+            
+            /// @brief Performs data exchanges to and from neighboring blocks, elements, etc.
+            /// @author WVN
+            virtual void Exchange(void)=0;
 
         protected:
 
