@@ -8,6 +8,7 @@ namespace cmf
     CartesianMeshArrayHandler::CartesianMeshArrayHandler(CartesianMesh* mesh_in)
     {
         mesh = mesh_in;
+        this->RegisterToBlocks(mesh_in->Blocks());
     }
     
     CartesianMeshArray* CartesianMeshArrayHandler::CreateNewVariable(ArrayInfo info, NodeFilter_t filter)
@@ -32,5 +33,11 @@ namespace cmf
     CartesianMeshArrayHandler::~CartesianMeshArrayHandler(void)
     {
         
+    }
+    
+    void CartesianMeshArrayHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)
+    {
+        // What do we do here?
+        CmfError("CartesianMeshArrayHandler::OnPostRefinementCallback is not implemented yet: cannot yet refine a mesh that contains a variable.");
     }
 }

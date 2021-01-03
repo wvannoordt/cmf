@@ -36,10 +36,10 @@ namespace cmf
             + NiceCommaString(devProps.maxGridSize[1]) + "  x  "
             + NiceCommaString(devProps.maxGridSize[2]));
         WriteLine(3, style + "Total constant memory:    " + UnitString(devProps.totalConstMem, "B", 1024));
-        WriteLine(3, style + "Compute capability:       " + std::to_string(devProps.major) + "." + std::to_string(devProps.minor));
-        WriteLine(3, style + "Clock rate:               " + UnitString(devProps.clockRate, "Hz"));
+        WriteLine(4, style + "Compute capability:       " + std::to_string(devProps.major) + "." + std::to_string(devProps.minor));
+        WriteLine(4, style + "Clock rate:               " + UnitString(1000*devProps.clockRate, "Hz"));
         WriteLine(3, style + "Multiprocessor count:     " + std::to_string(devProps.multiProcessorCount));
-        WriteLine(3, style + "Device PCI bus/device ID: " + std::to_string(devProps.pciBusID) + "/" + std::to_string(devProps.pciDeviceID));
+        WriteLine(4, style + "Device PCI bus/device ID: " + std::to_string(devProps.pciBusID) + "/" + std::to_string(devProps.pciDeviceID));
         WriteLine(3, "-------------------------------------------------------");
     }
     

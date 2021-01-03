@@ -2,6 +2,7 @@
 #define CMF_CARTESIAN_MESH_ARRAY_HANDLER
 #include "ICmfMeshArrayHandler.h"
 #include "CartesianMeshArray.h"
+#include "IPostRefinementCallback.h"
 #include "AmrFcnTypes.h"
 #include <string>
 #include <map>
@@ -10,7 +11,7 @@ namespace cmf
     class CartesianMesh;
     /// @brief Defines a MeshArrayHandler object for Cartesian meshes
     /// @author WVN
-    class CartesianMeshArrayHandler : public ICmfMeshArrayHandler
+    class CartesianMeshArrayHandler : public ICmfMeshArrayHandler, public IPostRefinementCallback
     {
         friend class CartesianMeshArray;
         public:
@@ -21,6 +22,11 @@ namespace cmf
             /// @brief Destructor
             /// @author WVN
             ~CartesianMeshArrayHandler(void);
+            
+            /// @brief The callback function for new nodes
+            /// @param newNodes The newly refined nodes to be handled
+            /// @author WVN
+            void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes);
             
             /// @brief Creates a new variable with the given name
             /// @param info Information about the variable \see ArrayInfo

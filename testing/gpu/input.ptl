@@ -1,4 +1,4 @@
-#define myvar myValue
+#define dataDim 16
 GlobalSettings
 {
 	Display
@@ -15,7 +15,7 @@ Domain
 {
 	blockDim = [6, 7, 4]
 	blockBounds = [0,1,0,1,0,1]
-	meshDataDim = [16, 16, 16]
+	meshDataDim = [$(dataDim), $(dataDim), $(dataDim)]
 	exchangeDim = [0, 0, 0]
 	refinementConstraintType = @choose(0, factor2CompletelyConstrained, free)
 	Partition
@@ -25,6 +25,8 @@ Domain
 }
 User
 {
-	sampleCoords = [0.5162, 0.5123, 0.5123]
-	doRefinement = true
+	outputFile = true
+	doRefinement = false // Note: at the time of writing, setting this to true will crash the application
+	outputFileName = output/data.vtk
+	sampleCoords = [0.001, 0.001, 0.001]
 }
