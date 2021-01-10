@@ -6,7 +6,7 @@ int main(int argc, char** argv)
     cmf::ReadInput("input.ptl");
     PTL::PropertySection user = cmf::mainInput["User"];
     double* imageBounds;
-    user["imageBounds"].MapTo(&imageBounds) = new PTL::Variables::PTLStaticDoubleArray(4, "The bounds of the image");
+    user["imageBounds"].MapTo(&imageBounds) = new PTL::PTLStaticDoubleArray(4, "The bounds of the image");
     user.StrictParse();
     
     cmf::SvgImage image(imageBounds[0], imageBounds[1], imageBounds[2], imageBounds[3]);

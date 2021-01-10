@@ -76,12 +76,12 @@ namespace cmf
         /// @author WVN
         void Define(PTL::PropertySection& input)
         {
-            input["blockDim"].MapTo(&blockDim) = new PTL::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 2;});
-            input["exchangeDim"].MapTo(&exchangeDim) = new PTL::Variables::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 0;});
-            input["blockBounds"].MapTo(&blockBounds) = new PTL::Variables::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds", [](int i){return (double)(i&1);});
+            input["blockDim"].MapTo(&blockDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 2;});
+            input["exchangeDim"].MapTo(&exchangeDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 0;});
+            input["blockBounds"].MapTo(&blockBounds) = new PTL::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds", [](int i){return (double)(i&1);});
             input["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
-                = new PTL::Variables::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
-            input["meshDataDim"].MapTo(&meshDataDim) = new PTL::Variables::PTLStaticIntegerArray(CMF_DIM, "Dimensions of data", [](int i){return 2;});
+                = new PTL::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
+            input["meshDataDim"].MapTo(&meshDataDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Dimensions of data", [](int i){return 2;});
         }
     };
 

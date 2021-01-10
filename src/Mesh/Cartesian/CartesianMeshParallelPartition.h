@@ -35,7 +35,7 @@ namespace cmf
         void Define(PTL::PropertySection& input)
         {
             input["partitionType"].MapTo(&partitionType)
-                = new PTL::Variables::PTLAutoEnum(CartesianPartitionType::uniform, CartesianPartitionTypeStr, "The partitioning approach used to partition the Cartesian mesh");
+                = new PTL::PTLAutoEnum(CartesianPartitionType::uniform, CartesianPartitionTypeStr, "The partitioning approach used to partition the Cartesian mesh");
         }
     };
     

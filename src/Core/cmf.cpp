@@ -1,6 +1,7 @@
 #include "PTL.h"
 #include "cmf.h"
 #include <string>
+#include "CmfCuda.h"
 namespace cmf
 {
     PTL::PropertyTree mainInput;
@@ -18,6 +19,10 @@ namespace cmf
     void Finalize(void)
     {
 
+    }
+    bool HasGpuSupport(void)
+    {
+        return CUDA_ENABLE?true:false;
     }
     
     bool IsParallel(void)

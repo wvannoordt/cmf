@@ -15,12 +15,17 @@ int main(int argc, char** argv)
     cmf::globalSettings = cmf::GlobalSettings(cmf::mainInput["GlobalSettings"]);
     cmf::CreateParallelContext(&argc, &argv);
     PTL::PropertySection user = cmf::mainInput["User"];
-    user["outputFile"].MapTo(&outputFile) = new PTL::Variables::PTLBoolean(false, "Output the partition file");
-    user["sampleCoords"].MapTo(&sampleCoords) = new PTL::Variables::PTLStaticDoubleArray(3, "Refinement coordinates", [](int i){return 0.1;});
-    user["doRefinement"].MapTo(&doRefinement) = new PTL::Variables::PTLBoolean(false, "Refine the mesh at the sample coordinates");
-    user["outputFileName"].MapTo(&outputFileName) = new PTL::Variables::PTLString("data.vtk", "Name of the output file");
+    user["outputFile"].MapTo(&outputFile) = new PTL::PTLBoolean(false, "Output the partition file");
+    user["sampleCoords"].MapTo(&sampleCoords) = new PTL::PTLStaticDoubleArray(3, "Refinement coordinates", [](int i){return 0.1;});
+    user["doRefinement"].MapTo(&doRefinement) = new PTL::PTLBoolean(false, "Refine the mesh at the sample coordinates");
+    user["outputFileName"].MapTo(&outputFileName) = new PTL::PTLString("data.vtk", "Name of the output file");
     user.StrictParse();
-    
+    if (cmf::HasGpuSupport())
+    {
+        //Test to see if we can allocate a gpu buffer
+        double* devPtr = (double*)Cmf_GpuAlloc(10*sizeof(double), 0);
+        Cmf_GpuFree(devPtr);
+    }
     cmf::CartesianMeshParallelPartitionInfo domainPartition(cmf::mainInput["Domain"]["Partition"]); // note that if the order of this and the declaration
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);

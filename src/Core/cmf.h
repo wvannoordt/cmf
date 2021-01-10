@@ -50,6 +50,10 @@ namespace cmf
     /// @brief Returns true if CMF was compiled with parallel MPI support
     /// @author WVN
     bool IsParallel(void);
+    
+    /// @brief Returns true if CMF was compiled with GPU support
+    /// @author WVN
+    bool HasGpuSupport(void);
 }
 
 #endif

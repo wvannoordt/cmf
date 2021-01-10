@@ -43,7 +43,7 @@ GPROF_ENABLE := 0
 endif
 
 ifndef CUDA_ENABLE
-CUDA_ENABLE := 0
+CUDA_ENABLE := 1
 endif
 
 ifeq (${GPROF_ENABLE}, 1)

@@ -5,6 +5,8 @@
 #include "DebugTools.hx"
 #include "ParallelGroup.h"
 #include "cmf.h"
+#include "CmfCuda.h"
+#include "CmfError.h"
 
 namespace cmf
 {
@@ -16,6 +18,9 @@ namespace cmf
         totalFree=0;
         stackBlobSize=CMF_STACK_BLOB_SIZE;
         stackBlobIdx = 0;
+        allocSizeGPU = 0;
+        totalAllocGPU = 0;
+        totalFreeGPU = 0;
     }
     
     CmfGC::~CmfGC(void)
@@ -23,6 +28,33 @@ namespace cmf
         WriteLineStd(3, "Freeing resources");
         WriteLineStd(3, "Total allocs: " + NiceCommaString(totalAlloc));
         WriteLineStd(3, "Total frees: " + NiceCommaString(totalFree));
+    }
+    
+    void* CmfGC::CmfGpuAlloc(size_t size, const int deviceNum, const char* file, const int line)
+    {
+        totalAllocGPU++;
+        allocSizeGPU += size;
+        if (!CUDA_ENABLE) CmfError("Cmf_GpuAlloc has been called, but CMF was compiled without CUDA support");
+        void* pointerOut;
+#if(CUDA_ENABLE)
+        CMF_CUDA_CHECK(cudaSetDevice(deviceNum));
+        CMF_CUDA_CHECK(cudaMalloc(&pointerOut, size));
+        WriteLine(5, "Allocating GPU buffer, cumulative size: " + NiceCommaString(allocSizeGPU));
+#endif
+        return pointerOut;
+    }
+    
+    void CmfGC::CmfGpuFree(void* ptr, const char* file, const int line, const char* varname)
+    {
+        if (!CUDA_ENABLE) CmfError("Cmf_GpuFree has been called, but CMF was compiled without CUDA support");
+    #if(CUDA_ENABLE)
+        CMF_CUDA_CHECK(cudaFree(ptr));
+        std::string filestr(file);
+        std::string varstr(varname);
+        WriteLine(5, "Freeing GPU variable " + varstr);
+        WriteLine(6, "From file " + filestr + ", line " + std::to_string(line));
+    #endif    
+        totalFreeGPU++;
     }
     
     void* CmfGC::CmfAlloc(size_t size, const char* file, const int line, bool allowStackAllocation)

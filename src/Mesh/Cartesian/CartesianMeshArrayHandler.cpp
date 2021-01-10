@@ -37,7 +37,7 @@ namespace cmf
     
     void CartesianMeshArrayHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)
     {
-        // What do we do here?
-        CmfError("CartesianMeshArrayHandler::OnPostRefinementCallback is not implemented yet: cannot yet refine a mesh that contains a variable.");
+        // What do we do here? (restriction operator)
+        if (varList.size()>0) CmfError("CartesianMeshArrayHandler::OnPostRefinementCallback is not implemented yet: cannot yet refine a mesh that contains a variable.");
     }
 }

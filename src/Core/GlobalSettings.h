@@ -45,10 +45,10 @@ namespace cmf
         /// @author WVN
         void Define(PTL::PropertySection& input)
         {
-            input["Display"]["debugLevel"].MapTo(&debugLevel) = new PTL::Variables::PTLInteger(1, "Level of debug output written to screen");
-            input["Display"]["trackOutputOrigins"].MapTo(&trackOutputOrigins) = new PTL::Variables::PTLBoolean(false, "Writes file and line number to screen along with output");
+            input["Display"]["debugLevel"].MapTo(&debugLevel) = new PTL::PTLInteger(1, "Level of debug output written to screen");
+            input["Display"]["trackOutputOrigins"].MapTo(&trackOutputOrigins) = new PTL::PTLBoolean(false, "Writes file and line number to screen along with output");
             
-            input["Memory"]["allowStackAllocation"].MapTo(&allowStackAllocation) = new PTL::Variables::PTLBoolean(false, "If set to true, will enable the emulated stack (use \"false\" for better debugging)");
+            input["Memory"]["allowStackAllocation"].MapTo(&allowStackAllocation) = new PTL::PTLBoolean(false, "If set to true, will enable the emulated stack (use \"false\" for better debugging)");
         }
     };
 }
