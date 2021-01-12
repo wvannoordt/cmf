@@ -3,7 +3,7 @@ GlobalSettings
 {
 	Display
 	{
-		debugLevel = 7
+		debugLevel = 0
 		trackOutputOrigins = false
 	}
 	Memory
@@ -23,7 +23,7 @@ Domain
 	}
 	Exchanges
 	{
-		exchangeDim = [0, 0, 0]
+		exchangeDim = [4, 4, 4]
 		interpolationOrder = 2
 	}
 }
