@@ -30,7 +30,6 @@ Domain
 User
 {
 	outputFile = true
-	doRefinement = false // Note: at the time of writing, setting this to true will crash the application
 	outputFileName = output/data.vtk
 	sampleCoords = [0.001, 0.001, 0.001]
 }

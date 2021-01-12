@@ -20,6 +20,10 @@ namespace cmf
         /// @brief The type of partition
         int partitionType;
         
+        /// @brief empty Constructor
+        /// @author WVN
+        CartesianMeshParallelPartitionInfo(void){}
+        
         /// @brief Constructor for the CartesianMeshInputInfo object.
         /// @param inputSection Section to be read from
         /// @author WVN

@@ -14,11 +14,13 @@ namespace cmf
         refinementConstraintType = input.refinementConstraintType;
         blocks = new RefinementBlock(blockDim, blockBounds, refinementConstraintType);
         meshDataDim = input.meshDataDim;
-        exchangeDim = input.exchangeDim;
+        exchangeDim = input.exchangeInfo.exchangeDim;
         arrayHandler = new CartesianMeshArrayHandler(this);
         meshGroup = &globalGroup;
         hasParallelPartition = false;
         partition = NULL;
+        CreateParallelPartition(input.partitionInfo);
+        arrayHandler->CreateExchangeHandler(input.exchangeInfo);
     }
 
     RefinementBlock* CartesianMesh::Blocks(void)
@@ -29,6 +31,11 @@ namespace cmf
     ICmfMeshArrayHandler* CartesianMesh::GetArrayHandler(void)
     {
         return arrayHandler;
+    }
+    
+    CartesianMeshParallelPartition* CartesianMesh::GetPartition(void)
+    {
+        return partition;
     }
 
     CartesianMeshArray& CartesianMesh::DefineVariable(std::string name)

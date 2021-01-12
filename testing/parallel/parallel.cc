@@ -18,12 +18,9 @@ int main(int argc, char** argv)
     User["sampleCoords"].MapTo(&sampleCoords) = new PTL::PTLStaticDoubleArray(cmf::GetDim(), "Sampling coordinates", [](int i){return 0.01;});
     User["doRefinement"].MapTo(&doRefinement) = new PTL::PTLBoolean(false, "Perform refinemet");
     User.StrictParse();
-    
-    cmf::CartesianMeshParallelPartitionInfo domainPartition(cmf::mainInput["Domain"]["Partition"]); // note that if the order of this and the declaration
-    // of inputInfo is switched, PTL will be sad :(
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
-    cmf::CartesianMeshParallelPartition* partition = domain.CreateParallelPartition(domainPartition);
+    auto partition = domain.GetPartition();
     double coords[3];
     //coords[0] = 0.2 + 0.4*(1-cmf::globalGroup.Rank()); // <-- will cause the later assertion to fail.
     coords[0] = 0.5;

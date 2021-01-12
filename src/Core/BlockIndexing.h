@@ -16,9 +16,9 @@
 #define cmf_piloop(mysymbol, myoffset, myinfo) for(mysymbol = -myoffset; mysymbol < myinfo.dataDim[0]+myoffset; mysymbol++)
 
 #if(CMF_IS3D)
-#define cmf_idx(myi0, myi1, myi2, myinfo) ((myi0)+myinfo.exchangeDim[0]) + ((myi1)+myinfo.exchangeDim[1])*myinfo.dataDim[0] + ((myi2)+myinfo.exchangeDim[2])*myinfo.dataDim[0]*myinfo.dataDim[1]
+#define cmf_idx(myi0, myi1, myi2, myinfo) ((myi0)+myinfo.exchangeDim[0]) + ((myi1)+myinfo.exchangeDim[1])*myinfo.totalDataDim[0] + ((myi2)+myinfo.exchangeDim[2])*myinfo.totalDataDim[0]*myinfo.totalDataDim[1]
 #else
-#define cmf_idx(myi0, myi1, myi2, myinfo) ((myi0)+myinfo.exchangeDim[0]) + ((myi1)+myinfo.exchangeDim[1])*myinfo.dataDim[0]
+#define cmf_idx(myi0, myi1, myi2, myinfo) ((myi0)+myinfo.exchangeDim[0]) + ((myi1)+myinfo.exchangeDim[1])*myinfo.totalDataDim[0]
 #endif
 
 #endif

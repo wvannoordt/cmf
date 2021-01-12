@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 {
     EXIT_WARN_IF_PARALLEL;
     EXIT_WARN_IF_DIM_NOT(3);
-    bool outputFile, doRefinement;
+    bool outputFile;
     double* sampleCoords;
     std::string outputFileName;
     cmf::ReadInput("input.ptl");
@@ -17,7 +17,6 @@ int main(int argc, char** argv)
     PTL::PropertySection user = cmf::mainInput["User"];
     user["outputFile"].MapTo(&outputFile) = new PTL::PTLBoolean(false, "Output the partition file");
     user["sampleCoords"].MapTo(&sampleCoords) = new PTL::PTLStaticDoubleArray(3, "Refinement coordinates", [](int i){return 0.1;});
-    user["doRefinement"].MapTo(&doRefinement) = new PTL::PTLBoolean(false, "Refine the mesh at the sample coordinates");
     user["outputFileName"].MapTo(&outputFileName) = new PTL::PTLString("data.vtk", "Name of the output file");
     user.StrictParse();
     if (cmf::HasGpuSupport())
@@ -30,15 +29,6 @@ int main(int argc, char** argv)
     cmf::CartesianMesh domain(inputInfo);
     cmf::RefinementTreeNode* node = domain.Blocks()->GetNodeAt(sampleCoords);
     domain.CreateCoordinateVariable(0);
-    if (doRefinement)
-    {
-        if (cmf::globalGroup.IsRoot())
-        {
-            std::cout << "Refine at " << sampleCoords[0] << ", " << sampleCoords[1] << ", " << sampleCoords[2] << std::endl;
-        }
-        node->Refine(7);
-        domain.Blocks()->PostRefinementCallbacks();
-    }
     
     int minTimeStep = 0;
     int maxTimeStep = 50;
@@ -49,6 +39,7 @@ int main(int argc, char** argv)
             std::cout << "Step " << i << std::endl;
             //Do exchanges
             domain["x"].Exchange();
+            
         }
     }
     

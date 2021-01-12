@@ -9,6 +9,8 @@ namespace cmf
     {
         mesh = mesh_in;
         this->RegisterToBlocks(mesh_in->Blocks());
+        defaultHandler = NULL;
+        requireDeleteDefaultHandler = false;
     }
     
     CartesianMeshArray* CartesianMeshArrayHandler::CreateNewVariable(ArrayInfo info, NodeFilter_t filter)
@@ -30,9 +32,19 @@ namespace cmf
         return (CartesianMeshArray*)varList[name];
     }
     
+    void CartesianMeshArrayHandler::CreateExchangeHandler(CartesianMeshExchangeInfo& inputInfo)
+    {
+        requireDeleteDefaultHandler = true;
+        defaultHandler = new CartesianMeshExchangeHandler(this->mesh, inputInfo);
+    }
+    
     CartesianMeshArrayHandler::~CartesianMeshArrayHandler(void)
     {
-        
+        if (requireDeleteDefaultHandler)
+        {
+            requireDeleteDefaultHandler = false;
+            delete defaultHandler;
+        }
     }
     
     void CartesianMeshArrayHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)

@@ -42,6 +42,5 @@ int main(int argc, char** argv)
     dataVtk << y;
     dataVtk << z;
     dataVtk.Write();
-    cmf::Finalize();
     return 0;
 }

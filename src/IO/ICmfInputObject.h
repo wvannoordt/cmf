@@ -3,6 +3,7 @@
 #include <string>
 #include "PTL.h"
 #include "CmfError.h"
+#include "Config.h"
 namespace cmf
 {
     /// @brief Defines a general input object to be read from an input file
@@ -17,7 +18,10 @@ namespace cmf
 
         /// @brief Parses the options in the input file
         /// @author WVN
-        void Parse(void){objectInput->StrictParse();}
+        void Parse(void)
+        {
+            objectInput->StrictParse();
+        }
 
         /// @brief Input-less constructor provided for manual construction
         /// @param title_in The title of this object, to be read from the input tree

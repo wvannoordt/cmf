@@ -74,7 +74,7 @@ namespace cmf
             blocks.push_back(lb.Node());
             BlockInfo info = mesh->GetBlockInfo(lb);
             int localPoints = 1;
-            __dloop(localPoints*=info.totalDataDim[d]);
+            __dloop(localPoints*=info.dataDim[d]);
             numBlocks++;
             totalNumPoints += localPoints;
         }

@@ -19,16 +19,17 @@ namespace cmf
         RegisterToBlocks(mesh->Blocks());
         WriteLine(1, "Partition Cartesian mesh \"" + mesh->GetTitle()
             + "\" with strategy \"" + CartesianPartitionTypeStr(inputInfo.partitionType) + "\"");
-        if (!mesh->meshGroup->IsInitialized())
-        {
-            CmfError("A partition for mesh \""+ mesh->GetTitle() + "\" was created without a valid parallel context!");
-        }
         switch(partitionType)
         {
             case CartesianPartitionType::uniform:
             {
                 deleteBuilder = true;
                 builder = new CartesianUniformPartition();                
+                break;
+            }
+            default:
+            {
+                CmfError("Invalid CartesianPartitionType type!");
                 break;
             }
         }

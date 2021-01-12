@@ -4,6 +4,7 @@
 #include "CartesianMeshArray.h"
 #include "IPostRefinementCallback.h"
 #include "AmrFcnTypes.h"
+#include "CartesianMeshExchangeHandler.h"
 #include <string>
 #include <map>
 namespace cmf
@@ -43,11 +44,24 @@ namespace cmf
             /// @param name The name to check
             /// @author WVN
             bool VariableExists(std::string name);
+            
+            /// @brief Creates the CartesianMeshExchangeHandler object for the current array handler.
+            /// @param inputInfo A constructor object to create the CartesianMeshExchangeHandler
+            /// @author WVN
+            void CreateExchangeHandler(CartesianMeshExchangeInfo& inputInfo);
         
         private:
             
             /// @brief The underlying mesh object
             CartesianMesh* mesh;
+            
+            /// @brief The object responsible for handling mesh exchanges.
+            /// \pre Note that this is not built in the constructor, 
+            /// but is created from an external call from CartesianMesh::CartesianMesh
+            CartesianMeshExchangeHandler* defaultHandler;
+            
+            /// @brief Indicates whether or not the current object should delete defaultHandler
+            bool requireDeleteDefaultHandler;
             
     };
 }

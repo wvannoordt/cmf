@@ -48,9 +48,6 @@ namespace cmf
     {
         /// @brief An array of size CMF_DIM that represents the initial block dimensions
         int* blockDim;
-        
-        /// @brief An array of size CMF_DIM that represents the number of exchange cells (used to facilitate data exchange) in each direction
-        int* exchangeDim;
 
         /// @brief An array of size 2*CMF_DIM the represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
         double* blockBounds;
@@ -60,6 +57,12 @@ namespace cmf
 
         /// @brief An array of size CMF_DIM that represents the initial block data dimensions
         int* meshDataDim;
+        
+        /// @brief A struct containing information to create a parallel partition
+        CartesianMeshParallelPartitionInfo partitionInfo;
+        
+        /// @brief A struct containing information to create a parallel partition
+        CartesianMeshExchangeInfo exchangeInfo;
 
         /// @brief Constructor for the CartesianMeshInputInfo object.
         /// @param title_in title of the mesh
@@ -77,11 +80,12 @@ namespace cmf
         void Define(PTL::PropertySection& input)
         {
             input["blockDim"].MapTo(&blockDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 2;});
-            input["exchangeDim"].MapTo(&exchangeDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 0;});
             input["blockBounds"].MapTo(&blockBounds) = new PTL::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds", [](int i){return (double)(i&1);});
             input["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
                 = new PTL::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
             input["meshDataDim"].MapTo(&meshDataDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Dimensions of data", [](int i){return 2;});
+            partitionInfo.Define(input["Partition"]);
+            exchangeInfo.Define(input["Exchanges"]);
         }
     };
 
@@ -175,11 +179,6 @@ namespace cmf
             void AssertSynchronizeBlocks(void);
             
             /// @author WVN
-            /// @brief Creates a parallel partition for the current mesh
-            /// @param partitionInfo the input struct containing parameters to create the paralle partition
-            CartesianMeshParallelPartition* CreateParallelPartition(CartesianMeshParallelPartitionInfo& partitionInfo);
-            
-            /// @author WVN
             /// @brief Returns the title of the mesh
             std::string GetTitle(void);
             
@@ -187,8 +186,17 @@ namespace cmf
             /// @brief Returns a mesh array with the given name
             /// @param name The name of the array to fetch
             CartesianMeshArray& operator [] (std::string name);
+            
+            /// @author WVN
+            /// @brief Returns the parallel partition object
+            CartesianMeshParallelPartition* GetPartition(void);
 
         private:
+            
+            /// @author WVN
+            /// @brief Creates a parallel partition for the current mesh
+            /// @param partitionInfo the input struct containing parameters to create the paralle partition
+            CartesianMeshParallelPartition* CreateParallelPartition(CartesianMeshParallelPartitionInfo& partitionInfo);
 
             /// @brief contains the mesh blocks of the current mesh
             RefinementBlock* blocks;
