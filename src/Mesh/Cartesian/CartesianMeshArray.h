@@ -15,6 +15,9 @@ namespace cmf
     class CartesianMeshArray : public ICmfMeshArray, public IBlockIterable
     {
         public:
+            
+            using ICmfMeshArray::operator=;
+            
             /// @brief Constructor
             /// @param name The name of the variable
             /// @author WVN

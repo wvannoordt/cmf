@@ -3,6 +3,8 @@
 #include <string>
 #include "ArrayInfo.h"
 #include "CmfError.h"
+#include "SymbolicEvaluation.h"
+#include "BinaryExpression.h"
 namespace cmf
 {
     class ICmfMeshArrayHandler;
@@ -36,6 +38,27 @@ namespace cmf
             /// @brief Performs data exchanges to and from neighboring blocks, elements, etc.
             /// @author WVN
             virtual void Exchange(void)=0;
+            
+            /// @brief Addition symbolic operator
+            /// @author WVN
+            BinaryExpression operator + (ICmfMeshArray& rhs);
+            
+            /// @brief Subtraction symbolic operator
+            /// @author WVN
+            BinaryExpression operator - (ICmfMeshArray& rhs);
+            
+            /// @brief Multiplication symbolic operator
+            /// @author WVN
+            BinaryExpression operator * (ICmfMeshArray& rhs);
+            
+            /// @brief Division symbolic operator
+            /// @author WVN
+            BinaryExpression operator / (ICmfMeshArray& rhs);
+            
+            /// @brief Allows for assignment of array values based on an expression involving other arrays
+            /// @author WVN
+            ICmfMeshArray& operator = (const SymbolicEvaluation& rhsExpression);
+            
 
         protected:
 

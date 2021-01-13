@@ -1,5 +1,7 @@
 #include "ICmfMeshArray.h"
 #include "CmfScreen.h"
+#include "MeshArrayExpression.h"
+#include "BinaryExpression.h"
 namespace cmf
 {
     ICmfMeshArray::ICmfMeshArray(ArrayInfo info)
@@ -27,6 +29,39 @@ namespace cmf
     void ICmfMeshArray::Destroy(void)
     {
         
+    }
+    
+    ICmfMeshArray& ICmfMeshArray::operator = (const SymbolicEvaluation& rhsExpression)
+    {
+        return *this;
+    }
+    
+    BinaryExpression ICmfMeshArray::operator + (ICmfMeshArray& rhs)
+    {
+        MeshArrayExpression lval(this);
+        MeshArrayExpression rval(&rhs);
+        return BinaryExpression(lval, BinaryOperator::addition, rval);
+    }
+    
+    BinaryExpression ICmfMeshArray::operator - (ICmfMeshArray& rhs)
+    {
+        MeshArrayExpression lval(this);
+        MeshArrayExpression rval(&rhs);
+        return BinaryExpression(lval, BinaryOperator::subtraction, rval);
+    }
+    
+    BinaryExpression ICmfMeshArray::operator * (ICmfMeshArray& rhs)
+    {
+        MeshArrayExpression lval(this);
+        MeshArrayExpression rval(&rhs);
+        return BinaryExpression(lval, BinaryOperator::multiplication, rval);
+    }
+    
+    BinaryExpression ICmfMeshArray::operator / (ICmfMeshArray& rhs)
+    {
+        MeshArrayExpression lval(this);
+        MeshArrayExpression rval(&rhs);
+        return BinaryExpression(lval, BinaryOperator::division, rval);
     }
     
     ICmfMeshArray::~ICmfMeshArray(void)
