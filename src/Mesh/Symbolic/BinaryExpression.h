@@ -1,6 +1,7 @@
 #ifndef CMF_BINARY_EXPRESION_H
 #define CMF_BINARY_EXPRESION_H
 #include "SymbolicEvaluation.h"
+#include "PTL.h"
 namespace cmf
 {
     namespace BinaryOperator
@@ -12,6 +13,18 @@ namespace cmf
             multiplication,
             division
         };
+    }
+    
+    inline static std::string BinaryOperatorStr(int refType)
+    {
+        switch (refType)
+        {
+            case BinaryOperator::addition: return "+";
+            case BinaryOperator::subtraction: return "-";
+            case BinaryOperator::multiplication: return "*";
+            case BinaryOperator::division: return "/";
+        }
+        return PTL_AUTO_ENUM_TERMINATOR;
     }
     
     /// @brief A class that represents a binary symbolic expression
@@ -29,16 +42,21 @@ namespace cmf
             /// @brief Destructor
             /// @author WVN
             ~BinaryExpression(void);
+            
+            /// @brief Returns a string representing this symbolic evaluation
+            /// @author WVN
+            std::string GetExpressionString(void) override;
+            
         private:
             
             /// @brief The type of binary operation being applied
             BinaryOperator::BinaryOperator oper;
             
             /// @brief The left expression
-            SymbolicEvaluation* left;
+            SymbolicEvaluation left;
             
             /// @brief The right expression
-            SymbolicEvaluation* right;
+            SymbolicEvaluation right;
     };
 }
 

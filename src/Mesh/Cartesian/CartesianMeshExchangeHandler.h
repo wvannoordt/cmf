@@ -3,6 +3,10 @@
 #include "CmfError.h"
 #include "CmfScreen.h"
 #include "ICmfInputObject.h"
+#include "IPostRefinementCallback.h"
+#include "RefinementTreeNode.h"
+#include <map>
+
 namespace cmf
 {
     class CartesianMesh;
@@ -39,7 +43,7 @@ namespace cmf
     };
     /// @brief Defines an object for handling data exchanges on Cartesian meshes
     /// @author WVN
-    class CartesianMeshExchangeHandler
+    class CartesianMeshExchangeHandler : public IPostRefinementCallback
     {
         public:
             /// @brief Constructor
@@ -52,6 +56,11 @@ namespace cmf
             /// @author WVN
             ~CartesianMeshExchangeHandler(void);
             
+            /// @brief The callback function for new nodes
+            /// @param newNodes The newly refined nodes to be handled
+            /// @author WVN
+            void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes);
+            
         private:
             /// @param mesh The mesh over which the exchanges are defined
             CartesianMesh* mesh;
@@ -61,6 +70,9 @@ namespace cmf
             
             /// @brief An array of size CMF_DIM that represents the number of exchange cells (used to facilitate data exchange) in each direction
             int* exchangeDim;
+        
+            /// @brief Map of block exchange patterns
+            std::map<RefinementTreeNode*, int> exchanges;
     };
 }
 

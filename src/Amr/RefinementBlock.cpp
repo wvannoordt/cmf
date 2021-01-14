@@ -55,6 +55,11 @@ namespace cmf
         return &allNodes;
     }
     
+    RefinementConstraint::RefinementConstraint RefinementBlock::GetRefinementConstraintType(void)
+    {
+        return refinementConstraintType;
+    }
+    
     RefinementBlock* RefinementBlock::GetRefinementBlockObject(void)
     {
         return this;

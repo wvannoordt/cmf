@@ -11,4 +11,9 @@ namespace cmf
     {
         
     }
+    
+    std::string SymbolicEvaluation::GetExpressionString(void)
+    {
+        return "[?SymbolicEvaluation]";
+    }
 }

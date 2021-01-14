@@ -21,6 +21,15 @@ namespace cmf
             /// @brief Destructor
             /// @author WVN
             ~MeshArrayExpression(void);
+            
+            /// @brief Returns a string representing this symbolic evaluation
+            /// @author WVN
+            std::string GetExpressionString(void) override;
+            
+            /// @brief Assignment operator
+            /// @author WVN
+            MeshArrayExpression& operator = (const MeshArrayExpression& rhs);
+            
         private:
             
             /// @brief The mesh array that this expression points to

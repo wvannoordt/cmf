@@ -18,7 +18,8 @@ int main(int argc, char** argv)
     cmf::CartesianMeshArray& y = domain.CreateCoordinateVariable(1);
     cmf::CartesianMeshArray& z = domain.CreateCoordinateVariable(2);
     cmf::CartesianMeshArray& newVariable = domain.DefineVariable("newVariable");
-    cmf::SymbolicEvaluation newVariable2 = x + y; // <-- goals
+    auto newVariable2 = x + y; // <-- goals
+    std::cout << newVariable2.GetExpressionString() << std::endl;
     newVariable = newVariable2;
     cmf::SerialCartesianVtk dataVtk(domain, "output/data.vtk");
     dataVtk << x;

@@ -147,6 +147,10 @@ namespace cmf
             /// @author WVN
             int AddPostRefinementCallbackObject(IPostRefinementCallback* obj);
             
+            /// @brief Returns the refinement constraint type
+            /// @author WVN
+            RefinementConstraint::RefinementConstraint GetRefinementConstraintType(void);
+            
         private:
             
             /// @brief Creates the initial grid of RefinementTreeNode objects

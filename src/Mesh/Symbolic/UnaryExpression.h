@@ -15,6 +15,10 @@ namespace cmf
             /// @brief Destructor
             /// @author WVN
             ~UnaryExpression(void);
+            
+            /// @brief Assignment operator
+            /// @author WVN
+            UnaryExpression& operator = (const UnaryExpression& rhs){};
         private:
     };
 }
