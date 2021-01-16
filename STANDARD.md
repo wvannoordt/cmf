@@ -9,7 +9,7 @@ The general philosophy of this project is straightforward: favor ease-of-use whe
 ## Documentation
 
 Documentation for CMF is done using Doxygen. As such, it is important that functions/variables/classes etc. are documented accordingly. Descriptions should be as comprehensive as possible
-and should be able to be understood when in the context of whatever class/file they appear in.
+and should be able to be understood when in the context of whatever class/file they appear in. Everything should be documented.
 
 ## Naming Conventions and Namespaces
 
@@ -36,7 +36,7 @@ the implementation justifies it, a macro is fine. Macro expansions should use co
 ## Output
 
 CMF is a library, meaning it ultimately accompanies an application that is being developed externally, which might require a specific way of managing output. Therefore,
-any output statements in CMF should use the built-in `Writeline` functions, and the debug level parameter should be strictly greater than 0. This means that by default,
+any output statements in CMF should use the built-in `WriteLine` functions, and the debug level parameter should be strictly greater than 0. This means that by default,
 there is absolutely no output from CMF, and this is the desired behavior. In the case that CMF throws an error and `WriteLine` is not enough for the required output,
 CMF provides a stream output class with a global instance `cmfout`, used the same as `std::cout`, that can be used for output. The reason to use this is because
 `cmfout` can be configured to output to log files as well as the terminal, and is what `WriteLine` uses internally. There should be no use of `std::cout` at all, and
