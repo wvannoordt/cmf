@@ -7,6 +7,7 @@
 #include "AmrFcnTypes.h"
 #include "IBlockIterable.h"
 #include "BlockIterator.h"
+#include "DataExchangePattern.h"
 namespace cmf
 {
     class CartesianMeshArrayHandler;
@@ -79,10 +80,12 @@ namespace cmf
             /// @author WVN
             void GetDefinedNodes(void);
             
+            /// @brief Creates the exchange pattern for this array
+            /// @author WVN
+            void CreateExchangePattern(void);
             
             /// @brief A filter definig the blocks that this variable is defined over
             NodeFilter_t filter;
-            
             
             /// @brief The handler responsible for this array
             CartesianMeshArrayHandler* handler;
@@ -92,6 +95,9 @@ namespace cmf
             
             /// @brief Tells whether or not the underlying pointer is allocated or not
             bool isAllocated;
+            
+            /// @brief The parallel exchange pattern for this mesh array
+            DataExchangePattern* exchangePattern;
             
             /// @brief Nodes over which this variable is defined
             std::vector<RefinementTreeNode*> definedNodes;

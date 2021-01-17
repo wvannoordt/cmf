@@ -49,6 +49,10 @@ namespace cmf
             /// @param inputInfo A constructor object to create the CartesianMeshExchangeHandler
             /// @author WVN
             void CreateExchangeHandler(CartesianMeshExchangeInfo& inputInfo);
+            
+            /// @brief Returns the default exchange handler for this mesh
+            /// @author WVN
+            CartesianMeshExchangeHandler* GetDefaultExchangeHandler(void);
         
         private:
             

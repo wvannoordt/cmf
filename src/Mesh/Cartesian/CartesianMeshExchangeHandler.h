@@ -5,6 +5,8 @@
 #include "ICmfInputObject.h"
 #include "IPostRefinementCallback.h"
 #include "RefinementTreeNode.h"
+#include "DataExchangePattern.h"
+#include "CartesianMeshArray.h"
 #include <map>
 
 namespace cmf
@@ -61,6 +63,11 @@ namespace cmf
             /// @author WVN
             void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes);
             
+            /// @brief Creates a new parallel exchange pattern for the provided array
+            /// @param meshArray The array to create an exchange pattern for
+            /// @author WVN
+            DataExchangePattern* CreateMeshArrayExchangePattern(CartesianMeshArray* meshArray);
+            
         private:
             /// @param mesh The mesh over which the exchanges are defined
             CartesianMesh* mesh;
@@ -72,7 +79,7 @@ namespace cmf
             int* exchangeDim;
         
             /// @brief Map of block exchange patterns
-            std::map<RefinementTreeNode*, int> exchanges;
+            std::map<CartesianMeshArray*, DataExchangePattern*> exchanges;
     };
 }
 

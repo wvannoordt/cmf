@@ -32,6 +32,11 @@ namespace cmf
         return (CartesianMeshArray*)varList[name];
     }
     
+    CartesianMeshExchangeHandler* CartesianMeshArrayHandler::GetDefaultExchangeHandler(void)
+    {
+        return defaultHandler;
+    }
+    
     void CartesianMeshArrayHandler::CreateExchangeHandler(CartesianMeshExchangeInfo& inputInfo)
     {
         requireDeleteDefaultHandler = true;

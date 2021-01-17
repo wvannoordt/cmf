@@ -11,9 +11,11 @@ namespace cmf
         isAllocated = false;
         handler = handler_in;
         filter = filter_in;
+        exchangePattern = NULL;
         GetDefinedNodes();
         Allocate();
         DefinePointerMap();
+        CreateExchangePattern();
     }
     
     void CartesianMeshArray::Allocate(void)
@@ -28,9 +30,16 @@ namespace cmf
         ptr = Cmf_Alloc(totalAllocSize);
     }
     
+    void CartesianMeshArray::CreateExchangePattern()
+    {
+        exchangePattern = this->handler->GetDefaultExchangeHandler()->CreateMeshArrayExchangePattern(this);
+        WriteLine(0, "WARNING: CartesianMeshArray::CreateExchangePattern not fully implemented");
+    }
+    
     void CartesianMeshArray::Exchange(void)
     {
         WriteLine(7, "Exchange \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\"");
+        exchangePattern->ExchangeData();
     }
     
     void CartesianMeshArray::GetDefinedNodes(void)

@@ -18,6 +18,17 @@ namespace cmf
         }
     }
     
+    DataExchangePattern* CartesianMeshExchangeHandler::CreateMeshArrayExchangePattern(CartesianMeshArray* meshArray)
+    {
+        if (exchanges.find(meshArray)!=exchanges.end())
+        {
+            CmfError("Attempted to define duplicate exchange pattern for array \"" + meshArray->GetFullName() + "\"");
+        }
+        DataExchangePattern* newPattern = new DataExchangePattern(mesh->GetGroup());
+        exchanges.insert({meshArray, newPattern});
+        return newPattern;
+    }
+    
     void CartesianMeshExchangeHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)
     {
         WriteLine(1, "WARNING!!!!!!! CartesianMeshExchangeHandler::OnPostRefinementCallback not implemented");
@@ -25,6 +36,9 @@ namespace cmf
     
     CartesianMeshExchangeHandler::~CartesianMeshExchangeHandler(void)
     {
-        
+        for (auto p: exchanges)
+        {
+            delete p.second;
+        }
     }
 }
