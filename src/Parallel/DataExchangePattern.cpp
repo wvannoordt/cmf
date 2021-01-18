@@ -12,8 +12,20 @@ namespace cmf
         
     }
     
+    void DataExchangePattern::Pack(void)
+    {
+        
+    }
+    
+    void DataExchangePattern::Unpack(void)
+    {
+        
+    }
+    
     void DataExchangePattern::ExchangeData(void)
     {
+        Pack();
         WriteLine(0, "WARNING: DataExchangePattern::ExchangeData not fully implemented");
+        Unpack();
     }
 }

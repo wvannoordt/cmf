@@ -22,6 +22,14 @@ namespace cmf
             void ExchangeData(void);
         private:
             
+            /// @brief Aggregates the information to be broadcasted using this exchange pattern and places it in a single data array
+        	/// @author WVN
+            void Pack(void);
+            
+            /// @brief Deaggregates the information to received using this exchange pattern and scatters it to the appropriate arrays
+        	/// @author WVN
+            void Unpack(void);
+            
             /// @brief the group that this exchange pattern is executed over
             ParallelGroup* group;
     };
