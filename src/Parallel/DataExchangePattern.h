@@ -1,9 +1,13 @@
 #ifndef CMF_DATA_EXCHANGE_PATTERN_H
 #define CMF_DATA_EXCHANGE_PATTERN_H
 #include "ParallelGroup.h"
+#include "IDataTransaction.h"
+#include <vector>
+#include "CmfGC.h"
 namespace cmf
 {
-    /// @brief Defines a series of data transactions that can be repeated
+    /// @brief Defines a series of data transactions that can be repeated, and also a good reference if you want to 
+    /// know how to spell "receive"
 	/// @author WVN
     class DataExchangePattern
     {
@@ -22,6 +26,14 @@ namespace cmf
             void ExchangeData(void);
         private:
             
+            /// @brief Computes the size of the outgoing buffer and allocates it accordingly
+        	/// @author WVN
+            void ResizeOutBuffer(void);
+            
+            /// @brief Computes the size of the incoming buffer and allocates it accordingly
+        	/// @author WVN
+            void ResizeInBuffer(void);
+            
             /// @brief Aggregates the information to be broadcasted using this exchange pattern and places it in a single data array
         	/// @author WVN
             void Pack(void);
@@ -30,8 +42,29 @@ namespace cmf
         	/// @author WVN
             void Unpack(void);
             
-            /// @brief the group that this exchange pattern is executed over
+            /// @brief The group that this exchange pattern is executed over
             ParallelGroup* group;
+            
+            /// @brief The list of individual transactions
+            std::vector<IDataTransaction*> transactions;
+            
+            /// @brief Indicates whether or not the outgoing buffer reqires resizing
+            bool resizeOutBufferRequired;
+            
+            /// @brief Indicates whether or not the outgoing buffer reqires resizing
+            bool resizeInBufferRequired;
+            
+            /// @brief The buffer for outgoing messages
+            char* sendBuffer;
+            
+            /// @brief Indicates whether or not sendBuffer is allocated
+            bool sendBufferIsAllocated;
+            
+            /// @brief The buffer for incoming messages
+            char* receiveBuffer;
+            
+            /// @brief Indicates whether or not sendBuffer is allocated
+            bool receiveBufferIsAllocated;
     };
 }
 
