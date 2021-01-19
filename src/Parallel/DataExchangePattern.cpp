@@ -30,7 +30,15 @@ namespace cmf
     
     void DataExchangePattern::Pack(void)
     {
-        
+        char* ptr = sendBuffer;
+        for (const auto tr:transactions)
+        {
+            if (tr->Sender() == group->Rank())
+            {
+                tr->Pack(ptr);
+                ptr += tr->GetPackedSize();
+            }
+        }
     }
     
     void DataExchangePattern::Unpack(void)

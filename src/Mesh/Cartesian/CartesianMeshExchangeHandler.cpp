@@ -1,6 +1,7 @@
 #include "CartesianMeshExchangeHandler.h"
 #include "CartesianMesh.h"
 #include "RefinementConstraint.h"
+#include "BlockIterator.h"
 namespace cmf
 {
     CartesianMeshExchangeHandler::CartesianMeshExchangeHandler(CartesianMesh* mesh_in, CartesianMeshExchangeInfo& inputInfo)
@@ -25,8 +26,17 @@ namespace cmf
             CmfError("Attempted to define duplicate exchange pattern for array \"" + meshArray->GetFullName() + "\"");
         }
         DataExchangePattern* newPattern = new DataExchangePattern(mesh->GetGroup());
+        DefineExchangePatternsForArray(meshArray, newPattern);
         exchanges.insert({meshArray, newPattern});
         return newPattern;
+    }
+    
+    void CartesianMeshExchangeHandler::DefineExchangePatternsForArray(CartesianMeshArray* meshArray, DataExchangePattern* pattern)
+    {
+        for (BlockIterator lb(meshArray, BlockFilters::Every, IterableMode::serial); lb.HasNext(); lb++)
+        {
+            
+        }
     }
     
     void CartesianMeshExchangeHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)

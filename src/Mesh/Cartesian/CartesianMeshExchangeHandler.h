@@ -69,7 +69,14 @@ namespace cmf
             DataExchangePattern* CreateMeshArrayExchangePattern(CartesianMeshArray* meshArray);
             
         private:
-            /// @param mesh The mesh over which the exchanges are defined
+            
+            /// @brief Creates a new parallel exchange pattern for the provided array
+            /// @param meshArray The array to define an exchange pattern for
+            /// @param pattern The exchange pattern to be defined
+            /// @author WVN
+            void DefineExchangePatternsForArray(CartesianMeshArray* meshArray, DataExchangePattern* pattern);
+            
+            /// @brief mesh The mesh over which the exchanges are defined
             CartesianMesh* mesh;
             
             /// @brief The order of interpolation for exchanges of differing levels
