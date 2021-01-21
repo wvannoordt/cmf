@@ -32,9 +32,9 @@ namespace cmf
         }
     }
     
-    void DataExchangePattern::Add(IDataTransaction* pattern)
+    void DataExchangePattern::Add(IDataTransaction* transaction)
     {
-        transactions.push_back(pattern);
+        transactions.push_back(transaction);
     }
     
     void DataExchangePattern::Pack(void)

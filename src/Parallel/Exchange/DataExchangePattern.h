@@ -27,9 +27,10 @@ namespace cmf
             void ExchangeData(void);
             
             /// @brief Adds a new data transaction to this data exchange pattern
+            /// @param transaction A new transaction to add
             /// \pre NOTE: this exchange pattern object WILL DELETE this pointer when it is deconstructed.
         	/// @author WVN
-            void Add(IDataTransaction* pattern);
+            void Add(IDataTransaction* transaction);
             
         private:
             /// @brief Computes the size of the outgoing buffer and allocates it accordingly
