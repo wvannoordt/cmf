@@ -26,6 +26,15 @@ namespace cmf
             receiveBufferIsAllocated = false;
             Cmf_Free(receiveBuffer);
         }
+        for (auto tr:transactions)
+        {
+            delete tr;
+        }
+    }
+    
+    void DataExchangePattern::Add(IDataTransaction* pattern)
+    {
+        transactions.push_back(pattern);
     }
     
     void DataExchangePattern::Pack(void)
@@ -43,7 +52,15 @@ namespace cmf
     
     void DataExchangePattern::Unpack(void)
     {
-        
+        char* ptr = receiveBuffer;
+        for (const auto tr:transactions)
+        {
+            if (tr->Receiver() == group->Rank())
+            {
+                tr->Unpack(ptr);
+                ptr += tr->GetPackedSize();
+            }
+        }
     }
     
     void DataExchangePattern::ExchangeData(void)

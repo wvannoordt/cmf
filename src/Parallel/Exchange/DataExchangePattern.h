@@ -2,6 +2,7 @@
 #define CMF_DATA_EXCHANGE_PATTERN_H
 #include "ParallelGroup.h"
 #include "IDataTransaction.h"
+#include "SingleTransaction.h"
 #include <vector>
 #include "CmfGC.h"
 namespace cmf
@@ -24,8 +25,13 @@ namespace cmf
             /// @brief Performs data exchanges
         	/// @author WVN
             void ExchangeData(void);
-        private:
             
+            /// @brief Adds a new data transaction to this data exchange pattern
+            /// \pre NOTE: this exchange pattern object WILL DELETE this pointer when it is deconstructed.
+        	/// @author WVN
+            void Add(IDataTransaction* pattern);
+            
+        private:
             /// @brief Computes the size of the outgoing buffer and allocates it accordingly
         	/// @author WVN
             void ResizeOutBuffer(void);
@@ -46,6 +52,7 @@ namespace cmf
             ParallelGroup* group;
             
             /// @brief The list of individual transactions
+            /// \pre Note that this object IS RESPONSIBLE for deleting these.
             std::vector<IDataTransaction*> transactions;
             
             /// @brief Indicates whether or not the outgoing buffer reqires resizing
