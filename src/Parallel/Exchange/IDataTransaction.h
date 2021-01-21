@@ -4,13 +4,17 @@
 namespace cmf
 {
     /// @brief Defines a generic parallel data transaction (including self-to-self transactions)
+    /// \pre Note that these objects are intended to exist independently of parallel groups, and are tied
+    /// to them via the DataExchangePattern class.
 	/// @author WVN
     class IDataTransaction
     {
         public:
             /// @brief Constructor
+            /// @param sender_in The sending rank
+            /// @param receiver_in The receiving rank
         	/// @author WVN
-            IDataTransaction(void);
+            IDataTransaction(int sender_in, int receiver_in);
             
             /// @brief Destructor
         	/// @author WVN
@@ -26,15 +30,27 @@ namespace cmf
         	/// @author WVN
             virtual void Pack(char* buf)=0;
             
+            /// @brief Unpacks the data from the given buffer
+            /// @param buf The buffer to unpack the data from
+            /// \pre Note that the size of buf must be at least the size returned by GetPackedSize()
+        	/// @author WVN
+            virtual void Unpack(char* buf)=0;
+            
             /// @brief Returns the rank of the sending process
         	/// @author WVN
-            virtual int Sender(void)=0;
+            int Sender(void);
             
             /// @brief Returns the rank of the receiving process
         	/// @author WVN
-            virtual int Receiver(void)=0;
+            int Receiver(void);
             
-        private:
+        protected:
+            
+            /// brief The sending rank
+            int sender;
+            
+            /// brief The receiving rank
+            int receiver;
     };
 }
 

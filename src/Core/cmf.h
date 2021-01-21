@@ -24,6 +24,7 @@
 #include "ParallelGroup.h"
 #include "BlockIndexing.h"
 #include "SvgImage.h"
+#include "DataExchangePattern.h"
 
 namespace cmf
 {
