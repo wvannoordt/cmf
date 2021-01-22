@@ -3,7 +3,7 @@
 
 namespace cmf
 {
-    SingleTransaction::SingleTransaction(void** target_in, size_t size_in, int sender_in, int receiver_in)
+    SingleTransaction::SingleTransaction(void* target_in, size_t size_in, int sender_in, int receiver_in)
         : IDataTransaction(sender_in, receiver_in)
     {
         target = target_in;
@@ -17,13 +17,13 @@ namespace cmf
     
     void SingleTransaction::Pack(char* buf)
     {
-        char* copyFrom = (char*)*target;
+        char* copyFrom = (char*)target;
         memcpy(buf, copyFrom, size);
     }
     
     void SingleTransaction::Unpack(char* buf)
     {
-        char* copyTo = (char*)*target;
+        char* copyTo = (char*)target;
         memcpy(copyTo, buf, size);
     }
 
