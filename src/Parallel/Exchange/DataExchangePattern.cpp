@@ -35,6 +35,8 @@ namespace cmf
     void DataExchangePattern::Add(IDataTransaction* transaction)
     {
         transactions.push_back(transaction);
+        if (transaction->Sender()   == group->Rank()) resizeOutBufferRequired = true;
+        if (transaction->Receiver() == group->Rank()) resizeInBufferRequired  = true;
     }
     
     void DataExchangePattern::Pack(void)
