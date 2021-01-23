@@ -2,19 +2,23 @@
 #include "SvgImage.h"
 namespace cmf
 {
-    SvgLine::SvgLine(double x0, double y0, double x1, double y1, SvgImage* host)
+    SvgLine::SvgLine(SvgNode* startNode_in, SvgNode* endNode_in, SvgImage* host)
     {
-        host->MapPoint(x0, y0, &(coords[0]), &(coords[1]));
-        host->MapPoint(x1, y1, &(coords[2]), &(coords[3]));
+        startNode = startNode_in;
+        endNode = endNode_in;
         title = "line";
+        hostImage = host;
     }
     
     void SvgLine::CreateAttributes(void)
     {
-        attributes.Add("x1", coords[0]);
-        attributes.Add("y1", coords[1]);
-        attributes.Add("x2", coords[2]);
-        attributes.Add("y2", coords[3]);
+        double x1, x2, y1, y2;
+        this->GetImage()->MapPoint(startNode->x, startNode->y, &x1, &y1);
+        this->GetImage()->MapPoint(endNode->x,   endNode->y,   &x2, &y2);
+        attributes.Add("x1", x1);
+        attributes.Add("y1", y1);
+        attributes.Add("x2", x2);
+        attributes.Add("y2", y2);
         CreateInheritedAttributes(attributes);
     }
     

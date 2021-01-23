@@ -2,6 +2,7 @@
 #define CMF_SVG_LINE_H
 #include "SvgElement.h"
 #include "SvgHasStroke.h"
+#include "SvgNode.h"
 namespace cmf
 {
     /// @brief Class that represents a line on an svg image
@@ -10,12 +11,10 @@ namespace cmf
     {
         public:
             /// @brief Constructor
-            /// @param x0 x-coordinate of initial point
-            /// @param x1 x-coordinate of final point
-            /// @param y0 y-coordinate of initial point
-            /// @param y1 y-coordinate of final point
+            /// @param startNode_in Coordinates of the initial point
+            /// @param endNode_in Coordinates of the final point
         	/// @author WVN
-            SvgLine(double x0, double y0, double x1, double y1, SvgImage* host);
+            SvgLine(SvgNode* startNode_in, SvgNode* endNode_in, SvgImage* host);
             
             /// @brief Creates the relevant attributes for file output
         	/// @author WVN
@@ -26,8 +25,12 @@ namespace cmf
             ~SvgLine(void);
             
         private:
-            /// @brief The coordinates of the line (x0 y0 x1 y1)
-            double coords[4];
+            
+            /// @brief The node at the beginning of the line
+            SvgNode* startNode;
+            
+            /// @brief The node at the end of the line
+            SvgNode* endNode;
     };
 }
 

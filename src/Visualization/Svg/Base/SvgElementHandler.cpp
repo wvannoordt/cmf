@@ -26,20 +26,20 @@ namespace cmf
         if (!boundImage) CmfError("This handler object has no image bound to it!");
     }
     
-    SvgLine* SvgElementHandler::AddLine(double x0, double y0, double x1, double y1)
+    SvgLine* SvgElementHandler::AddLine(SvgNode* start, SvgNode* end)
     {
         RequireBound();
         RequireImage();
-        SvgLine* newLine = new SvgLine(x0, y0, x1, y1, image);
+        SvgLine* newLine = new SvgLine(start, end, image);
         layer->AddElementAndInternallyManage(newLine);
         return newLine;
     }
     
-    SvgRectangle* SvgElementHandler::AddRectangle(double x0, double y0, double x1, double y1)
+    SvgRectangle* SvgElementHandler::AddRectangle(SvgNode* lowerLeft, SvgNode* upperRight)
     {
         RequireBound();
         RequireImage();
-        SvgRectangle* newRect = new SvgRectangle(x0, y0, x1, y1, image);
+        SvgRectangle* newRect = new SvgRectangle(lowerLeft, upperRight, image);
         layer->AddElementAndInternallyManage(newRect);
         return newRect;
     }

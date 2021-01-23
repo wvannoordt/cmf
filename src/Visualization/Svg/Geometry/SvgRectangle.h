@@ -3,6 +3,7 @@
 #include "SvgElement.h"
 #include "SvgHasStroke.h"
 #include "SvgHasFill.h"
+#include "SvgNode.h"
 namespace cmf
 {
     /// @brief Class that represents a rectangle on an svg image
@@ -11,22 +12,18 @@ namespace cmf
     {
         public:
             /// @brief Constructor
-            /// @param x0 x-coordinate of first corner
-            /// @param x1 x-coordinate of first corner
-            /// @param y0 y-coordinate of second corner
-            /// @param y1 y-coordinate of second corner
+            /// @param lowerLeft_in The lower-left point
+            /// @param upperRight_in The upper-right point
             /// @param rx x-Round parameter for rounding corners
             /// @param ry y-Round parameter for rounding corners
         	/// @author WVN
-            SvgRectangle(double x0, double y0, double x1, double y1, double rx, double ry, SvgImage* host);
+            SvgRectangle(SvgNode* lowerLeft_in, SvgNode* upperRight_in, double rx, double ry, SvgImage* host);
             
             /// @brief Constructor
-            /// @param x0 x-coordinate of first corner
-            /// @param x1 x-coordinate of first corner
-            /// @param y0 y-coordinate of second corner
-            /// @param y1 y-coordinate of second corner
+            /// @param lowerLeft_in The lower-left point
+            /// @param upperRight_in The upper-right point
         	/// @author WVN
-            SvgRectangle(double x0, double y0, double x1, double y1, SvgImage* host);
+            SvgRectangle(SvgNode* lowerLeft_in, SvgNode* upperRight_in, SvgImage* host);
             
             /// @brief Creates the relevant attributes for file output
         	/// @author WVN
@@ -39,17 +36,18 @@ namespace cmf
         private:
             
             /// @brief Builder function
-            /// @param x0 x-coordinate of first corner
-            /// @param x1 x-coordinate of first corner
-            /// @param y0 y-coordinate of second corner
-            /// @param y1 y-coordinate of second corner
+            /// @param lowerLeft_in The lower-left point
+            /// @param upperRight_in The upper-right point
             /// @param rx x-Round parameter for rounding corners
             /// @param ry y-Round parameter for rounding corners
         	/// @author WVN
-            void Build(double x0, double y0, double x1, double y1, double rx, double ry, SvgImage* host);
+            void Build(SvgNode* lowerLeft_in, SvgNode* upperRight_in, double rx, double ry, SvgImage* host);
             
-            /// @brief coordinates of the rectangle: (x0, y0, x1, y1)
-            double coords[4];
+            /// @brief The lower-left point
+            SvgNode* lowerLeft;
+            
+            /// @brief The upper-right point
+            SvgNode* upperRight;
             
             /// @brief rounding parameter, x
             double roundx;

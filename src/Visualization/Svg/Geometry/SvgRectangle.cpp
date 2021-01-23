@@ -3,14 +3,14 @@
 #include <cmath>
 namespace cmf
 {
-    SvgRectangle::SvgRectangle(double x0, double y0, double x1, double y1, double rx, double ry, SvgImage* host)
+    SvgRectangle::SvgRectangle(SvgNode* lowerLeft_in, SvgNode* upperRight_in, double rx, double ry, SvgImage* host)
     {
-        Build(x0, y0, x1, y1, rx, ry, host);
+        Build(lowerLeft_in, upperRight_in, rx, ry, host);
     }
     
-    SvgRectangle::SvgRectangle(double x0, double y0, double x1, double y1, SvgImage* host)
+    SvgRectangle::SvgRectangle(SvgNode* lowerLeft_in, SvgNode* upperRight_in, SvgImage* host)
     {
-        Build(x0, y0, x1, y1, 0.0, 0.0, host);
+        Build(lowerLeft_in, upperRight_in, 0.0, 0.0, host);
     }
     
     SvgRectangle::~SvgRectangle(void)
@@ -18,21 +18,25 @@ namespace cmf
         
     }
     
-    void SvgRectangle::Build(double x0, double y0, double x1, double y1, double rx, double ry, SvgImage* host)
+    void SvgRectangle::Build(SvgNode* lowerLeft_in, SvgNode* upperRight_in, double rx, double ry, SvgImage* host)
     {
-        width = x1 - x0;
-        height = y1 - y0;
-        host->MapPoint(x0, y0, &(coords[0]), &(coords[1]));
-        host->MapPoint(x1, y1, &(coords[2]), &(coords[3]));
+        width = upperRight_in->x - lowerLeft_in->x;
+        height = upperRight_in->y - lowerLeft_in->y;
+        lowerLeft = lowerLeft_in;
+        upperRight = upperRight_in;
         title = "rect";
         roundx = rx;
         roundy = ry;
+        hostImage = host;
     }
     
     void SvgRectangle::CreateAttributes(void)
     {
-        attributes.Add("x", coords[0]);
-        attributes.Add("y", coords[3]);
+        double x = 0.0;
+        double y = 0.0;
+        this->GetImage()->MapPoint(lowerLeft->x, upperRight->y, &x, &y);
+        attributes.Add("x", x);
+        attributes.Add("y", y);
         attributes.Add("width", width);
         attributes.Add("height", height);
         if (abs(roundx) > 1e-9) attributes.Add("rx", roundx);

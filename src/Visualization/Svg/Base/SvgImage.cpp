@@ -74,7 +74,9 @@ namespace cmf
         {
             double wid = abs(bounds[1]-bounds[0]);
             double hei = abs(bounds[3]-bounds[2]);
-            SvgRectangle baseRect(bounds[0]-0.3*wid, bounds[2]-0.3*hei, bounds[1]+0.3*wid, bounds[3]+0.3*hei, this);
+            SvgNode lowerLeft(bounds[0]-0.3*wid, bounds[2]-0.3*hei);
+            SvgNode upperRight(bounds[1]+0.3*wid, bounds[3]+0.3*hei);
+            SvgRectangle baseRect(&lowerLeft, &upperRight, this);
             baseRect.SetFillColor(fillColor.StringValue());
             baseRect.WriteToFile(stream);
         }

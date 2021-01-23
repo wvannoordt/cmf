@@ -23,20 +23,16 @@ namespace cmf
             ~SvgElementHandler(void);
             
             /// @brief Creates a line
-            /// @param x0 x-coordinate of initial point
-            /// @param x1 x-coordinate of final point
-            /// @param y0 y-coordinate of initial point
-            /// @param y1 y-coordinate of final point
+            /// @param start The starting point
+            /// @param end The ending point
         	/// @author WVN
-            SvgLine* AddLine(double x0, double y0, double x1, double y1);
+            SvgLine* AddLine(SvgNode* start, SvgNode* end);
             
             /// @brief Creates a rectangle
-            /// @param x0 x-coordinate of initial point
-            /// @param x1 x-coordinate of final point
-            /// @param y0 y-coordinate of initial point
-            /// @param y1 y-coordinate of final point
+            /// @param lowerLeft The lower-left point
+            /// @param upperRight The upper-right point
         	/// @author WVN
-            SvgRectangle* AddRectangle(double x0, double y0, double x1, double y1);
+            SvgRectangle* AddRectangle(SvgNode* lowerLeft, SvgNode* upperRight);
             
         protected:
             
