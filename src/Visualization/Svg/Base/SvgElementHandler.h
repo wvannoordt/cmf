@@ -4,6 +4,7 @@
 #include "SvgAttributes.h"
 #include "SvgLine.h"
 #include "SvgRectangle.h"
+#include "SvgCircle.h"
 namespace cmf
 {
     class SvgManipulateItem;
@@ -33,6 +34,12 @@ namespace cmf
             /// @param upperRight The upper-right point
         	/// @author WVN
             SvgRectangle* AddRectangle(SvgNode* lowerLeft, SvgNode* upperRight);
+            
+            /// @brief Creates a circle
+            /// @param center The center of the circle
+            /// @param radius The radius of the circle
+        	/// @author WVN
+            SvgCircle* AddCircle(SvgNode* center, double radius);
             
         protected:
             

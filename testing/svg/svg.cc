@@ -26,7 +26,12 @@ int main(int argc, char** argv)
     cmf::SvgNode ll3(270.0,189.0);
     cmf::SvgNode ur3(450.0,505.0);
     cmf::SvgRectangle* rect4 = image["Items"].AddRectangle(&ll3, &ur3);
+    
+    cmf::SvgNode cirCenter(344.0, 200.6);
+    double circleRadius = 50.0;
+    cmf::SvgCircle* circle = image["Circles"].AddCircle(&cirCenter, circleRadius);
     // image["layer1"].SetVisibility(false);
+    image["Circles"].SendToBack();
     
     rect3->SetFillColor("green");
     rect4->SetFillColor("green");

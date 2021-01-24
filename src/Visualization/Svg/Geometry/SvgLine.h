@@ -18,7 +18,7 @@ namespace cmf
             
             /// @brief Creates the relevant attributes for file output
         	/// @author WVN
-            void CreateAttributes(void);
+            void CreateAttributes(void) override;
             
             /// @brief Destructor
         	/// @author WVN

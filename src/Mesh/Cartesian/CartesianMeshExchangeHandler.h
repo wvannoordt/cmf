@@ -40,7 +40,7 @@ namespace cmf
         {
             input["interpolationOrder"].MapTo(&interpolationOrder)
                 = new PTL::PTLInteger(2, "The order of interpolation from one level to the next, or previous, when performing exchanges");
-            input["exchangeDim"].MapTo(&exchangeDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Number of exchange cells to use in each direction", [](int i){return 1;});
+            input["exchangeDim"].MapTo(&exchangeDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Number of exchange cells to use in each direction", [](int i){return 0;});
         }
     };
     /// @brief Defines an object for handling data exchanges on Cartesian meshes

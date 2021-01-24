@@ -2,6 +2,7 @@
 #include "CartesianMesh.h"
 #include "RefinementConstraint.h"
 #include "BlockIterator.h"
+#include "Utils.hx"
 namespace cmf
 {
     CartesianMeshExchangeHandler::CartesianMeshExchangeHandler(CartesianMesh* mesh_in, CartesianMeshExchangeInfo& inputInfo)
@@ -10,8 +11,10 @@ namespace cmf
         interpolationOrder = inputInfo.interpolationOrder;
         WriteLine(2, "Create exchange pattern on mesh \"" + mesh->GetTitle() + "\"");
         exchangeDim = inputInfo.exchangeDim;
+        int maxExchangeDim = 0;
+        __dloop(maxExchangeDim = CMFMAX(maxExchangeDim, exchangeDim[d]));
         this->RegisterToBlocks(mesh->Blocks());
-        if (mesh->Blocks()->GetRefinementConstraintType() != RefinementConstraint::factor2CompletelyConstrained)
+        if ((mesh->Blocks()->GetRefinementConstraintType() != RefinementConstraint::factor2CompletelyConstrained) && (maxExchangeDim>0))
         {
             CmfError("CartesianMeshExchangeHandler cannot currently be created with any RefinementConstraint other than factor2CompletelyConstrained, found \""
                 + RefinementConstraintStr(mesh->Blocks()->GetRefinementConstraintType())

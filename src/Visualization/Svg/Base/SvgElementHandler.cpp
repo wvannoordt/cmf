@@ -44,6 +44,15 @@ namespace cmf
         return newRect;
     }
     
+    SvgCircle* SvgElementHandler::AddCircle(SvgNode* center, double radius)
+    {
+        RequireBound();
+        RequireImage();
+        SvgCircle* newCirc = new SvgCircle(center, radius, image);
+        layer->AddElementAndInternallyManage(newCirc);
+        return newCirc;
+    }
+    
     void SvgElementHandler::BindGroup(SvgElementGroup* layer_in)
     {
         bound = true;
