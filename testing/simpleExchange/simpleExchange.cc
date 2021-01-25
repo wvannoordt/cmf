@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     
     size_t nguard = 3;
     size_t arSize = 5;
-    char* dataArray = (char*)malloc((arSize+2*nguard)*sizeof(int));
+    int* dataArray = (int*)malloc((arSize+2*nguard)*sizeof(int));
     cmf::DataExchangePattern dataHandler(&cmf::globalGroup);
     
     int leftNeighbor = cmf::globalGroup.Rank()-1;
@@ -21,12 +21,12 @@ int main(int argc, char** argv)
     if (rightNeighbor >= cmf::globalGroup.Size()) rightNeighbor -= cmf::globalGroup.Size();
     
     //left transaction
-    dataHandler.Add(new cmf::SingleTransaction((void*)(dataArray+nguard), nguard, cmf::globalGroup.Rank(), leftNeighbor));
-    dataHandler.Add(new cmf::SingleTransaction((void*)(dataArray), nguard, leftNeighbor, cmf::globalGroup.Rank()));
+    dataHandler.Add(new cmf::SingleTransaction((void*)(dataArray+nguard), nguard*sizeof(int), cmf::globalGroup.Rank(), leftNeighbor));
+    dataHandler.Add(new cmf::SingleTransaction((void*)(dataArray), nguard*sizeof(int), leftNeighbor, cmf::globalGroup.Rank()));
     
     //right transaction
-    dataHandler.Add(new cmf::SingleTransaction((void*)(dataArray+arSize), nguard, cmf::globalGroup.Rank(), rightNeighbor));
-    dataHandler.Add(new cmf::SingleTransaction((void*)(dataArray+arSize+nguard), nguard, rightNeighbor, cmf::globalGroup.Rank()));
+    dataHandler.Add(new cmf::SingleTransaction((void*)(dataArray+arSize), nguard*sizeof(int), cmf::globalGroup.Rank(), rightNeighbor));
+    dataHandler.Add(new cmf::SingleTransaction((void*)(dataArray+arSize+nguard), nguard*sizeof(int), rightNeighbor, cmf::globalGroup.Rank()));
     
     dataHandler.ExchangeData();
     

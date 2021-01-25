@@ -124,7 +124,10 @@ namespace cmf
             }
         }
         // resize the status array if need be
-        if (numSendsTotal!=statusHandles.size()) statusHandles.resize(numSendsTotal);
+        if (numSendsTotal!=statusHandles.size())
+        {
+            statusHandles.resize(numSendsTotal);
+        }
         
         int listSize = requestHandles.size();
         group->AwaitAllAsynchronousOperations(listSize, requestHandles.data(), statusHandles.data());
