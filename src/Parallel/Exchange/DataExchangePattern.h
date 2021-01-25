@@ -33,19 +33,21 @@ namespace cmf
             void Add(IDataTransaction* transaction);
             
         private:
-            /// @brief Computes the size of the outgoing buffer and allocates it accordingly
+            /// @brief Computes the size of the outgoing buffer for the given rank and allocates it accordingly
+            /// @param rank The rank that the outgoing data will eventually go to
         	/// @author WVN
-            void ResizeOutBuffer(void);
+            void ResizeOutBuffer(int rank);
             
-            /// @brief Computes the size of the incoming buffer and allocates it accordingly
+            /// @brief Computes the size of the incoming buffer for the given rank and allocates it accordingly
+            /// @param rank The rank that the incoming data will eventually come from
         	/// @author WVN
-            void ResizeInBuffer(void);
+            void ResizeInBuffer(int rank);
             
-            /// @brief Aggregates the information to be broadcasted using this exchange pattern and places it in a single data array
+            /// @brief Aggregates the information to be broadcasted using this exchange pattern and places it in a single data array per rank
         	/// @author WVN
             void Pack(void);
             
-            /// @brief Deaggregates the information to received using this exchange pattern and scatters it to the appropriate arrays
+            /// @brief Deaggregates the information to received using this exchange pattern and scatters it to the appropriate arrays per rank
         	/// @author WVN
             void Unpack(void);
             
@@ -56,23 +58,38 @@ namespace cmf
             /// \pre Note that this object IS RESPONSIBLE for deleting these.
             std::vector<IDataTransaction*> transactions;
             
-            /// @brief Indicates whether or not the outgoing buffer reqires resizing
-            bool resizeOutBufferRequired;
+            /// @brief Indicates whether or not the outgoing buffer reqires resizing for the corresponding rank
+            std::vector<bool> resizeOutBufferRequired;
             
-            /// @brief Indicates whether or not the outgoing buffer reqires resizing
-            bool resizeInBufferRequired;
+            /// @brief Indicates whether or not the outgoing buffer reqires resizing for the corresponding rank
+            std::vector<bool> resizeInBufferRequired;
             
             /// @brief The buffer for outgoing messages
-            char* sendBuffer;
+            std::vector<char*> sendBuffer;
             
-            /// @brief Indicates whether or not sendBuffer is allocated
-            bool sendBufferIsAllocated;
+            /// @brief Indicates whether or not the corresponding array in sendBuffer is allocated
+            std::vector<bool> sendBufferIsAllocated;
             
             /// @brief The buffer for incoming messages
-            char* receiveBuffer;
+            std::vector<char*> receiveBuffer;
             
-            /// @brief Indicates whether or not sendBuffer is allocated
-            bool receiveBufferIsAllocated;
+            /// @brief Indicates whether or not the corresponding array in sendBuffer is allocated
+            std::vector<bool> receiveBufferIsAllocated;
+            
+            /// @brief Used to index outgoing and incoming buffers, preventing local allocation every time exchanges are called
+            std::vector<char*> pointerIndices;
+            
+            /// @brief A list of buffer sizes of sendBuffer
+            std::vector<size_t> sendSizes;
+            
+            /// @brief A list of buffer sizes of receiveBuffer
+            std::vector<size_t> receiveSizes;
+            
+            /// @brief The list of asynchronous request handles
+            std::vector<ParallelRequestHandle> requestHandles;
+            
+            /// @brief The list of status handles
+            std::vector<ParallelStatus> statusHandles;
     };
 }
 

@@ -70,6 +70,28 @@ namespace cmf
             /// @author WVN
             int Sum(int val);
             
+            
+            /// @brief Eqivalent to <a href="https://www.mpich.org/static/docs/v3.3/www3/MPI_Irecv.html">MPI_Irecv</a>
+            /// @param buf initial address of receive buffer
+            /// @param count number of elements in receive buffer
+            /// @param datatype datatype of each receive buffer element
+            /// @param source rank of source
+            /// @param request communication request (output)
+            void QueueReceive(void *buf, int count, ParallelDataType datatype, int source, ParallelRequestHandle* request);
+            
+            /// @brief Eqivalent to <a href="https://www.mpich.org/static/docs/v3.3/www3/MPI_Ssend.html">MPI_Ssend</a>
+            /// @param buf initial address of send buffer
+            /// @param count number of elements in receive buffer
+            /// @param datatype datatype of each send buffer element
+            /// @param dest rank of destination
+            void BlockingSynchronousSend(const void *buf, int count, ParallelDataType datatype, int dest);
+            
+            /// @brief Eqivalent to <a href="https://www.mpich.org/static/docs/v3.3/www3/MPI_Waitall.html">MPI_Waitall</a>
+            /// @param count list length
+            /// @param arrayOfRequests array of request handles
+            /// @param arrayOfStatuses array of status objects (output)
+            void AwaitAllAsynchronousOperations(int count, ParallelRequestHandle arrayOfRequests[], ParallelStatus arrayOfStatuses[]);
+            
             /// @brief Eqivalent to <a href="https://www.mpich.org/static/docs/v3.2/www3/MPI_Allgather.html">MPI_Allgather</a>
             /// @param sendbuf starting address of send buffer
             /// @param sendcount number of elements in send buffer

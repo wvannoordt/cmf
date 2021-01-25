@@ -8,10 +8,14 @@ namespace cmf
     typedef MPI_Comm      CmfParallelCommunicator;
     typedef MPI_Datatype  ParallelDataType;
     typedef MPI_Op        ParallelOperation;
+    typedef MPI_Request   ParallelRequestHandle;
+    typedef MPI_Status    ParallelStatus;
 #else
     typedef unsigned long CmfParallelCommunicator;
     typedef unsigned long ParallelDataType;
     typedef unsigned long ParallelOperation;
+    typedef unsigned long ParallelRequestHandle;
+    typedef unsigned long ParallelStatus;
 #endif
 
     /// @brief The default communicator (MPI_COMM_WORLD)
@@ -23,6 +27,9 @@ namespace cmf
     
     /// @brief int type
     extern ParallelDataType parallelInt;
+    
+    /// @brief int type
+    extern ParallelDataType parallelChar;
     
     /// @brief long type
     extern ParallelDataType parallelLong;
