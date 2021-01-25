@@ -50,12 +50,12 @@ namespace cmf
             if ((sender == currentRank) && (transaction->GetPackedSize() > 0))
             {
                 resizeOutBufferRequired[receiver] = true;
-                sendSizes[currentRank] += transaction->GetPackedSize();
+                sendSizes[receiver] += transaction->GetPackedSize();
             }
             if ((receiver == currentRank) && (transaction->GetPackedSize() > 0))
             {
                 resizeInBufferRequired[sender] = true;
-                receiveSizes[currentRank] += transaction->GetPackedSize();
+                receiveSizes[sender] += transaction->GetPackedSize();
             }
         }
     }
@@ -68,8 +68,8 @@ namespace cmf
             int currentRank = group->Rank();
             if (tr->Sender() == currentRank)
             {
-                tr->Pack(pointerIndices[currentRank]);
-                pointerIndices[currentRank] += tr->GetPackedSize();
+                tr->Pack(pointerIndices[tr->Receiver()]);
+                pointerIndices[tr->Receiver()] += tr->GetPackedSize();
             }
         }
     }
@@ -87,8 +87,8 @@ namespace cmf
             int currentRank = group->Rank();
             if (tr->Receiver() == currentRank)
             {
-                tr->Unpack(pointerIndices[currentRank]);
-                pointerIndices[currentRank] += tr->GetPackedSize();
+                tr->Unpack(pointerIndices[tr->Sender()]);
+                pointerIndices[tr->Sender()] += tr->GetPackedSize();
             }
         }
     }
@@ -100,40 +100,50 @@ namespace cmf
             if (resizeOutBufferRequired[rank] || !sendBufferIsAllocated[rank])    this->ResizeOutBuffer(rank);
             if (resizeInBufferRequired[rank]  || !receiveBufferIsAllocated[rank]) this->ResizeInBuffer(rank);
         }
+        
         //Aggregate the data
         Pack();
         
+        //Count the number of send requests
+        int numReceivesTotal = 0;
+        for (int rank = 0; rank < group->Size(); rank++)
+        {
+            if ((rank != group->Rank()) && (receiveSizes[rank] > 0))
+            {
+                numReceivesTotal++;
+            }
+        }
+        
+        // resize the status array if need be
+        if (numReceivesTotal!=statusHandles.size())  statusHandles.resize(numReceivesTotal);
+        if (numReceivesTotal!=requestHandles.size()) requestHandles.resize(numReceivesTotal);
+        
         //Queue the asynchronous send requests
+        int counter = 0;
         for (int rank = 0; rank < group->Size(); rank++)
         {
             // Note that self-to-self transactions are handled using memcpy() in the Unpack() function
             if ((rank != group->Rank()) && (receiveSizes[rank] > 0))
             {
-                group->QueueReceive(receiveBuffer[rank], receiveSizes[rank], parallelChar, rank, &requestHandles[rank]);
+                group->QueueReceive(receiveBuffer[rank], receiveSizes[rank], parallelChar, rank, &requestHandles[counter]);
+                counter++;
             }
-        }
+        }   
         
-        int numSendsTotal = 0;
         for (int rank = 0; rank < group->Size(); rank++)
         {
             //Send the data
             if ((rank != group->Rank()) && (sendSizes[rank] > 0))
             {
                 group->BlockingSynchronousSend(sendBuffer[rank], sendSizes[rank], parallelChar, rank);
-                numSendsTotal++;
             }
         }
-        // resize the status array if need be
-        if (numSendsTotal!=statusHandles.size())
-        {
-            statusHandles.resize(numSendsTotal);
-        }
         
-        int listSize = requestHandles.size();
-        group->AwaitAllAsynchronousOperations(listSize, requestHandles.data(), statusHandles.data());
+        group->AwaitAllAsynchronousOperations(numReceivesTotal, requestHandles.data(), statusHandles.data());
         
         //Distribute the data
         Unpack();
+        group->Synchronize();
     }
     
     //Considering using a predicate here...

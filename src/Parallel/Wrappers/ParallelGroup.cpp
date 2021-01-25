@@ -72,7 +72,7 @@ namespace cmf
     
     void ParallelGroup::QueueReceive(void *buf, int count, ParallelDataType datatype, int source, ParallelRequestHandle* request)
     {
-        CMF_MPI_CHECK(MPI_Irecv(buf, count, datatype, source, MPI_ANY_TAG, communicator, request));
+        CMF_MPI_CHECK(MPI_Irecv(buf, count, datatype, source, 1, communicator, request));
 #if(!CMF_PARALLEL)
         CmfError("ParallelGroup::QueueReceive called without parallel support. This will probably cause an issue. Contact WVN");
 #endif
@@ -80,7 +80,7 @@ namespace cmf
     
     void ParallelGroup::BlockingSynchronousSend(const void *buf, int count, ParallelDataType datatype, int dest)
     {
-        CMF_MPI_CHECK(MPI_Ssend(buf, count, datatype, dest, MPI_ANY_TAG, communicator));
+        CMF_MPI_CHECK(MPI_Ssend(buf, count, datatype, dest, 1, communicator));
 #if(!CMF_PARALLEL)
         CmfError("ParallelGroup::BlockingSynchronousSend called without parallel support. This will probably cause an issue. Contact WVN");
 #endif

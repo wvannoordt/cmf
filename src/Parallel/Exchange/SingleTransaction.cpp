@@ -1,5 +1,7 @@
 #include "SingleTransaction.h"
+#include <iostream>
 #include <cstring>
+#include "ParallelGroup.h"
 
 namespace cmf
 {
