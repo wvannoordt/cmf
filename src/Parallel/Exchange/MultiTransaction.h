@@ -2,6 +2,7 @@
 #define CMF_MULTI_TRANSACTION
 #include "CmfGC.h"
 #include "IDataTransaction.h"
+#include <vector>
 
 namespace cmf
 {
@@ -11,10 +12,13 @@ namespace cmf
     {
         public:
             /// @brief Constructor
+            /// @param target_in The target address
+            /// @param offsets_in A list of offsets to copy from, relative to target_in
+            /// @param sizes_in The size of each copy in the corresponding offset
             /// @param sender_in The sending rank
             /// @param receiver_in The receiving rank
             /// @author WVN
-            MultiTransaction(int sender_in, int receiver_in);
+            MultiTransaction(void* target_in, std::vector<size_t> offsets_in, std::vector<size_t> sizes_in, int sender_in, int receiver_in);
             
             /// @brief Destructor
             /// @author WVN
@@ -40,6 +44,15 @@ namespace cmf
             
             /// @brief The total size of the data transaction
             size_t packedSize;
+            
+            /// @brief The target address for this transaction
+            void* target;
+            
+            /// @brief The list of offsets to copy from/to, relative to target
+            std::vector<size_t> offsets;
+            
+            /// @brief The list of sizes of each copy
+            std::vector<size_t> sizes;
     };
 }
 
