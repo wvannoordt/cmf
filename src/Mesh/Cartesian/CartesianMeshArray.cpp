@@ -52,6 +52,11 @@ namespace cmf
         }
     }
     
+    NodeFilter_t CartesianMeshArray::GetFilter(void)
+    {
+        return filter;
+    }
+    
     RefinementBlock* CartesianMeshArray::GetRefinementBlockObject(void)
     {
         handler->mesh->Blocks();

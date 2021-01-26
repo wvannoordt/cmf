@@ -70,6 +70,10 @@ namespace cmf
             /// @author WVN
             void Exchange(void);
             
+            /// @brief Returns filter
+            /// @author WVN
+            NodeFilter_t GetFilter(void);
+            
         private:
             
             /// @brief Allocates the unferlying pointer
@@ -84,7 +88,7 @@ namespace cmf
             /// @author WVN
             void CreateExchangePattern(void);
             
-            /// @brief A filter definig the blocks that this variable is defined over
+            /// @brief A filter defining the blocks that this variable is defined over
             NodeFilter_t filter;
             
             /// @brief The handler responsible for this array

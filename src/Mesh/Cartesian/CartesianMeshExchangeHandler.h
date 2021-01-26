@@ -69,12 +69,25 @@ namespace cmf
             DataExchangePattern* CreateMeshArrayExchangePattern(CartesianMeshArray* meshArray);
             
         private:
-            
             /// @brief Creates a new parallel exchange pattern for the provided array
             /// @param meshArray The array to define an exchange pattern for
             /// @param pattern The exchange pattern to be defined
             /// @author WVN
             void DefineExchangePatternsForArray(CartesianMeshArray* meshArray, DataExchangePattern* pattern);
+            
+            /// @brief Creates a direct-injection transaction between two neighboring nodes
+            /// @param pattern The exchange pattern to add the transaction to
+            /// @param meshArray The array to define an exchange pattern for
+            /// @param currentNode The current node sending information
+            /// @param neighborNode The node that will receive information
+            /// @param relationship The senderNode -> receiverNode relationship
+            /// @author WVN
+            void CreateDirectInjectionTransaction(
+                DataExchangePattern* pattern,
+                CartesianMeshArray* meshArray,
+                RefinementTreeNode* currentNode,
+                RefinementTreeNode* neighborNode, 
+                NodeEdge relationship);
             
             /// @brief mesh The mesh over which the exchanges are defined
             CartesianMesh* mesh;

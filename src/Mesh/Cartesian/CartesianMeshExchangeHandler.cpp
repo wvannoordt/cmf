@@ -3,6 +3,7 @@
 #include "RefinementConstraint.h"
 #include "BlockIterator.h"
 #include "Utils.hx"
+#include "NeighborIterator.h"
 namespace cmf
 {
     CartesianMeshExchangeHandler::CartesianMeshExchangeHandler(CartesianMesh* mesh_in, CartesianMeshExchangeInfo& inputInfo)
@@ -36,10 +37,38 @@ namespace cmf
     
     void CartesianMeshExchangeHandler::DefineExchangePatternsForArray(CartesianMeshArray* meshArray, DataExchangePattern* pattern)
     {
-        for (BlockIterator lb(meshArray, BlockFilters::Every, IterableMode::serial); lb.HasNext(); lb++)
+        NodeFilter_t arFilter = meshArray->GetFilter();
+        for (BlockIterator lb(meshArray, arFilter, IterableMode::serial); lb.HasNext(); lb++)
         {
-            
+            for (NeighborIterator neigh(lb.Node()); neigh.Active(); neigh++)
+            {
+                if (arFilter(neigh.Node()))
+                {
+                    RefinementTreeNode* currentNode  = lb.Node();
+                    RefinementTreeNode* neighborNode = neigh.Node();
+                    bool isDirectInjection = currentNode->IsSameDimensionsAs(neighborNode);
+                    if (isDirectInjection)
+                    {
+                        CreateDirectInjectionTransaction(pattern, meshArray, currentNode, neighborNode, neigh.Edge());
+                    }
+                    else
+                    {
+                        WriteLine(1, "WARNING: defining exchange patterns not yet implemented between different refinement levels");
+                    }
+                }
+            }
         }
+    }
+    
+    void CartesianMeshExchangeHandler::CreateDirectInjectionTransaction(
+        DataExchangePattern* pattern,
+        CartesianMeshArray* meshArray,
+        RefinementTreeNode* currentNode,
+        RefinementTreeNode* neighborNode, 
+        NodeEdge relationship)
+    {
+        BlockPartitionInfo currentNodeInfo  = mesh->partition->GetPartitionInfo(currentNode);
+        BlockPartitionInfo neighborNodeInfo = mesh->partition->GetPartitionInfo(neighborNode);
     }
     
     void CartesianMeshExchangeHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)

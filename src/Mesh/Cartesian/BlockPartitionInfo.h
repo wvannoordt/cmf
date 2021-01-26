@@ -15,7 +15,7 @@ namespace cmf
             rank = 0;
         }
         
-        /// @brief Indicates whether or not the associated block is handled by the CPU or the GPU
+        /// @brief Indicates whether or not the associated block is handled by the CPU
         bool isCPU;
         
         /// @brief The MPI rank responsible for the associated block

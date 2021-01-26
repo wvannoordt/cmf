@@ -37,7 +37,7 @@ int main(int argc, char** argv)
             std::cout << "Step " << i << std::endl;
         }
         //Do exchanges
-        domain["x"].Exchange();    
+        domain["x"].Exchange();
     }
     
     if (outputFile)

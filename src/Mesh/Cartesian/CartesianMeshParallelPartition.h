@@ -73,6 +73,11 @@ namespace cmf
             /// @author WVN
             void OutputPartitionToVtk(std::string filename);
             
+            /// @brief Returns the BlockPartitionInfo for the given node
+            /// @param node The node to get the partition info for
+            /// @author WVN
+            BlockPartitionInfo GetPartitionInfo(RefinementTreeNode* node);
+            
         private:
             
             /// @brief Translates a CartesianMeshParallelPartitionInfo to the information 

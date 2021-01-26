@@ -3,7 +3,7 @@ GlobalSettings
 {
 	Display
 	{
-		debugLevel = 0
+		debugLevel = 1
 		trackOutputOrigins = false
 	}
 	Memory
@@ -13,7 +13,7 @@ GlobalSettings
 }
 Domain
 {
-	blockDim = [6, 7, 4]
+	blockDim = [2, 2, 2]
 	blockBounds = [0,1,0,1,0,1]
 	meshDataDim = [$(dataDim), $(dataDim), $(dataDim)]
 	refinementConstraintType = @choose(0, factor2CompletelyConstrained, free)
@@ -33,5 +33,5 @@ User
 	outputFileName = output/data.vtk
 	sampleCoords = [0.001, 0.001, 0.001]
 	minTimeStep = 0
-	maxTimeStep = 10
+	maxTimeStep = 10000
 }

@@ -222,10 +222,11 @@ namespace cmf
             /// @brief Indicates whether the mesh has been partitioned
             bool hasParallelPartition;
             
-            /// @brief Parallel partiion object for the current mesh
+            /// @brief Parallel partition object for the current mesh
             CartesianMeshParallelPartition* partition;
         
             friend class CartesianMeshParallelPartition;
+            friend class CartesianMeshExchangeHandler;
     };
 }
 

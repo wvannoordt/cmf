@@ -36,6 +36,12 @@ namespace cmf
         builder->CreatePartition(&partition, mesh);
     }
     
+    BlockPartitionInfo CartesianMeshParallelPartition::GetPartitionInfo(RefinementTreeNode* node)
+    {
+        if (partition.find(node)==partition.end()) CmfError("Requested partition for an unpartitioned node.");
+        return partition[node];
+    }
+    
     void CartesianMeshParallelPartition::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)
     {
         WriteLine(3, "\"" + mesh->GetTitle() + "\" parallel partition handling new blocks");

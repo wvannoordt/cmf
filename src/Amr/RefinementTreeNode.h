@@ -133,6 +133,11 @@ namespace cmf
             /// @author WVN
             void SetRefineLimiter(NodeFilter_t* limiter_in);
             
+            /// @brief Returns true if this node and the given node have the same box dimensions
+            /// @param node The node to check this node against
+            /// @author WVN
+            bool IsSameDimensionsAs(RefinementTreeNode* node);
+            
             /// @brief Returns the level that this node is at.
             /// @author WVN
             int GetLevel(void);

@@ -107,6 +107,13 @@ namespace cmf
             }
         }
     }
+    
+    bool RefinementTreeNode::IsSameDimensionsAs(RefinementTreeNode* node)
+    {
+        bool output = true;
+        __dloop(output = (output && (node->directionLevels[d]==this->directionLevels[d])));
+        return output;
+    }
 
     bool RefinementTreeNode::IsTerminal(void)
     {
