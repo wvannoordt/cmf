@@ -5,6 +5,7 @@
 #define WriteLineStd(mylevel, mymessage) {cmf::WriteLineStd_WithFileAndLine((mylevel), (mymessage), __LINE__, __FILE__);}
 #define ParWriteLine(mylevel, mymessage) {cmf::WriteLine_WithFileAndLine((mylevel), (mymessage), __LINE__, __FILE__);}
 #define ParWriteLineStd(mylevel, mymessage) {cmf::WriteLineStd_WithFileAndLine((mylevel), (mymessage), __LINE__, __FILE__);}
+
 namespace cmf
 {    
     /// @brief Write a message to the screen

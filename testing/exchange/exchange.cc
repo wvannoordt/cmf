@@ -23,15 +23,11 @@ int main(int argc, char** argv)
     user["minTimeStep"].MapTo(&minTimeStep) = new PTL::PTLInteger(0, "Minimum time step");
     user["maxTimeStep"].MapTo(&maxTimeStep) = new PTL::PTLInteger(1, "Maximum time step");
     user.StrictParse();
-    if (cmf::HasGpuSupport())
-    {
-        //Test to see if we can allocate a gpu buffer
-        double* devPtr = (double*)Cmf_GpuAlloc(10*sizeof(double), 0);
-        Cmf_GpuFree(devPtr);
-    }
+    
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
     cmf::RefinementTreeNode* node = domain.Blocks()->GetNodeAt(sampleCoords);
+    
     domain.CreateCoordinateVariable(0);
     
     for (int i = minTimeStep; i <= maxTimeStep; i++)
@@ -39,10 +35,9 @@ int main(int argc, char** argv)
         if (cmf::globalGroup.IsRoot())
         {
             std::cout << "Step " << i << std::endl;
-            //Do exchanges
-            domain["x"].Exchange();
-            
         }
+        //Do exchanges
+        domain["x"].Exchange();    
     }
     
     if (outputFile)

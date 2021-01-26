@@ -58,6 +58,12 @@ namespace cmf
                 receiveSizes[sender] += transaction->GetPackedSize();
             }
         }
+        else
+        {
+            // This might not be the best way to do this.
+            // Delete if the transaction does not pertain to the current rank
+            delete transaction;
+        }
     }
     
     void DataExchangePattern::Pack(void)
