@@ -69,6 +69,10 @@ namespace cmf
     {
         BlockPartitionInfo currentNodeInfo  = mesh->partition->GetPartitionInfo(currentNode);
         BlockPartitionInfo neighborNodeInfo = mesh->partition->GetPartitionInfo(neighborNode);
+        
+        //Get type-size
+        // size_t elemSize = meshArray->
+        
     }
     
     void CartesianMeshExchangeHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)
