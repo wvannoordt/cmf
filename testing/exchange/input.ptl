@@ -33,5 +33,5 @@ User
 	outputFileName = output/data.vtk
 	sampleCoords = [0.001, 0.001, 0.001]
 	minTimeStep = 0
-	maxTimeStep = 10000
+	maxTimeStep = 100
 }

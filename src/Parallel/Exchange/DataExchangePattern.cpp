@@ -163,6 +163,8 @@ namespace cmf
         // Consider a wrapper for realloc() if downsizing, it is a lot faster!
         if (sendBufferIsAllocated[rank]) Cmf_Free(sendBuffer[rank]);
         sendBuffer[rank] = (char*)Cmf_Alloc(totalSize);
+        resizeOutBufferRequired[rank] = false;
+        sendBufferIsAllocated[rank] = true;
     }
     
     void DataExchangePattern::ResizeInBuffer(int rank)
@@ -175,5 +177,7 @@ namespace cmf
         // Consider a wrapper for realloc() if downsizing, it is a lot faster!
         if (receiveBufferIsAllocated[rank]) Cmf_Free(receiveBuffer[rank]);
         receiveBuffer[rank] = (char*)Cmf_Alloc(totalSize);
+        resizeInBufferRequired[rank] = false;
+        receiveBufferIsAllocated[rank] = true;
     }
 }

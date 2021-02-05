@@ -87,5 +87,3 @@ shuld generally be minimized.
   method selection should be implemented using an enumeration with a corresponding string function.
 - There should be no files output unless explicitly enabled or as a consequence of a crash. No files should be output to the current directory explicitly.
 - Avoid deallocating memory only to immediately re-allocate it, unless it is part of an isolated resizing or repartitioning operation.
-
-## Header Files
