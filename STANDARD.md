@@ -4,7 +4,7 @@ This document lays out the expected standard for CMF. This standard is provided 
 
 ## General Guidelines
 
-The general philosophy of this project is straightforward: favor ease-of-use when possible, and optimize where it matters, and allow users a great deal of control.
+The general philosophy of this project is straightforward: favor ease-of-use when possible, optimize where it matters, and allow users a great deal of control.
 
 ## Documentation
 
@@ -20,6 +20,8 @@ Class names and function names should be written using `PascalCase`, while varia
 with the exception of special functions such as `Cmf_Alloc`, which is (necessarily) a macro invoking an internal function call. Full words and complete variable names should be preferred,
 as an example consider the function `UpdateNeighborsOfNeighborsToChildNodes(...)`. The function name may look long and cumbersome, but it is clear what it does within the context of its
 class.
+
+However, if a function is highly domain-specific (e.g. computes some terms in a well-known equation), then short, but clear variable names should be used, e.g. "rho" instead of "density".
 
 ## Comments
 
@@ -87,3 +89,4 @@ shuld generally be minimized.
   method selection should be implemented using an enumeration with a corresponding string function.
 - There should be no files output unless explicitly enabled or as a consequence of a crash. No files should be output to the current directory explicitly.
 - Avoid deallocating memory only to immediately re-allocate it, unless it is part of an isolated resizing or repartitioning operation.
+- Avoid functions with too many responibilities. If a function is more than 100-200 lines long, it is too big.
