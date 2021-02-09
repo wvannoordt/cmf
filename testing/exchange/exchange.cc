@@ -24,9 +24,12 @@ int main(int argc, char** argv)
     user["maxTimeStep"].MapTo(&maxTimeStep) = new PTL::PTLInteger(1, "Maximum time step");
     user.StrictParse();
     
+    
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
     cmf::RefinementTreeNode* node = domain.Blocks()->GetNodeAt(sampleCoords);
+    
+    cmf::mainInput.CreateDefaultValuesFile("output/def.ptl");
     
     domain.CreateCoordinateVariable(0);
     
