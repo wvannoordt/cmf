@@ -15,9 +15,8 @@
 #include "DebugTools.hx"
 namespace cmf
 {
-    StlConverter::StlConverter(std::string filename)
+    StlConverter::StlConverter(std::string filename_in, SurfaceTriangulation* target_in) : ICmfGeometryConverter(filename_in, target_in)
     {
-        WriteLine(1, "Reading STL file \"" + filename + "\"...");
         int num = 1;
         bigEndian = !(*(char*)&num==1);
         if (bigEndian) CmfError("Unable to handle big-endian data for now. This should be a simple fix.");
@@ -29,7 +28,6 @@ namespace cmf
         ymax = -1e30;
         zmin =  1e30;
         zmax = -1e30;
-        ReadFromFile(filename);
         WriteLine(1, "Done");
     }
     
@@ -90,8 +88,38 @@ namespace cmf
         fclose(fileReader);
     }
     
-    void StlConverter::ConvertGeometry(SurfaceTriangulation* target)
+    void StlConverter::SaveGeometry(void)
     {
+        FILE* fileWriter;
+        fileWriter = fopen(filename.c_str(), "w+b");
+        size_t dummy;
+        for (int i = 0; i < STL_HDR_SIZE; i++) header[i] = 0;
+        std::string hdr = "cmf binary stl";
+        for (int i = 0; i < hdr.length(); i++) header[i] = hdr[i];
+        
+        //write header
+        dummy = fwrite(header, sizeof(char), STL_HDR_SIZE, fileWriter);
+        
+        //write number of faces
+        dummy = fwrite(&(target->numFaces), sizeof(int), 1, fileWriter);
+        
+        //write faces
+        char garbage[2] = {0};
+        for (int i = 0; i < target->numFaces; i++)
+        {
+            float data[12];
+            for (int j = 0; j < 3; j++) data[j]   = target->normals[3*i+j];
+            for (int j = 0; j < 9; j++) data[3+j] = target->points[9*i+j];
+            dummy = fwrite(data, sizeof(float), 12, fileWriter);
+            dummy = fwrite(garbage, sizeof(char), 2, fileWriter);
+        }
+        fclose(fileWriter);
+    }
+    
+    void StlConverter::ConvertGeometry(void)
+    {
+        WriteLine(1, "Reading STL file \"" + filename + "\"...");
+        ReadFromFile(filename);
         WriteLine(3, "Converting to native geometry");
         target->AllocatePointBuffer(9*facetCount*sizeof(double));
         target->AllocateNormalBuffer(3*facetCount*sizeof(double));

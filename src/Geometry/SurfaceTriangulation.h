@@ -51,6 +51,11 @@ namespace cmf
             /// @param bounds The bounds of the box to check (xmin, xmax, ymin, ymax, [zmin, zmax])
             /// @author WVN
             bool BoxIntersectsBoundary(double* bounds);
+            
+            /// @brief Writes the surface triangulation to a file
+            /// @param filename The file to write
+            /// @author WVN
+            void WriteTriangulation(std::string filename);
         
         private:
             

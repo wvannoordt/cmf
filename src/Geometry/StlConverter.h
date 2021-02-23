@@ -14,8 +14,9 @@ namespace cmf
             
             /// @brief Constructor for StlConverter class
             /// @param filename The file name to be read
+            /// @param target_in The surface object to be converted
             /// @author WVN
-            StlConverter(std::string filename);
+            StlConverter(std::string filename_in, SurfaceTriangulation* target);
             
             /// @brief Destrctor for StlConverter class
             /// @author WVN
@@ -27,9 +28,14 @@ namespace cmf
             void SavePointCloud(std::string filename);
             
             /// @brief Converts the current representation to the cmf standard format
-            /// @param target The triangulation to be populated
             /// @author WVN
-            void ConvertGeometry(SurfaceTriangulation* target);
+            void ConvertGeometry(void);
+            
+            /// @brief Saves the native geometry as the corresponding file type
+            /// @param target The surface to write
+            /// @param filename The file to write to
+            /// @author WVN
+            void SaveGeometry(void);
             
         private:
             
