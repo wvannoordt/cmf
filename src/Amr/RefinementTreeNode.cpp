@@ -164,6 +164,16 @@ namespace cmf
     bool RefinementTreeNode::RefineRequiredFromRelationship(RefinementTreeNode* newChildNode, RefinementTreeNode* toBeRefined, NodeEdge relationship, char* newRefTypeOut)
     {
         *newRefTypeOut = 0;
+        bool* periodicRefine = toBeRefined->rootBlock->periodicRefinement;
+        bool noRefineBecauseOfPeriodicity = false;
+        for (int d = 0; d < CMF_DIM; d++)
+        {
+            if (CharBit(relationship.isDomainEdge, d)&&!(periodicRefine[d]))
+            {
+                noRefineBecauseOfPeriodicity = true;
+            }
+        }
+        if (noRefineBecauseOfPeriodicity) return false;
         switch (newChildNode->constraint)
         {
             case RefinementConstraint::free:

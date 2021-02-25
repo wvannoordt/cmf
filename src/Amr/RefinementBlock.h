@@ -26,8 +26,9 @@ namespace cmf
             /// @param blockBounds_in The bounding box for the domain
             /// @param constraint_in A string title that will be used to look for option in the section of the input file (the section has the same name)
             /// \see RefinementConstraint.h
+            /// @param periodicRefinement_in A boolean array of size CMF_DIM indicating whether or not refinement constraints are applied periodically
             /// @author WVN
-            RefinementBlock(int* blockDim_in, double* blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in);
+            RefinementBlock(int* blockDim_in, double* blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in, bool* periodicRefinement_in);
             
             /// @brief Destructor for the RefinementBlock object. Explicitly calls Destroy and destroys all contained RefinementTreeNode objects.
             /// @author WVN
@@ -173,6 +174,9 @@ namespace cmf
             
             /// @brief An array of size CMF_DIM that represent the size of a single initial node in each dimension
             double dx[CMF_DIM];
+            
+            ///@brief A boolean array of size CMF_DIM indicating whether or not refinement constraints are applied periodically
+            bool* periodicRefinement;
             
             /// @brief An array to store the initial nodes of this refinement block
             RefinementTreeNode** trunks;

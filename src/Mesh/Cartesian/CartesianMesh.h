@@ -49,8 +49,11 @@ namespace cmf
         /// @brief An array of size CMF_DIM that represents the initial block dimensions
         int* blockDim;
 
-        /// @brief An array of size 2*CMF_DIM the represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
+        /// @brief An array of size 2*CMF_DIM that represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
         double* blockBounds;
+        
+        /// @brief A logical array of CMF_DIM indicating whether or not neighbor refinement constraints should be applied periodically in the corresponding direction [x, y, (z)]
+        bool* periodicRefinement;
 
         /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
         RefinementConstraint::RefinementConstraint refinementConstraintType;
@@ -80,10 +83,17 @@ namespace cmf
         void Define(PTL::PropertySection& input)
         {
             input["blockDim"].MapTo(&blockDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 2;});
+            
             input["blockBounds"].MapTo(&blockBounds) = new PTL::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds", [](int i){return (double)(i&1);});
+            
             input["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
                 = new PTL::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
+                
+            input["periodicRefinement"].MapTo(&periodicRefinement)
+                = new PTL::PTLStaticBooleanArray(CMF_DIM, "Determines if the refinementConstraintType applies accross domain boundaries", [](int i){return true;});
+                
             input["meshDataDim"].MapTo(&meshDataDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Dimensions of data", [](int i){return 2;});
+            
             partitionInfo.Define(input["Partition"]);
             exchangeInfo.Define(input["Exchanges"]);
         }

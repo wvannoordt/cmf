@@ -12,7 +12,7 @@ namespace cmf
         blockDim = input.blockDim;
         blockBounds = input.blockBounds;
         refinementConstraintType = input.refinementConstraintType;
-        blocks = new RefinementBlock(blockDim, blockBounds, refinementConstraintType);
+        blocks = new RefinementBlock(blockDim, blockBounds, refinementConstraintType, input.periodicRefinement);
         meshDataDim = input.meshDataDim;
         exchangeDim = input.exchangeInfo.exchangeDim;
         arrayHandler = new CartesianMeshArrayHandler(this);

@@ -14,8 +14,9 @@
 #include "IPostRefinementCallback.h"
 namespace cmf
 {
-    RefinementBlock::RefinementBlock(int* blockDim_in, double* blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in)
+    RefinementBlock::RefinementBlock(int* blockDim_in, double* blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in, bool* periodicRefinement_in)
     {
+        periodicRefinement = periodicRefinement_in;
         blockDim = blockDim_in;
         blockBounds = blockBounds_in;
         refinementConstraintType = constraint_in;
