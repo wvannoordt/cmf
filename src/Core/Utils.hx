@@ -212,7 +212,7 @@ static inline void PrintCharAsVector(char p)
 /// @author WVN
 static inline bool PlaneIntersectsBox(double* point, double* normalVec, double* box)
 {
-    //strictly speaking, only need to test the "most akigned" vertices
+    //strictly speaking, only need to test the "most aligned" vertices
     bool hasPositive = false;
 	bool hasNegative = false;
     double corner[3];
@@ -240,10 +240,10 @@ static inline bool PlaneIntersectsBox(double* point, double* normalVec, double* 
 /// @author WVN
 static inline bool BoxOverlap3(double* b1, double* b2)
 {
-    return ((b1[0] <= b2[1]) || (b1[1] >= b2[0])) && ((b1[2] <= b2[3]) || (b1[3] >= b2[2])) && ((b1[4] <= b2[5]) || (b1[5] >= b2[4]));
+    return ((b1[0] <= b2[1]) && (b1[1] >= b2[0])) && ((b1[2] <= b2[3]) && (b1[3] >= b2[2])) && ((b1[4] <= b2[5]) && (b1[5] >= b2[4]));
 }
 
-// see http://fileadmin.cs.lth.se/cs/personal/tomas_akenine-moller/code/tribox_tam.pdf for algorithm below
+// see https://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/pubs/tribox.pdf for algorithm below
 
 /// @brief Checks if a triangle intersects a box
 /// @param p1 First point
@@ -272,30 +272,38 @@ static inline bool TriangleIntersectsBox(double* p1, double* p2, double* p3, dou
     tbox[5] = CMFMAX(CMFMAX(p1[2], p2[2]), p3[2]);
     if (!BoxOverlap3(tbox, box)) return false;
     if (!PlaneIntersectsBox(p1, nvec, box)) return false;
-    //return true;
     double ei[3];
-    double fj[3];
+    double fj[3][3];
+    fj[0][0] = p2[0] - p1[0];
+    fj[1][0] = p2[1] - p1[1];
+    fj[2][0] = p2[2] - p1[2];
+    fj[0][1] = p3[0] - p2[0];
+    fj[1][1] = p3[1] - p2[1];
+    fj[2][1] = p3[2] - p2[2];
+    fj[0][2] = p1[0] - p3[0];
+    fj[1][2] = p1[1] - p3[1];
+    fj[2][2] = p1[2] - p3[2];
     double aij[3];
     double p[3];
     double r;
     int i, j;
+    double pmin, pmax;
     for (int z = 0; z < 9; z++)
     {
         i = z/3;
         j = z%3;
         ei[0] = 0.0; ei[1] = 0.0; ei[2] = 0.0;
-        fj[0] = (j==0)?(p2[0]-p1[0]):((j==1)?(p3[0]-p2[0]):(p1[0]-p3[0]));
-        fj[1] = (j==0)?(p2[1]-p1[1]):((j==1)?(p3[1]-p2[1]):(p1[1]-p3[1]));
-        fj[2] = (j==0)?(p2[2]-p1[2]):((j==1)?(p3[2]-p2[2]):(p1[2]-p3[2]));
         ei[i] = 1.0;
-        aij[0] = ei[1]*fj[2] - ei[2]*fj[1];
-        aij[1] = ei[0]*fj[2] - ei[2]*fj[0];
-        aij[2] = ei[0]*fj[1] - ei[1]*fj[0];
+        aij[0] = ei[1]*fj[2][j] - ei[2]*fj[1][j];
+        aij[1] = ei[2]*fj[0][j] - ei[0]*fj[2][j];
+        aij[2] = ei[0]*fj[1][j] - ei[1]*fj[0][j];
         p[0] = aij[0]*(p1[0]-c[0]) + aij[1]*(p1[1]-c[1]) + aij[2]*(p1[2]-c[2]);
         p[1] = aij[0]*(p2[0]-c[0]) + aij[1]*(p2[1]-c[1]) + aij[2]*(p2[2]-c[2]);
         p[2] = aij[0]*(p3[0]-c[0]) + aij[1]*(p3[1]-c[1]) + aij[2]*(p3[2]-c[2]);
+        pmin = CMFMIN(CMFMIN(p[0], p[1]), p[2]);
+        pmax = CMFMAX(CMFMAX(p[0], p[1]), p[2]);
         r = h[0]*__d_abs(aij[0]) + h[1]*__d_abs(aij[1]) + h[2]*__d_abs(aij[2]);
-        if ((r < CMFMIN(CMFMIN(p[0], p[1]), p[2])) || (CMFMAX(CMFMAX(p[0], p[1]), p[2]) < -r)) return false;
+        if ((r < pmin) || (pmax < -r)) return false;
     }
     return true;
 }

@@ -23,8 +23,10 @@
 #include "Parallel.h"
 #include "ParallelGroup.h"
 #include "BlockIndexing.h"
+#include "BlockVtk.h"
 #include "SvgImage.h"
 #include "DataExchangePattern.h"
+#include "Vec.h"
 
 namespace cmf
 {

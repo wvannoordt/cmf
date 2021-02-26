@@ -88,6 +88,35 @@ namespace cmf
         fclose(fileReader);
     }
     
+    void StlConverter::OutputFaceSubsetAsStl(std::vector<int> set)
+    {
+        FILE* fileWriter;
+        fileWriter = fopen(filename.c_str(), "w+b");
+        size_t dummy;
+        for (int i = 0; i < STL_HDR_SIZE; i++) header[i] = 0;
+        std::string hdr = "cmf binary stl";
+        for (int i = 0; i < hdr.length(); i++) header[i] = hdr[i];
+        
+        //write header
+        dummy = fwrite(header, sizeof(char), STL_HDR_SIZE, fileWriter);
+        
+        //write number of faces
+        int numFacesSubset = set.size();
+        dummy = fwrite(&numFacesSubset, sizeof(int), 1, fileWriter);
+        
+        //write faces
+        char garbage[2] = {0};
+        for (int i = 0; i < numFacesSubset; i++)
+        {
+            float data[12];
+            for (int j = 0; j < 3; j++) data[j]   = target->normals[3*set[i]+j];
+            for (int j = 0; j < 9; j++) data[3+j] = target->points[9*set[i]+j];
+            dummy = fwrite(data, sizeof(float), 12, fileWriter);
+            dummy = fwrite(garbage, sizeof(char), 2, fileWriter);
+        }
+        fclose(fileWriter);
+    }
+    
     void StlConverter::SaveGeometry(void)
     {
         FILE* fileWriter;

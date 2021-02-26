@@ -217,6 +217,42 @@ namespace cmf
         Cmf_Free(lookupTableBinIdx);
     }
     
+    std::vector<int> SurfaceTriangulation::OutputTrianglesIntersectingBoxAsStl(double* bounds, std::string filename)
+    {
+        //This is a super slow implementation and should only be used for debugging!
+        WriteLine(1, "WARNING: SurfaceTriangulation::OutputTrianglesIntersectingBoxAsStl should be used for debugging only!");
+        std::vector<int> triIndices;
+        for (int face = 0; face < numFaces; face++)
+        {
+            double* p1 = points + 9*face;
+            double* p2 = points + 9*face+3;
+            double* p3 = points + 9*face+6;
+            double* n  = normals+ 3*face;
+            if (TriangleIntersectsBox(p1, p2, p3, n, bounds))
+            {
+                triIndices.push_back(face);
+            }
+        }
+        StlConverter writer(filename, this);
+        writer.OutputFaceSubsetAsStl(triIndices);
+        return triIndices;
+    }
+    
+    void SurfaceTriangulation::CopyFaceInfo(int faceIndex, double* p1, double* p2, double* p3, double* n)
+    {
+        double* p1Loc = points + 9*faceIndex;
+        double* p2Loc = points + 9*faceIndex+3;
+        double* p3Loc = points + 9*faceIndex+6;
+        double* nLoc  = normals+ 3*faceIndex;
+        for (int j = 0; j < 3; j++)
+        {
+            p1[j] = p1Loc[j];
+            p2[j] = p2Loc[j];
+            p3[j] = p3Loc[j];
+            n[j] = nLoc[j];
+        }
+    }
+    
     void SurfaceTriangulation::OutputBoundingBoxesAsCloud(std::string filename)
     {
         size_t totalNumCells=1;

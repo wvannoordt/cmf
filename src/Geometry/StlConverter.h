@@ -37,6 +37,11 @@ namespace cmf
             /// @author WVN
             void SaveGeometry(void);
             
+            /// @brief Outputs a subset of the surface triangulation as an STL file
+            /// @param set The indices of the triangles to write
+            /// @author WVN
+            void OutputFaceSubsetAsStl(std::vector<int> set);
+            
         private:
             
             /// @brief The number of faces in the stl file

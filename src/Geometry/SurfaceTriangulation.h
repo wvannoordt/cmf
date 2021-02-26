@@ -27,7 +27,8 @@ namespace cmf
         return PTL_AUTO_ENUM_TERMINATOR;
     }
     class ICmfGeometryConverter;
-    /// @brief A class representing a finite discretization of a surface
+    /// @brief A class representing a finite discretization of a surface. This class is not intended to handle any data
+    /// over a surface!
     /// @author WVN
     class SurfaceTriangulation : ICmfGeometry
     {
@@ -56,12 +57,29 @@ namespace cmf
             /// @param filename The file to write
             /// @author WVN
             void WriteTriangulation(std::string filename);
+            
+            /// @brief (Debugging only) Writes the triangles that intersect a given box as an STL file.
+            /// Returns the subset of intersecting faces
+            /// @param bounds The box to check (xmin xmax ymin ymax [zmin zmax])
+            /// @param filename The file to write
+            /// @author WVN
+            std::vector<int> OutputTrianglesIntersectingBoxAsStl(double* bounds, std::string filename);
+            
+            /// @brief (Debugging only) Copies the points and normal vector of a triangle to the
+            /// provided arrays (mut be of size 3 or greater)
+            /// @param faceIndex The index of the face to fetch
+            /// @param p1 The array to fill with the first point info
+            /// @param p2 The array to fill with the second point info
+            /// @param p3 The array to fill with the third point info
+            /// @param n A pointer to the array to fill with the normal vector info
+            /// @author WVN
+            void CopyFaceInfo(int faceIndex, double* p1, double* p2, double* p3, double* n);
         
         private:
             
             /// @brief Outputs the bounding boxes in the lookup table as a point cloud
             /// @param filename The file name to write to
-            /// @author WVN            
+            /// @author WVN
             void OutputBoundingBoxesAsCloud(std::string filename);
             
             /// @brief Populates the triangulation data using the specified converter
