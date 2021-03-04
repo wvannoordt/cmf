@@ -13,8 +13,9 @@ GlobalSettings
 }
 Domain
 {
-	blockDim = [2, 2, 2]
-	blockBounds = [0,1,0,1,0,1]
+	blockDim = [2, 1, 1]
+	periodicRefinement = [true,true,true]
+	blockBounds = [0,2,0,1,0,1]
 	meshDataDim = [$(dataDim), $(dataDim), $(dataDim)]
 	refinementConstraintType = @choose(0, factor2CompletelyConstrained, free)
 	Partition
