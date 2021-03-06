@@ -1,4 +1,3 @@
-#define dataDim 16
 GlobalSettings
 {
 	Display
@@ -10,29 +9,4 @@ GlobalSettings
 	{
 		allowStackAllocation = false
 	}
-}
-Domain
-{
-	blockDim = [2, 1, 1]
-	periodicRefinement = [true,true,true]
-	blockBounds = [0,2,0,1,0,1]
-	meshDataDim = [$(dataDim), $(dataDim), $(dataDim)]
-	refinementConstraintType = @choose(0, factor2CompletelyConstrained, free)
-	Partition
-	{
-		partitionType = uniform
-	}
-	Exchanges
-	{
-		exchangeDim = [4, 4, 4]
-		interpolationOrder = 2
-	}
-}
-User
-{
-	outputFile = true
-	outputFileName = output/data.vtk
-	sampleCoords = [0.001, 0.001, 0.001]
-	minTimeStep = 0
-	maxTimeStep = 100
 }

@@ -1,6 +1,6 @@
 MAINCC := $(wildcard *.cc)
 TARGET := test_$(basename $(notdir ${MAINCC}))
-TEST_FLAGS := -g
+TEST_FLAGS := -g -DGLIBCXX_FORCE_NEW=1
 
 ifneq ("$(wildcard testParams.mk)","")
 include testParams.mk

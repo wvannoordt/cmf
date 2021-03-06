@@ -119,8 +119,9 @@ ICUDA :=
 LCUDA :=
 endif
 
+VALGRIND_SUPPRESSION_FILE := ${CURRENT_BASEIDIR}/util/cmf_valgrind.supp
 ifeq (${MEMCHECK}, 1)
-VALG := $(shell which valgrind) --error-exitcode=188 --leak-check=full
+VALG := $(shell which valgrind) --error-exitcode=166 --leak-check=full -v --error-limit=no --gen-suppressions=all --suppressions=${VALGRIND_SUPPRESSION_FILE}
 else
 VALG :=
 endif
@@ -132,6 +133,7 @@ COMPILE_TIME_OPT += -DCMF_ZLIB_EXT_ENABLE=${ZLIB_ENABLE}
 COMPILE_TIME_OPT += -DCMF_ENABLE_STACK_BLOB=0
 COMPILE_TIME_OPT += -DCMF_PARALLEL=${PARALLEL}
 COMPILE_TIME_OPT += -DCUDA_ENABLE=${CUDA_ENABLE}
+COMPILE_TIME_OPT += -DGLIBCXX_FORCE_NEW=1
 
 
 
