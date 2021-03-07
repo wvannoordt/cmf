@@ -3,6 +3,7 @@
 #include "ParallelGroup.h"
 #include "IDataTransaction.h"
 #include "SingleTransaction.h"
+#include "MultiTransaction.h"
 #include <vector>
 #include "CmfGC.h"
 namespace cmf
