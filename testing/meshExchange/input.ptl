@@ -1,0 +1,26 @@
+#define datadim 16
+GlobalSettings
+{
+	Display
+	{
+		debugLevel = 5
+		trackOutputOrigins = false
+	}
+	Memory
+	{
+		allowStackAllocation = false
+	}
+}
+Domain
+{
+	blockDim = [2, 2, 2]
+	blockBounds = [0,1,0,1,0,1]
+	meshDataDim = [$(datadim), $(datadim), $(datadim)]
+	refinementConstraintType = factor2CompletelyConstrained
+	periodicRefinement = [true,true,true]
+	Exchanges
+	{
+		exchangeDim = [2,2,2]
+		interpolationOrder = 2
+	}
+}
