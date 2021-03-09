@@ -56,6 +56,45 @@ namespace cmf
         return DefineVariable(info, filter);
     }
     
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, size_t elementSize, NodeFilter_t filter)
+    {
+        ArrayInfo info;
+        info.name = name;
+        info.rank = 0;
+        info.elementSize = elementSize;
+        return DefineVariable(info, filter);
+    }
+    
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, size_t elementSize, std::initializer_list<int> arrayDimensions, NodeFilter_t filter)
+    {
+        ArrayInfo info;
+        info.name = name;
+        info.rank = arrayDimensions.size();
+        if (info.rank>MAX_RANK) CmfError("A mesh array \"" + name + "\" was initialized with rank " + std::to_string(info.rank) + ", exceeding maximum rank " + std::to_string(MAX_RANK));
+        int r = 0;
+        for (auto dim:arrayDimensions)
+        {
+            info.dimensions[r++] = dim;
+        }
+        info.elementSize = elementSize;
+        return DefineVariable(info, filter);
+    }
+    
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, size_t elementSize, std::initializer_list<int> arrayDimensions)
+    {
+        ArrayInfo info;
+        info.name = name;
+        info.rank = arrayDimensions.size();
+        if (info.rank>MAX_RANK) CmfError("A mesh array \"" + name + "\" was initialized with rank " + std::to_string(info.rank) + ", exceeding maximum rank " + std::to_string(MAX_RANK));
+        int r = 0;
+        for (auto dim:arrayDimensions)
+        {
+            info.dimensions[r++] = dim;
+        }
+        info.elementSize = elementSize;
+        return DefineVariable(info, BlockFilters::Terminal);
+    }
+    
     CartesianMeshArray& CartesianMesh::DefineVariable(ArrayInfo info)
     {
         return DefineVariable(info, BlockFilters::Terminal);

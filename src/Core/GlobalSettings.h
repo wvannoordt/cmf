@@ -19,6 +19,9 @@ namespace cmf
         
         /// @brief If set to true, will enable the emulated stack
         bool allowStackAllocation;
+        
+        /// @@brief indicates whether or not the GlobalSettings object was parsed from a file
+        bool hasBeenParsedFromFile;
 
         /// @brief Constructor for the GlobalSettings object.
         /// @param title_in title of the mesh
@@ -29,6 +32,7 @@ namespace cmf
             globalOutputEnabledHere = true;
             Define(*objectInput);
             Parse();
+            hasBeenParsedFromFile = true;
         }
 
         /// @brief Default constructor for the GlobalSettings object.
@@ -39,6 +43,7 @@ namespace cmf
             globalOutputEnabledHere = true;
             debugLevel = 1;
             trackOutputOrigins = false;
+            hasBeenParsedFromFile = false;
         }
 
         /// @brief Defines the input variables

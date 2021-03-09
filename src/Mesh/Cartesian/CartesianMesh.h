@@ -13,6 +13,7 @@
 #include "CartesianMeshArrayHandler.h"
 #include "ParallelGroup.h"
 #include "CartesianMeshParallelPartition.h"
+#include <initializer_list>
 
 namespace cmf
 {
@@ -133,6 +134,29 @@ namespace cmf
             /// @param filter A block filter determining whether the block lies in the domain of the variable
             /// @author WVN
             CartesianMeshArray& DefineVariable(std::string name, NodeFilter_t filter);
+            
+            /// @brief Defines a variable with the given name
+            /// @param name The name of the variable
+            /// @param elementSize the size (in bytes) of a single element
+            /// @param filter A block filter determining whether the block lies in the domain of the variable
+            /// @author WVN
+            CartesianMeshArray& DefineVariable(std::string name, size_t elementSize, NodeFilter_t filter);
+            
+            /// @brief Defines a variable with the given name
+            /// @param name The name of the variable
+            /// @param elementSize the size (in bytes) of a single element
+            /// @param arrayDimensions the dimensions of the array (per element)
+            /// @param filter A block filter determining whether the block lies in the domain of the variable
+            /// @author WVN
+            CartesianMeshArray& DefineVariable(std::string name, size_t elementSize, std::initializer_list<int> arrayDimensions, NodeFilter_t filter);
+            
+            /// @brief Defines a variable with the given name
+            /// @param name The name of the variable
+            /// @param elementSize the size (in bytes) of a single element
+            /// @param arrayDimensions the dimensions of the array (per element)
+            /// @param filter A block filter determining whether the block lies in the domain of the variable
+            /// @author WVN
+            CartesianMeshArray& DefineVariable(std::string name, size_t elementSize, std::initializer_list<int> arrayDimensions);
             
             /// @brief Defines a variable with the given name
             /// @param info An ArrayInfo struct defining the properties of the array

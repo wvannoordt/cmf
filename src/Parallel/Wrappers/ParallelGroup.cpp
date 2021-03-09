@@ -32,6 +32,10 @@ namespace cmf
     
     void ParallelGroup::CreateGroup(CmfParallelCommunicator comm)
     {
+        if (!globalSettings.hasBeenParsedFromFile)
+        {
+            WriteLine(1, "WARNING: it is suggested to read cmf::globalSettings from a PTL file before creating the global parallel context");
+        }
         communicator = comm;
         CMF_MPI_CHECK(MPI_Comm_rank(comm, &processId));
         CMF_MPI_CHECK(MPI_Comm_size(comm, &processCount));
