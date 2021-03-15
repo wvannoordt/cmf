@@ -25,6 +25,7 @@ void FillArray(cmf::CartesianMeshArray& ar, double value, bool doGuardFilling = 
 
 int main(int argc, char** argv)
 {
+    EXIT_WARN_IF_PARALLEL;
     EXIT_WARN_IF_DIM_NOT(3);
     
     cmf::ReadInput("input.ptl");

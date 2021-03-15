@@ -18,3 +18,23 @@
    fun:append
    fun:operator+=
 }
+{
+   <ptl-stl-str-dappend>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_appendEPKcm
+   fun:_ZStplIcSt11char_traitsIcESaIcEENSt7__cxx1112basic_stringIT_T0_T1_EERKS8_PKS5_
+   fun:_ZN3PTL20PTLStaticDoubleArrayC1EiNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPFdiE
+}
+{
+   <ptl-str-bool-appnd>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_appendEPKcm
+   fun:_ZN3PTL21PTLStaticBooleanArrayC1EiNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPFbiE
+}
+
