@@ -4,18 +4,19 @@
 #include "cmftestutils.h"
 #include <chrono>
 
-void FillArray(cmf::CartesianMeshArray& ar, double value, bool doGuardFilling)
+void FillArray(cmf::CartesianMeshArray& ar, double value, bool doGuardFilling = false)
 {
+    int ng = doGuardFilling?1:0;
     for (auto lb: ar)
     {
         cmf::BlockArray<double> block = ar[lb];
-        for (int k = block.kmin; k < block.kmax; k++)
+        for (int k = block.kmin - ng*block.exchangeK; k < block.kmax + ng*block.exchangeK; k++)
         {
-            for (int j = block.jmin; j < block.jmax; j++)
+            for (int j = block.jmin - ng*block.exchangeJ; j < block.jmax + ng*block.exchangeJ; j++)
             {
-                for (int i = block.imin; i < block.imax; i++)
+                for (int i = block.imin - ng*block.exchangeI; i < block.imax + ng*block.exchangeI; i++)
                 {
-                    block(i, j, k) = 1.0;
+                    block(i, j, k) = value;
                 }
             }
         }
@@ -32,9 +33,15 @@ int main(int argc, char** argv)
     
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
-    auto& var = domain.DefineVariable("var", sizeof(double));
-    
-    
+    auto& var = domain.DefineVariable("data", sizeof(double));
+    FillArray(var, -1.0, true);
+    FillArray(var, (double)(cmf::globalGroup.Rank()), false);
+    if (cmf::globalGroup.Size()<2)
+    {
+        cmf::SerialCartesianVtk svtk(domain, "output/data.vtk");
+        svtk << var;
+        svtk.Write();
+    }
     
     return 0;
 }

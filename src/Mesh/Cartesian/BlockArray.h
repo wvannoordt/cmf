@@ -4,6 +4,7 @@
 #include "ICmfHasBlockBoundIndices.h"
 #include "CartesianMeshArray.h"
 #include "CmfError.h"
+#include "CudaStaticDefs.h"
 namespace cmf
 {
     /// @brief A struct representing an "indexed" view of a block array. Note that the "elementRank" template parameter
@@ -31,11 +32,18 @@ namespace cmf
             data = (arType*)pointerPair.pointer;
             std::vector<int>& arDim = pointerPair.array->arrayDimensions;
             int elemRankInput = pointerPair.array->rank;
+            size_t elementSizeIn = pointerPair.array->elementSize;
             if (elemRankInput!=elementRank)
             {
                 CmfError("A BlockArray of rank " + std::to_string(elementRank)
                     + " is being created from array \"" + pointerPair.array->variableName
                     + "\" of rank " + std::to_string(elemRankInput));
+            }
+            if (sizeof(arType) != elementSizeIn)
+            {
+                CmfError("A Blockarray with element size " + std::to_string(sizeof(arType))
+                    + " is being created from an array \"" + pointerPair.array->variableName
+                    + "\" with element size " + std::to_string(elementSizeIn));
             }
             for (int i = 0; i < elemRankInput; i++)
             {
@@ -78,7 +86,7 @@ namespace cmf
         /// @author WVN
         /// @param lev The current level
         /// @param t The final index
-        template <typename T> inline arType * idxC(int lev, T t)
+        template <typename T> _CmfShared_ inline arType * idxC(int lev, T t)
         {
             return data+idxCoeff[lev]*t;
         }
@@ -88,7 +96,7 @@ namespace cmf
         /// @param lev The current level
         /// @param t The current index
         /// @param ts The remaining indices index
-        template <typename T, typename... Ts> inline arType * idxC(int lev, T t, Ts... ts)
+        template <typename T, typename... Ts> _CmfShared_ inline arType * idxC(int lev, T t, Ts... ts)
         {
             static_assert(std::is_integral<T>::value, "Integral type required for indexing");
             return idxC(lev+1, ts...) + t*idxCoeff[lev];
@@ -97,7 +105,7 @@ namespace cmf
         /// @brief internal indexer, recursive case
         /// @author WVN
         /// @param ts The list of indices
-        template <typename... Ts> inline arType & operator () (Ts... ts)
+        template <typename... Ts> _CmfShared_ inline arType & operator () (Ts... ts)
         {
             static_assert(sizeof...(Ts)==TotalRank(), "Incorrect rank in array index");
             return *(idxC(0, ts...) + idxOffset);
