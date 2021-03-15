@@ -12,6 +12,13 @@ namespace cmf
         handler = handler_in;
         filter = filter_in;
         exchangePattern = NULL;
+        rank = info.rank;
+        arrayDimensions.resize(info.rank, 0);
+        for (int i = 0; i < info.rank; i++)
+        {
+            arrayDimensions[i] = info.dimensions[i];
+        }
+        elementSize = info.elementSize;
         GetDefinedNodes();
         Allocate();
         DefinePointerMap();
@@ -52,6 +59,26 @@ namespace cmf
         }
     }
     
+    std::vector<RefinementTreeNode*>::iterator CartesianMeshArray::begin() noexcept
+    {
+        return definedNodes.begin();
+    }
+    
+    std::vector<RefinementTreeNode*>::const_iterator CartesianMeshArray::begin() const noexcept
+    {
+        return definedNodes.begin();
+    }
+    
+    std::vector<RefinementTreeNode*>::iterator CartesianMeshArray::end() noexcept
+    {
+        return definedNodes.end();
+    }
+    
+    std::vector<RefinementTreeNode*>::const_iterator CartesianMeshArray::end() const noexcept
+    {
+        return definedNodes.end();
+    }
+    
     NodeFilter_t CartesianMeshArray::GetFilter(void)
     {
         return filter;
@@ -72,10 +99,18 @@ namespace cmf
         return &definedNodes;
     }
     
-    void* CartesianMeshArray::operator [] (BlockIterator& it)
+    CartesianMeshArrayPointerPair CartesianMeshArray::operator [] (BlockIterator& it)
     {
-        if (!IsSupportedBlock(it.Node())) CmfError("Attempted to index variable \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\" on an unsupported block");
-        return pointerMap[it.Node()];
+        return (*this)[it.Node()];
+    }
+    
+    CartesianMeshArrayPointerPair CartesianMeshArray::operator [] (RefinementTreeNode* node)
+    {
+        if (!IsSupportedBlock(node)) CmfError("Attempted to index variable \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\" on an unsupported block");
+        CartesianMeshArrayPointerPair output;
+        output.array = this;
+        output.pointer = pointerMap[node];
+        return output;
     }
     
     bool CartesianMeshArray::IsSupportedBlock(RefinementTreeNode* node)

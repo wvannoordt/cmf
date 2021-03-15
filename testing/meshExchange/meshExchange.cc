@@ -6,7 +6,20 @@
 
 void FillArray(cmf::CartesianMeshArray& ar, double value, bool doGuardFilling)
 {
-    
+    for (auto lb: ar)
+    {
+        cmf::BlockArray<double> block = ar[lb];
+        for (int k = block.kmin; k < block.kmax; k++)
+        {
+            for (int j = block.jmin; j < block.jmax; j++)
+            {
+                for (int i = block.imin; i < block.imax; i++)
+                {
+                    block(i, j, k) = 1.0;
+                }
+            }
+        }
+    }
 }
 
 int main(int argc, char** argv)
@@ -15,7 +28,6 @@ int main(int argc, char** argv)
     
     cmf::ReadInput("input.ptl");
     cmf::globalSettings = cmf::GlobalSettings(cmf::mainInput["GlobalSettings"]);
-    
     cmf::CreateParallelContext(&argc, &argv);
     
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);

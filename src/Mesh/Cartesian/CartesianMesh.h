@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "Typedefs.h"
 #include "AmrFcnTypes.h"
 #include "PTL.h"
 #include "RefinementTreeNode.h"
@@ -14,27 +15,25 @@
 #include "ParallelGroup.h"
 #include "CartesianMeshParallelPartition.h"
 #include <initializer_list>
+#include "ICmfHasBlockBoundIndices.h"
 
 namespace cmf
 {
     /// @brief A struct general block information that can be passed to a numerical kernel, used for indexing and computing coorintes
     /// @author WVN
-    struct BlockInfo
-    {
-        //@brief dimensions of the data on the current block, excluding exchange cells
-        int dataDim[CMF_DIM];
-        
-        //@brief dimensions of the data on the current block, including exchange cells
-        int totalDataDim[CMF_DIM];
-        
-        //@brief dimensions of the exchange cells on the current block
-        int exchangeDim[CMF_DIM];
-        
+    struct BlockInfo : public ICmfHasBlockBoundIndices
+    {        
         //@brief bounding box of the current block
         double blockBounds[2*CMF_DIM];
         
         //@brief The dimensions of the box in each coordinate
         double blockSize[CMF_DIM];
+        
+        //@brief The number of cells (excluding the exchange cells) in each direction
+        double dataDim[CMF_DIM];
+        
+        //@brief The number of cells (including the exchange cells) in each direction
+        double totalDataDim[CMF_DIM];
         
         //@brief the mesh spacing of the current block
         double dx[CMF_DIM];
@@ -153,6 +152,12 @@ namespace cmf
             /// @brief Defines a variable with the given name
             /// @param name The name of the variable
             /// @param elementSize the size (in bytes) of a single element
+            /// @author WVN
+            CartesianMeshArray& DefineVariable(std::string name, size_t elementSize);
+            
+            /// @brief Defines a variable with the given name
+            /// @param name The name of the variable
+            /// @param elementSize the size (in bytes) of a single element
             /// @param arrayDimensions the dimensions of the array (per element)
             /// @param filter A block filter determining whether the block lies in the domain of the variable
             /// @author WVN
@@ -261,6 +266,7 @@ namespace cmf
         
             friend class CartesianMeshParallelPartition;
             friend class CartesianMeshExchangeHandler;
+            template <typename arType, const int elementRank> friend struct BlockArray;
     };
 }
 

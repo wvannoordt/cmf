@@ -3,6 +3,7 @@
 #include "Utils.hx"
 #include "StringUtils.h"
 #include "BlockIndexing.h"
+#include "BlockArray.h"
 namespace cmf
 {
     SerialCartesianVtk::SerialCartesianVtk(CartesianMesh& mesh_in, std::string filename_in, NodeFilter_t filter_in)
@@ -56,10 +57,17 @@ namespace cmf
         for (BlockIterator lb(mesh, filter, IterableMode::parallel); lb.HasNext(); lb++)
         {
             BlockInfo info = mesh->GetBlockInfo(lb);
-            double* buf = (double*)variable[lb];
-            cmf_pkloop(idx[2], 0, info){cmf_pjloop(idx[1], 0, info){cmf_piloop(idx[0], 0, info){
-                scalarData << buf[cmf_idx(idx[0], idx[1], idx[2], info)];
-            }}}
+            BlockArray<double> buf = variable[lb];
+            for (int k = info.kmin; k < info.kmax; k++)
+            {
+                for (int j = info.jmin; j < info.jmax; j++)
+                {
+                    for (int i = info.imin; i < info.imax; i++)
+                    {
+                        scalarData << buf(i, j, k);
+                    }
+                }
+            }
         }
         return *this;
     }

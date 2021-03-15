@@ -66,7 +66,8 @@ namespace cmf
             
             /// @brief Indicates whether or not the current object should delete defaultHandler
             bool requireDeleteDefaultHandler;
-            
+        
+            template <typename arType, const int elementRank> friend struct BlockArray;
     };
 }
 

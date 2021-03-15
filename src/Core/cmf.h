@@ -27,6 +27,7 @@
 #include "SvgImage.h"
 #include "DataExchangePattern.h"
 #include "Vec.h"
+#include "BlockArray.h"
 
 namespace cmf
 {

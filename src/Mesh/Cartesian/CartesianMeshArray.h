@@ -2,14 +2,29 @@
 #define CMF_CARTESIAN_MESH_ARRAY_H
 #include <string>
 #include <map>
+#include <initializer_list>
 #include "ArrayInfo.h"
 #include "ICmfMeshArray.h"
 #include "AmrFcnTypes.h"
 #include "IBlockIterable.h"
 #include "BlockIterator.h"
 #include "DataExchangePattern.h"
+#include "Typedefs.h"
 namespace cmf
 {
+    class CartesianMeshArray;
+    
+    /// @brief Represents a pairing of a CartesianMeshArray with a data pointer for a block
+    /// @author WVN
+    struct CartesianMeshArrayPointerPair
+    {
+        /// @brief The array that the pointer lies on a block of
+        CartesianMeshArray* array;
+        
+        /// @brief The data pointer
+        void* pointer;
+    };
+    
     class CartesianMeshArrayHandler;
     /// @brief Defines a MeshArray object Cartesian grids
     /// @author WVN
@@ -60,7 +75,12 @@ namespace cmf
             /// @brief Allows for direct indexing using a block iterator
             /// @param it The block iterator to index with
             /// @author WVN
-            void* operator [] (BlockIterator& it);
+            CartesianMeshArrayPointerPair operator [] (BlockIterator& it);
+            
+            /// @brief Allows for direct indexing using a node
+            /// @param it The node to iterate at
+            /// @author WVN
+            CartesianMeshArrayPointerPair operator [] (RefinementTreeNode* node);
             
             /// @brief \see IBlockIterable::GetRefinementBlockObject
             /// @author WVN
@@ -73,6 +93,22 @@ namespace cmf
             /// @brief Returns filter
             /// @author WVN
             NodeFilter_t GetFilter(void);
+            
+            /// @brief Begin() overload for range iteration
+            /// @author WVN
+            std::vector<RefinementTreeNode*>::iterator begin() noexcept;
+            
+            /// @brief const Begin() overload for range iteration
+            /// @author WVN
+            std::vector<RefinementTreeNode*>::const_iterator begin() const noexcept;
+            
+            /// @brief End() overload for range iteration
+            /// @author WVN
+            std::vector<RefinementTreeNode*>::iterator end() noexcept;
+            
+            /// @brief constant End() overload for range iteration
+            /// @author WVN
+            std::vector<RefinementTreeNode*>::const_iterator end() const noexcept;
             
         private:
             
@@ -94,17 +130,28 @@ namespace cmf
             /// @brief The handler responsible for this array
             CartesianMeshArrayHandler* handler;
             
+            /// @brief The dimensions of this array
+            std::vector<int> arrayDimensions;
+            
+            /// @brief The rank of a single element of this array
+            int rank;
+            
             /// @brief A map that holds the pointers for each block
             std::map<RefinementTreeNode*, void*> pointerMap;
             
             /// @brief Tells whether or not the underlying pointer is allocated or not
             bool isAllocated;
             
+            /// @brief The size of a single element
+            size_t elementSize;
+            
             /// @brief The parallel exchange pattern for this mesh array
             DataExchangePattern* exchangePattern;
             
             /// @brief Nodes over which this variable is defined
             std::vector<RefinementTreeNode*> definedNodes;
+            
+            template <typename arType, const int elementRank> friend struct BlockArray;
     };
 }
 

@@ -4,6 +4,7 @@
 #include "AmrFcnTypes.h"
 #include "Utils.hx"
 #include "BlockIndexing.h"
+#include "BlockArray.h"
 namespace cmf
 {
     CartesianMesh::CartesianMesh(CartesianMeshInputInfo input) : ICmfMesh(input, MeshType::Cartesian)
@@ -65,6 +66,15 @@ namespace cmf
         return DefineVariable(info, filter);
     }
     
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, size_t elementSize)
+    {
+        ArrayInfo info;
+        info.name = name;
+        info.rank = 0;
+        info.elementSize = elementSize;
+        return DefineVariable(info, BlockFilters::Terminal);
+    }
+    
     CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, size_t elementSize, std::initializer_list<int> arrayDimensions, NodeFilter_t filter)
     {
         ArrayInfo info;
@@ -120,23 +130,24 @@ namespace cmf
         info.rank = 0;
         info.elementSize = sizeof(double);
         double coordval[3];
-        int idx[CMF_DIM];
         CartesianMeshArray& coordArray = *(arrayHandler->CreateNewVariable(info, filter));
         for (BlockIterator lb(this, filter, IterableMode::parallel); lb.HasNext(); lb++)
         {
             BlockInfo info = this->GetBlockInfo(lb);
-            double* coordBuffer = (double*)coordArray[lb];
-            cmf_pkloop(idx[2], info.exchangeDim[2], info)
+            BlockArray<double> coords = coordArray[lb];
+            for (cell_t k = info.kmin; k < info.kmax; k++)
             {
-                cmf_pjloop(idx[1], info.exchangeDim[1], info)
+                for (cell_t j = info.jmin; j < info.jmax; j++)
                 {
-                    cmf_piloop(idx[0], info.exchangeDim[0], info)
+                    for (cell_t i = info.imin; i < info.imax; i++)
                     {
-                        __dloop(coordval[d] = info.blockBounds[2*d]+((double)idx[d] + 0.5)*info.dx[d]);
-#if(!CMF_IS3D)
+                        coordval[0] = info.blockBounds[0]+((double)i + 0.5)*info.dx[0];
+                        coordval[1] = info.blockBounds[2]+((double)j + 0.5)*info.dx[1];
                         coordval[2] = 0.0;
+#if(CMF_IS3D)
+                        coordval[2] = info.blockBounds[4]+((double)k + 0.5)*info.dx[2];
 #endif
-                        coordBuffer[cmf_idx(idx[0], idx[1], idx[2], info)] = coordval[direction];
+                        coords(i, j, k) = coordval[direction];
                     }
                 }
             }
@@ -166,15 +177,23 @@ namespace cmf
         double* blockBounds = node->GetBlockBounds();
         for (int d = 0; d < CMF_DIM; d++)
         {
-            output.dataDim[d] = meshDataDim[d];
-            output.exchangeDim[d] = exchangeDim[d];
             output.blockBounds[2*d] = blockBounds[2*d];
             output.blockBounds[2*d+1] = blockBounds[2*d+1];
             output.blockSize[d] = blockBounds[2*d+1] - blockBounds[2*d];
             output.dx[d] = output.blockSize[d] / meshDataDim[d];
             output.dxInv[d] = 1.0 / output.dx[d];
-            output.totalDataDim[d] = meshDataDim[d]+2*exchangeDim[d];
+            output.dataDim[d] = meshDataDim[d];
+            output.totalDataDim[d] = meshDataDim[d] + 2*exchangeDim[d];
         }
+        output.exchangeI = exchangeDim[0];
+        output.exchangeJ = exchangeDim[1];
+        output.exchangeK = (CMF_IS3D?exchangeDim[1+CMF_IS3D]:0);
+        output.imin = 0;
+        output.imax = meshDataDim[0];
+        output.jmin = 0;
+        output.jmax = meshDataDim[1];
+        output.kmin = 0;
+        output.kmax = (1-CMF_IS3D) + CMF_IS3D*meshDataDim[1+CMF_IS3D];
         return output;
     }
     

@@ -17,7 +17,7 @@ namespace cmf
         }
     }
     
-    void CudaDeviceHandler::PrintProperties(int i, CmfCudaDeviceProperties& devProps)
+    void CudaDeviceHandler::PrintProperties(cudaDev_t i, CmfCudaDeviceProperties& devProps)
     {
         std::string style = " >> ";
         WriteLine(3, "-------------------------------------------------------");

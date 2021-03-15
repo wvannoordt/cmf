@@ -1,6 +1,7 @@
 #ifndef CMF_CUDA_DEVICE_HANDLER_H
 #define CMF_CUDA_DEVICE_HANDLER_H
 #include "CmfCuda.h"
+#include "Typedefs.h"
 #include <vector>
 namespace cmf
 {
@@ -24,7 +25,10 @@ namespace cmf
             std::vector<CmfCudaDeviceProperties> deviceProperties;
             
             /// @brief Prints a CmfCudaDeviceProperties struct to the screen
-            void PrintProperties(int i, CmfCudaDeviceProperties& devProps);
+            /// @author WVN
+            /// @param i the device to print properties for
+            /// @param devProps the device properties to print
+            void PrintProperties(cudaDev_t i, CmfCudaDeviceProperties& devProps);
     };
 }
 
