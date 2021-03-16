@@ -10,6 +10,7 @@
 #include "BlockIterator.h"
 #include "DataExchangePattern.h"
 #include "Typedefs.h"
+#include "BlockInfo.h"
 namespace cmf
 {
     class CartesianMeshArray;
@@ -23,6 +24,9 @@ namespace cmf
         
         /// @brief The data pointer
         void* pointer;
+        
+        /// @brief Indicates whether or not an error is thrown
+        bool enforceElementSizeMatches;
     };
     
     class CartesianMeshArrayHandler;
@@ -81,6 +85,11 @@ namespace cmf
             /// @param it The node to iterate at
             /// @author WVN
             CartesianMeshArrayPointerPair operator [] (RefinementTreeNode* node);
+            
+            /// @brief Returns a BlockInfo struct computed from the given block
+            /// @param node The block to have info returned for
+            /// @author WVN
+            BlockInfo GetBlockInfo(RefinementTreeNode* node);
             
             /// @brief \see IBlockIterable::GetRefinementBlockObject
             /// @author WVN
@@ -152,6 +161,7 @@ namespace cmf
             std::vector<RefinementTreeNode*> definedNodes;
             
             template <typename arType, const int elementRank> friend struct BlockArray;
+            friend class CartesianMeshExchangeHandler;
     };
 }
 

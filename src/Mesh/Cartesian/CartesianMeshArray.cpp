@@ -49,6 +49,11 @@ namespace cmf
         exchangePattern->ExchangeData();
     }
     
+    BlockInfo CartesianMeshArray::GetBlockInfo(RefinementTreeNode* node)
+    {
+        return handler->mesh->GetBlockInfo(node);
+    }
+    
     void CartesianMeshArray::GetDefinedNodes(void)
     {
         for (BlockIterator i(handler->mesh, filter, IterableMode::parallel); i.HasNext(); i++)

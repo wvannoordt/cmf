@@ -184,6 +184,7 @@ namespace cmf
             output.dxInv[d] = 1.0 / output.dx[d];
             output.dataDim[d] = meshDataDim[d];
             output.totalDataDim[d] = meshDataDim[d] + 2*exchangeDim[d];
+            output.exchangeDim[d] = exchangeDim[d];
         }
         output.exchangeI = exchangeDim[0];
         output.exchangeJ = exchangeDim[1];

@@ -13,6 +13,8 @@
 #include "CmfError.h"
 #include "CmfScreen.h"
 #include "StringUtils.h"
+#include "Vec.h"
+#include "CmfPrint.h"
 
 namespace cmf
 {

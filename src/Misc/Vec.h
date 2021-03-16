@@ -36,8 +36,10 @@ namespace cmf
         /// @author WVN
         Vec3(const Vec3& w) {v[0] = w.v[0]; v[1] = w.v[1]; v[2] = w.v[2];}
         
+        numericType & operator [] (int i) {return *(v+i);}
+        
         ///@brief the data
-        double v[3];
+        numericType v[3];
         
         ///@brief Normalize in-place by L2-norm
         void Normalize(void)
@@ -46,6 +48,16 @@ namespace cmf
             v[0]/=norm;
             v[1]/=norm;
             v[2]/=norm;
+        }
+        
+        /// @brief Returns a string representing the vector
+        std::string str()
+        {
+            std::string output = "[";
+            output += std::to_string(v[0]) + ", ";
+            output += std::to_string(v[1]) + ", ";
+            output += std::to_string(v[2]) + "]";
+            return output;
         }
         
         ///@brief Addition operator

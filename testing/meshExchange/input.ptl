@@ -2,7 +2,7 @@ GlobalSettings
 {
 	Display
 	{
-		debugLevel = 4
+		debugLevel = 7
 		trackOutputOrigins = false
 	}
 	Memory
@@ -22,4 +22,8 @@ Domain
 		exchangeDim = [2,2,2]
 		interpolationOrder = 2
 	}
+}
+User
+{
+	doOutput = true
 }

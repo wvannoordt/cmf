@@ -102,13 +102,115 @@ namespace cmf
             return idxC(lev+1, ts...) + t*idxCoeff[lev];
         }
 
-        /// @brief internal indexer, recursive case
+        /// @brief indexer
         /// @author WVN
         /// @param ts The list of indices
         template <typename... Ts> _CmfShared_ inline arType & operator () (Ts... ts)
         {
             static_assert(sizeof...(Ts)==TotalRank(), "Incorrect rank in array index");
             return *(idxC(0, ts...) + idxOffset);
+        }
+    };
+    
+    /// @brief A struct representing a generic multidimensional array
+    /// @author WVN
+    template <typename arType, const int arRank = 1> struct MdArray
+    {
+    	arType* data;
+    	int rank = arRank;
+    	int dims[arRank];
+        int idxCoeff[arRank];
+        
+        /// @brief Constructor function
+        /// @author WVN
+        /// @param lev The recursive level
+        /// @param t the final index dimension
+    	template <typename Ts> void Ralloc(int lev, Ts t)
+    	{
+    		dims[lev] = t;
+            idxCoeff[0] = 1;
+            for (int i = 1; i < arRank; i++)
+            {
+                idxCoeff[i] = idxCoeff[i-1]*dims[i-1];
+            }
+    	}
+        
+        /// @brief Constructor function
+        /// @author WVN
+        /// @param lev The recursive level
+        /// @param t the final index dimension
+        /// @param ts the remaining indices
+    	template <typename T, typename... Ts> void Ralloc(int lev, T t, Ts... ts)
+    	{
+    		static_assert(std::is_integral<T>::value, "Integral type required for dimension initialization.");
+    		dims[lev] = t;
+    		Ralloc(lev+1, ts...);
+    	}
+        
+        /// @brief Constructor
+        /// @author WVN
+        /// @param ts the remaining indices
+    	template <typename... Ts> MdArray(Ts... ts)
+    	{
+    		Ralloc(0, ts...);
+    	}
+    	
+        /// @brief internal indexer, base case
+        /// @author WVN
+        /// @param lev The current level
+        /// @param t The final index
+        template <typename T> _CmfShared_ inline arType * idxC(int lev, T t)
+        {
+            return data+idxCoeff[lev]*t;
+        }
+
+        /// @brief internal indexer, recursive case
+        /// @author WVN
+        /// @param lev The current level
+        /// @param t The current index
+        /// @param ts The remaining indices index
+        template <typename T, typename... Ts> _CmfShared_ inline arType * idxC(int lev, T t, Ts... ts)
+        {
+            static_assert(std::is_integral<T>::value, "Integral type required for indexing");
+            return idxC(lev+1, ts...) + t*idxCoeff[lev];
+        }
+
+        /// @brief indexer
+        /// @author WVN
+        /// @param ts The list of indices
+        template <typename... Ts> _CmfShared_ inline arType & operator () (Ts... ts)
+        {
+            static_assert(sizeof...(Ts)==arRank, "Incorrect rank in array index");
+            return *(idxC(0, ts...));
+        }
+        
+        /// @brief internal offset calculation, base case
+        /// @author WVN
+        /// @param lev The current level
+        /// @param t The final index
+        template <typename T> _CmfShared_ inline arType * offsetInternal(int lev, T t)
+        {
+            return data+idxCoeff[lev]*t;
+        }
+
+        /// @brief internal offset calculation, recursive case
+        /// @author WVN
+        /// @param lev The current level
+        /// @param t The current index
+        /// @param ts The remaining indices index
+        template <typename T, typename... Ts> _CmfShared_ inline arType * offsetInternal(int lev, T t, Ts... ts)
+        {
+            static_assert(std::is_integral<T>::value, "Integral type required for indexing");
+            return offsetInternal(lev+1, ts...) + t*idxCoeff[lev];
+        }
+
+        /// @brief Returns the offset of an element
+        /// @author WVN
+        /// @param ts The list of indices
+        template <typename... Ts> _CmfShared_ inline size_t offset(Ts... ts)
+        {
+            static_assert(sizeof...(Ts)==arRank, "Incorrect rank in array index");
+            return offsetInternal(0, ts...);
         }
     };
 }
