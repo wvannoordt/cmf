@@ -96,7 +96,7 @@ namespace cmf
         NodeEdge edgeData;
         edgeData.isDomainEdge = isDomainEdge;
         __dloop(edgeData.edgeVector[d] = deltaijk[d]);
-        neighbors.insert({target, edgeData});
+        neighbors.push_back({target, edgeData});
         if (isDomainEdge)
         {
             for (int d = 0; d < CMF_DIM; d++)
@@ -129,10 +129,13 @@ namespace cmf
 
     void RefinementTreeNode::RemoveNeighbor(RefinementTreeNode* target)
     {
-        std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.find(target);
-        if(it != neighbors.end())
+        for (int i = 0; i < neighbors.size(); i++)
         {
-            neighbors.erase(target);
+            if (neighbors[i].first==target)
+            {
+                neighbors.erase(neighbors.begin()+i);
+                i--;
+            }
         }
     }
 
@@ -142,14 +145,14 @@ namespace cmf
         std::vector<bool> refineRequired;
         std::vector<char> refineTypes;
         this->Lock();
-        for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
+        for (auto& it: neighbors)
         {
             char newNeighborRefinementType;
-            if (!it->first->NodeIsLocked())
+            if (!it.first->NodeIsLocked())
             {
-                refineRequired.push_back(RefineRequiredFromRelationship(this, it->first, it->second, &newNeighborRefinementType));
+                refineRequired.push_back(RefineRequiredFromRelationship(this, it.first, it.second, &newNeighborRefinementType));
                 refineTypes.push_back(newNeighborRefinementType);
-                nodes.push_back(it->first);
+                nodes.push_back(it.first);
             }
         }
         //Manually enumerate neighbors since contents of the std::map change with refinements
@@ -161,6 +164,11 @@ namespace cmf
             }
         }
         this->Unlock();
+    }
+    
+    std::vector<std::pair<RefinementTreeNode*, NodeEdge>>& RefinementTreeNode::Neighbors(void)
+    {
+        return neighbors;
     }
 
     bool RefinementTreeNode::RefineRequiredFromRelationship(RefinementTreeNode* newChildNode, RefinementTreeNode* toBeRefined, NodeEdge relationship, char* newRefTypeOut)
@@ -297,9 +305,9 @@ namespace cmf
         //The current node's neghbors should no longer have a neighbor relationship with this node, but rather with its children
         UpdateNeighborsOfNeighborsToChildNodes(subNodeRefinementType);
         //Remove all neighbors of this node
-        for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
+        for (auto& it: neighbors)
         {
-            it->first->RemoveNeighbor(this);
+            it.first->RemoveNeighbor(this);
         }
         //Recursively loop through neighboring nodes to check if the refinement constraint is violated
         for (int i = 0; i < numSubNodes; i++)
@@ -354,11 +362,11 @@ namespace cmf
 
     void RefinementTreeNode::UpdateNeighborsOfNeighborsToChildNodes(char newRefinementType)
     {
-        for (std::map<RefinementTreeNode*, NodeEdge>::iterator it = neighbors.begin(); it!=neighbors.end(); it++)
+        for (auto& it: neighbors)
         {
             //do stuff with it->first based on it->second
-            RefinementTreeNode* neighbor = it->first;
-            NodeEdge relationship = it->second;
+            RefinementTreeNode* neighbor = it.first;
+            NodeEdge relationship = it.second;
             int newEdgeVec[CMF_DIM];
 
             //0 -> any bit value allowed

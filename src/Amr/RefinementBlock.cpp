@@ -75,6 +75,25 @@ namespace cmf
     {
         this->Destroy();
     }
+    
+    void RefinementBlock::OutputNeighborsToFile(std::string filename)
+    {
+        std::ofstream myfile;
+        myfile.open(filename.c_str());
+        myfile << "CMF AMR Neighbor information" << std::endl;
+        for (const auto node: allNodes)
+        {
+            auto& neighs = node->Neighbors();
+            for (auto p:neighs)
+            {
+                auto neighNode = p.first;
+                auto neighEdge = p.second;
+                cmf::Vec3<int> edgeVec(neighEdge.edgeVector);
+                myfile << edgeVec << std::endl;
+            }
+        }
+        myfile.close();
+    }
 
     void RefinementBlock::DefineTrunks(void)
     {

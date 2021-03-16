@@ -97,6 +97,7 @@ int main(int argc, char** argv)
     
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
+    
     auto& var = domain.DefineVariable("data", sizeof(double));
     FillArray(var, -1.0, true);
     FillArray(var, (double)(cmf::globalGroup.Rank()), false);

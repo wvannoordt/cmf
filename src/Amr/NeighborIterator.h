@@ -36,7 +36,7 @@ namespace cmf
             RefinementTreeNode* host;
             
             /// @brief An underlying iterator object
-            std::map<RefinementTreeNode*, NodeEdge>::iterator iter;
+            std::vector<std::pair<RefinementTreeNode*, NodeEdge>>::iterator iter;
     };
 }
 

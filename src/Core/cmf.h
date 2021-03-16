@@ -28,6 +28,7 @@
 #include "DataExchangePattern.h"
 #include "Vec.h"
 #include "BlockArray.h"
+#include "CmfPrint.h"
 
 namespace cmf
 {

@@ -177,6 +177,8 @@ namespace cmf
             }
         }
         
+        // print(ijkMinSend, ijkMaxSend, ijkMinRecv, ijkMaxRecv);
+        
         std::vector<size_t> offsetsSend;
         std::vector<size_t> sizesSend;
         std::vector<size_t> offsetsRecv;

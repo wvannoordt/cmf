@@ -128,6 +128,11 @@ namespace cmf
             /// @author WVN
             double* GetBlockBounds(void);
             
+            /// @brief Outputs a file with neighbor information (DEBUGGING ONLY!)
+            /// @author WVN
+            /// @param filename The file to output
+            void OutputNeighborsToFile(std::string filename);
+            
             /// @brief Outputs a list of nodes to a vtk file
             /// @param nodeList A list of nodes to be output
             /// @param filename The name of the file to be output, should have a ".vtk" file extension

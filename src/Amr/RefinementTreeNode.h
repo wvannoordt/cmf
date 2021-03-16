@@ -11,6 +11,7 @@
 #include "RefinementConstraint.h"
 #include "BlockIterator.h"
 #include "VtkFile.h"
+#include <algorithm>
 
 namespace cmf
 {
@@ -203,6 +204,11 @@ namespace cmf
             /// @brief Returns the maximum length of the bounding box of the current node.
             /// @author WVN
             double MaxEdgeLength(void);
+            
+            /// @brief Returns the list of neighbors
+            /// @author WVN
+            std::vector<std::pair<RefinementTreeNode*, NodeEdge>>& Neighbors(void);
+            
         private:
             /// @brief Locks the current node from being modified by recursive calls.
             /// \see Unlock
@@ -351,7 +357,7 @@ namespace cmf
             int directionLevels[CMF_DIM];
             
             /// @brief A table of neighboring nodes and their relationship properties
-            std::map<RefinementTreeNode*, NodeEdge> neighbors;
+            std::vector<std::pair<RefinementTreeNode*, NodeEdge>> neighbors;
             
             /// @brief Element d is true if the current node lies on the d'th face of the rootBlock
             bool isOnBoundary[2*CMF_DIM];
