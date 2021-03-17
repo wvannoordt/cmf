@@ -64,6 +64,12 @@ namespace cmf
         }
     }
     
+    void* CartesianMeshArray::GetNodePointerWithNullDefault(RefinementTreeNode* node)
+    {
+        if (pointerMap.find(node)==pointerMap.end()) return NULL;
+        return pointerMap[node];
+    }
+    
     std::vector<RefinementTreeNode*>::iterator CartesianMeshArray::begin() noexcept
     {
         return definedNodes.begin();

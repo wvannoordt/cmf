@@ -188,9 +188,9 @@ namespace cmf
         /// @author WVN
         /// @param lev The current level
         /// @param t The final index
-        template <typename T> _CmfShared_ inline arType * offsetInternal(int lev, T t)
+        template <typename T> _CmfShared_ inline size_t offsetInternal(int lev, T t)
         {
-            return data+idxCoeff[lev]*t;
+            return idxCoeff[lev]*t;
         }
 
         /// @brief internal offset calculation, recursive case
@@ -198,7 +198,7 @@ namespace cmf
         /// @param lev The current level
         /// @param t The current index
         /// @param ts The remaining indices index
-        template <typename T, typename... Ts> _CmfShared_ inline arType * offsetInternal(int lev, T t, Ts... ts)
+        template <typename T, typename... Ts> _CmfShared_ inline size_t offsetInternal(int lev, T t, Ts... ts)
         {
             static_assert(std::is_integral<T>::value, "Integral type required for indexing");
             return offsetInternal(lev+1, ts...) + t*idxCoeff[lev];

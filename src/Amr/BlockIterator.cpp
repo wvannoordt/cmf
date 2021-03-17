@@ -1,6 +1,8 @@
 #include "BlockIterator.h"
 #include "CmfError.h"
 #include "RefinementTreeNode.h"
+#include "CmfPrint.h"
+#include "ParallelGroup.h"
 namespace cmf
 {
     BlockIterator::BlockIterator(IBlockIterable* hostBlock_in)
@@ -63,11 +65,19 @@ namespace cmf
         isAtEnd = index>=allNodes->size();
         if ((parallelMode == IterableMode::parallel) && CMF_PARALLEL)
         {
-            while (!isAtEnd && !(hostBlock->ParallelPartitionContainsNode((*allNodes)[index])&&filter((*allNodes)[index]))){index++;isAtEnd = (index>=allNodes->size());}
+            while (!isAtEnd && !(hostBlock->ParallelPartitionContainsNode((*allNodes)[index])&&filter((*allNodes)[index])))
+            {
+                index++;
+                isAtEnd = (index>=allNodes->size());
+            }
         }
         else
         {
-            while (!isAtEnd && !(filter((*allNodes)[index]))){index++;isAtEnd = (index>=allNodes->size());}
+            while (!isAtEnd && !(filter((*allNodes)[index])))
+            {
+                index++;
+                isAtEnd = (index>=allNodes->size());
+            }
         }
         return *this;
     }

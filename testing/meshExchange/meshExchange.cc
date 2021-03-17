@@ -101,6 +101,7 @@ int main(int argc, char** argv)
     auto& var = domain.DefineVariable("data", sizeof(double));
     FillArray(var, -1.0, true);
     FillArray(var, (double)(cmf::globalGroup.Rank()), false);
+    domain.GetPartition()->OutputPartitionToVtk("output/partition.vtk");
     if (doOutput) OutputIndividualBlocks(var);
     var.Exchange();
     if (doOutput) OutputIndividualBlocks(var, true);

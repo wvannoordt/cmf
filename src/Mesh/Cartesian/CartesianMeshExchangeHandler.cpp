@@ -42,7 +42,7 @@ namespace cmf
     {
         WriteLine(5, "Define exchange pattern for variable \"" + meshArray->variableName + "\" on mesh \"" + mesh->title + "\"");
         NodeFilter_t arFilter = meshArray->GetFilter();
-        for (BlockIterator lb(meshArray, arFilter, IterableMode::serial); lb.HasNext(); lb++)
+        for (BlockIterator lb(mesh, arFilter, IterableMode::serial); lb.HasNext(); lb++)
         {
             for (NeighborIterator neigh(lb.Node()); neigh.Active(); neigh++)
             {
@@ -72,6 +72,8 @@ namespace cmf
         RefinementTreeNode* neighborNode, 
         NodeEdge relationship)
     {
+        //This almost certainly needs to be broken up into sub-functions...
+        
         //Retrieve partition info and block dimensions from the mesh
         BlockPartitionInfo currentNodeInfo  = mesh->partition->GetPartitionInfo(currentNode);
         BlockPartitionInfo neighborNodeInfo = mesh->partition->GetPartitionInfo(neighborNode);
@@ -101,8 +103,8 @@ namespace cmf
         MdArray<char, 4> neighData(singleCellSize, niNeighbor, njNeighbor, nkNeighbor);
         
         //Manually assign data pointers
-        currentData.data = (char*)(meshArray->pointerMap[currentNode]);
-        neighData.data   = (char*)(meshArray->pointerMap[neighborNode]);
+        currentData.data = (char*)(meshArray->GetNodePointerWithNullDefault(currentNode));
+        neighData.data   = (char*)(meshArray->GetNodePointerWithNullDefault(neighborNode));
         
         //Check that all dimensions are equal among the blocks
         bool allDimsEqual = true;
@@ -175,15 +177,56 @@ namespace cmf
                     break;
                 }
             }
-        }
-        
-        // print(ijkMinSend, ijkMaxSend, ijkMinRecv, ijkMaxRecv);
-        
+        }        
         std::vector<size_t> offsetsSend;
         std::vector<size_t> sizesSend;
+        for (cell_t k = ijkMinSend[2]; k < ijkMaxSend[2]; k++)
+        {
+            for (cell_t j = ijkMinSend[1]; j < ijkMaxSend[1]; j++)
+            {
+                cell_t imin = ijkMinSend[0];
+                size_t packetSize = singleCellSize*(ijkMaxSend[0] - ijkMinSend[0]);
+                size_t packetOffset = currentData.offset(0, imin, j, k);
+                sizesSend.push_back(packetSize);
+                offsetsSend.push_back(packetOffset);
+            }
+        }
+        
         std::vector<size_t> offsetsRecv;
         std::vector<size_t> sizesRecv;
+        for (cell_t k = ijkMinRecv[2]; k < ijkMaxRecv[2]; k++)
+        {
+            for (cell_t j = ijkMinRecv[1]; j < ijkMaxRecv[1]; j++)
+            {
+                cell_t imin = ijkMinRecv[0];
+                size_t packetSize = singleCellSize*(ijkMaxRecv[0] - ijkMinRecv[0]);
+                size_t packetOffset = neighData.offset(0, imin, j, k);
+                sizesRecv.push_back(packetSize);
+                offsetsRecv.push_back(packetOffset);
+            }
+        }
         
+        int currentRank  = currentNodeInfo.rank;
+        int neighborRank = neighborNodeInfo.rank;
+        if (!currentNodeInfo.isCPU || !neighborNodeInfo.isCPU)
+        {
+            CmfError("GPU exchanges are not implemented yet!!!!");
+        }
+        
+        //Get the relevant pointer. neither block is on the current rank, then the pointer is null,
+        //but the transaction will immediately be deleted anyway.
+        void* sendBuffer    = (void*)(currentData.data);
+        void* receiveBuffer = (void*)(neighData.data);
+        std::vector<size_t> offsetsCurrentToNeighbor = offsetsSend;
+        std::vector<size_t> sizesCurrentToNeighbor = sizesSend;
+        if (neighborRank==mesh->GetGroup()->Rank())
+        {
+            offsetsCurrentToNeighbor = offsetsRecv;
+            sizesCurrentToNeighbor = sizesRecv;
+        }
+        
+        //Current node sends to the neighbor
+        pattern->Add(new MultiTransaction(myPointer, offsetsCurrentToNeighbor, sizesCurrentToNeighbor, currentRank, neighborRank));
     }
     
     void CartesianMeshExchangeHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)

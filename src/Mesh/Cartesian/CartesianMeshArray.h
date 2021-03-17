@@ -119,6 +119,10 @@ namespace cmf
             /// @author WVN
             std::vector<RefinementTreeNode*>::const_iterator end() const noexcept;
             
+            /// @author WVN
+            /// @brief Returns the base pointer for a node, and NULL if there is not one
+            void* GetNodePointerWithNullDefault(RefinementTreeNode* node);
+            
         private:
             
             /// @brief Allocates the unferlying pointer
