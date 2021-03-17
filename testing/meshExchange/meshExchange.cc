@@ -59,7 +59,7 @@ void OutputIndividualBlocks(cmf::CartesianMeshArray& ar, bool isPostExchange = f
         for (int i = 0; i < CMF_DIM; i++) origin[i] = info.blockBounds[2*i];
         for (int i = 0; i < CMF_DIM; i++) spacing[i] = info.dx[i];
         
-        myfile << "ORIGIN "  << origin[0]  << " " << origin[1]  << " " << origin[2]  << std::endl;
+        myfile << "ORIGIN "  << 2*origin[0]  << " " << 2*origin[1]  << " " << 2*origin[2]  << std::endl;
         myfile << "SPACING " << spacing[0] << " " << spacing[1] << " " << spacing[2] << std::endl;
         myfile << "CELL_DATA " << ni*nj*nk << std::endl;
         myfile << "SCALARS Rank double"  << std::endl;

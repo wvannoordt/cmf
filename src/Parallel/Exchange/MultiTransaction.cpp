@@ -4,19 +4,30 @@
 
 namespace cmf
 {
-    MultiTransaction::MultiTransaction(void* target_in, std::vector<size_t> offsets_in, std::vector<size_t> sizes_in, int sender_in, int receiver_in)
-        : IDataTransaction(sender_in, receiver_in)
+    MultiTransaction::MultiTransaction(
+        void* sendTarget_in, std::vector<size_t> sendOffsets_in, std::vector<size_t> sendSizes_in, int sendRank_in,
+        void* recvTarget_in, std::vector<size_t> recvOffsets_in, std::vector<size_t> recvSizes_in, int recvRank_in)
+        : IDataTransaction(sendRank_in, recvRank_in)
     {
-        target  = target_in;
-        offsets = offsets_in;
-        sizes   = sizes_in;
-        if (offsets.size() != sizes.size())
+        sendTarget  = sendTarget_in;
+        recvTarget  = recvTarget_in;
+        sendOffsets = sendOffsets_in;
+        recvOffsets = recvOffsets_in;
+        sendSizes   = sendSizes_in;
+        recvSizes   = recvSizes_in;
+        if ((sendOffsets_in.size() != sendSizes_in.size()) ||(recvOffsets_in.size() != recvSizes_in.size()))
         {
-            CmfError("A MultiTransaction has been created with inconsistent offsets and sizes. Found "
-                + std::to_string(offsets.size()) + " offsets, but " + std::to_string(sizes.size()) + " sizes.");
+            CmfError("A MultiTransaction has been created with inconsistent offsets and sizes");
         }
-        packedSize = 0;
-        for (const auto s:sizes) packedSize += s;
+        size_t packedSizeSend = 0;
+        for (const auto s:sendSizes) packedSizeSend += s;
+        size_t packedSizeRecv = 0;
+        for (const auto s:recvSizes) packedSizeRecv += s;
+        if (packedSizeSend != packedSizeRecv)
+        {
+            CmfError("A MultiTransaction has been created with inconsistent total sizes");
+        }
+        packedSize = packedSizeRecv;
     }
     
     MultiTransaction::~MultiTransaction(void)
@@ -32,24 +43,24 @@ namespace cmf
     void MultiTransaction::Pack(char* buf)
     {
         char* copyTo = buf;
-        char* cTarget = (char*)target;
-        int numOffsets = offsets.size();
+        char* cTarget = (char*)sendTarget;
+        int numOffsets = sendOffsets.size();
         for (int i = 0; i < numOffsets; i++)
         {
-            memcpy(copyTo, cTarget + offsets[i], sizes[i]);
-            copyTo += sizes[i];
+            memcpy(copyTo, cTarget + sendOffsets[i], sendSizes[i]);
+            copyTo += sendSizes[i];
         }
     }
     
     void MultiTransaction::Unpack(char* buf)
     {
         char* copyFrom = buf;
-        char* cTarget = (char*)target;
-        int numOffsets = offsets.size();
+        char* cTarget = (char*)recvTarget;
+        int numOffsets = recvOffsets.size();
         for (int i = 0; i < numOffsets; i++)
         {
-            memcpy(cTarget + offsets[i], copyFrom, sizes[i]);
-            copyFrom += sizes[i];
+            memcpy(cTarget + recvOffsets[i], copyFrom, recvSizes[i]);
+            copyFrom += recvSizes[i];
         }
     }
 }

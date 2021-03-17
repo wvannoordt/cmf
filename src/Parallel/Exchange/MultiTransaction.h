@@ -12,13 +12,18 @@ namespace cmf
     {
         public:
             /// @brief Constructor
-            /// @param target_in The target address
-            /// @param offsets_in A list of offsets to copy from, relative to target_in
-            /// @param sizes_in The size of each copy in the corresponding offset
-            /// @param sender_in The sending rank
-            /// @param receiver_in The receiving rank
+            /// @param sendTarget_in The target address for the sender, or NULL if the receiving array is on another rank
+            /// @param sendOffsets_in A list of offsets to copy from, relative to sendTarget_in. Ignored if sendRank_in is not rhe current rank
+            /// @param sendSizes_in The size of each copy in the corresponding offset. Ignored if sendRank_in is not rhe current rank
+            /// @param sendRank_in The rank of the sender
+            /// @param recvTarget_in The target address for the receiver, or NULL if the receiving array is on another rank
+            /// @param recvOffsets_in A list of offsets to copy from, relative to receiveTarget_in. Ignored if recvRank_in is not rhe current rank
+            /// @param recvSizes_in The size of each copy in the corresponding offset. Ignored if recvRank_in is not rhe current rank
+            /// @param recvRank_in The rank of the receiver
             /// @author WVN
-            MultiTransaction(void* target_in, std::vector<size_t> offsets_in, std::vector<size_t> sizes_in, int sender_in, int receiver_in);
+            MultiTransaction(
+                void* sendTarget_in, std::vector<size_t> sendOffsets_in, std::vector<size_t> sendSizes_in, int sendRank_in,
+                void* recvTarget_in, std::vector<size_t> recvOffsets_in, std::vector<size_t> recvSizes_in, int recvRank_in);
             
             /// @brief Destructor
             /// @author WVN
@@ -45,14 +50,30 @@ namespace cmf
             /// @brief The total size of the data transaction
             size_t packedSize;
             
-            /// @brief The target address for this transaction
-            void* target;
+            /// @brief The address of the array to be sent, or NULL if it lies on another rank
+            void* sendTarget;
             
-            /// @brief The list of offsets to copy from/to, relative to target
-            std::vector<size_t> offsets;
+            /// @brief The offsets (relative to sendTarget) to send. Ignored if sendRank is not rhe current rank
+            std::vector<size_t> sendOffsets;
             
-            /// @brief The list of sizes of each copy
-            std::vector<size_t> sizes;
+            /// @brief The sizes to send. Ignored if sendRank is not rhe current rank
+            std::vector<size_t> sendSizes;
+            
+            /// @brief The sending rank
+            int sendRank;
+            
+            /// @brief The address of the array to be received, or NULL if it lies on another rank
+            void* recvTarget;
+            
+            /// @brief The offsets (relative to recvTarget) to receive. Ignored if recvRank is not rhe current rank
+            std::vector<size_t> recvOffsets;
+            
+            /// @brief The sizes to receive. Ignored if recvRank is not rhe current rank
+            std::vector<size_t> recvSizes;
+            
+            /// @brief The receiving rank
+            int recvRank;
+            
     };
 }
 

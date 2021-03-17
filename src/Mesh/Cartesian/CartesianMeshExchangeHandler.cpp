@@ -215,18 +215,11 @@ namespace cmf
         
         //Get the relevant pointer. neither block is on the current rank, then the pointer is null,
         //but the transaction will immediately be deleted anyway.
-        void* sendBuffer    = (void*)(currentData.data);
-        void* receiveBuffer = (void*)(neighData.data);
-        std::vector<size_t> offsetsCurrentToNeighbor = offsetsSend;
-        std::vector<size_t> sizesCurrentToNeighbor = sizesSend;
-        if (neighborRank==mesh->GetGroup()->Rank())
-        {
-            offsetsCurrentToNeighbor = offsetsRecv;
-            sizesCurrentToNeighbor = sizesRecv;
-        }
+        void* sendBuffer = (void*)(currentData.data);
+        void* recvBuffer = (void*)(neighData.data);
         
         //Current node sends to the neighbor
-        pattern->Add(new MultiTransaction(myPointer, offsetsCurrentToNeighbor, sizesCurrentToNeighbor, currentRank, neighborRank));
+        pattern->Add(new MultiTransaction(sendBuffer, offsetsSend, sizesSend, currentRank, recvBuffer, offsetsRecv, sizesRecv, neighborRank));
     }
     
     void CartesianMeshExchangeHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)

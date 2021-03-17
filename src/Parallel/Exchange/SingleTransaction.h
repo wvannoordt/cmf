@@ -9,12 +9,13 @@ namespace cmf
     {
         public:
             /// @brief Constructor
-            /// @param target_in The target address
+            /// @param sendTarget_in The target address for the sender, or NULL if the receiving array is on another rank
+            /// @param recvTarget_in The target address for the receiver, or NULL if the receiving array is on another rank
             /// @param size_in The size of the transaction
             /// @param sender_in The sending rank
             /// @param receiver_in The receiving rank
             /// @author WVN
-            SingleTransaction(void* target_in, size_t size_in, int sender_in, int receiver_in);
+            SingleTransaction(void* sendTarget_in, void* recvTarget_in, size_t size_in, int sender_in, int receiver_in);
             
             /// @brief Returns the size of the compacted data
         	/// @author WVN
@@ -38,8 +39,11 @@ namespace cmf
             
         private:
             
-            /// brief The target address
-            void* target;
+            /// @brief The address of the array to be sent, or NULL if it lies on another rank
+            void* sendTarget;
+            
+            /// @brief The address of the array to be received, or NULL if it lies on another rank
+            void* recvTarget;
             
             /// brief The size of the transaction
             size_t size;
