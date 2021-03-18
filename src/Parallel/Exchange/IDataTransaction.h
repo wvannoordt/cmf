@@ -1,6 +1,8 @@
 #ifndef CMF_IDATA_TRANSACTION_H
 #define CMF_IDATA_TRANSACTION_H
+
 #include "CmfGC.h"
+
 namespace cmf
 {
     /// @brief Defines a generic parallel data transaction (including self-to-self transactions)
