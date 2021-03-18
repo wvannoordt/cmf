@@ -7,6 +7,7 @@
 #include "NeighborIterator.h"
 #include "Vec.h"
 #include "BlockArray.h"
+#include "CmfPrint.h"
 namespace cmf
 {
     CartesianMeshExchangeHandler::CartesianMeshExchangeHandler(CartesianMesh* mesh_in, CartesianMeshExchangeInfo& inputInfo)

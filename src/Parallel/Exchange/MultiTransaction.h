@@ -22,8 +22,8 @@ namespace cmf
             /// @param recvRank_in The rank of the receiver
             /// @author WVN
             MultiTransaction(
-                void* sendTarget_in, std::vector<size_t> sendOffsets_in, std::vector<size_t> sendSizes_in, int sendRank_in,
-                void* recvTarget_in, std::vector<size_t> recvOffsets_in, std::vector<size_t> recvSizes_in, int recvRank_in);
+                void* sendTarget_in, std::vector<size_t>& sendOffsets_in, std::vector<size_t>& sendSizes_in, int sendRank_in,
+                void* recvTarget_in, std::vector<size_t>& recvOffsets_in, std::vector<size_t>& recvSizes_in, int recvRank_in);
             
             /// @brief Destructor
             /// @author WVN

@@ -93,6 +93,9 @@ int main(int argc, char** argv)
     bool doOutput;
     user["doOutput"].MapTo(&doOutput) = new PTL::PTLBoolean(false, "Output individual block files with guard cells");
     
+    bool doExchange;
+    user["doExchange"].MapTo(&doExchange) = new PTL::PTLBoolean(false, "Exchange the test variable");
+    
     user.StrictParse();
     
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
@@ -103,7 +106,7 @@ int main(int argc, char** argv)
     FillArray(var, (double)(cmf::globalGroup.Rank()), false);
     domain.GetPartition()->OutputPartitionToVtk("output/partition.vtk");
     if (doOutput) OutputIndividualBlocks(var);
-    var.Exchange();
+    if (doExchange) var.Exchange();
     if (doOutput) OutputIndividualBlocks(var, true);
     if (cmf::globalGroup.Size()<2)
     {

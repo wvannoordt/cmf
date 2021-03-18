@@ -5,16 +5,22 @@
 namespace cmf
 {
     MultiTransaction::MultiTransaction(
-        void* sendTarget_in, std::vector<size_t> sendOffsets_in, std::vector<size_t> sendSizes_in, int sendRank_in,
-        void* recvTarget_in, std::vector<size_t> recvOffsets_in, std::vector<size_t> recvSizes_in, int recvRank_in)
+        void* sendTarget_in, std::vector<size_t>& sendOffsets_in, std::vector<size_t>& sendSizes_in, int sendRank_in,
+        void* recvTarget_in, std::vector<size_t>& recvOffsets_in, std::vector<size_t>& recvSizes_in, int recvRank_in)
         : IDataTransaction(sendRank_in, recvRank_in)
     {
         sendTarget  = sendTarget_in;
         recvTarget  = recvTarget_in;
+        
+        
+        //memory leak here
         sendOffsets = sendOffsets_in;
         recvOffsets = recvOffsets_in;
         sendSizes   = sendSizes_in;
         recvSizes   = recvSizes_in;
+        //memory leak here
+        
+        
         if ((sendOffsets_in.size() != sendSizes_in.size()) ||(recvOffsets_in.size() != recvSizes_in.size()))
         {
             CmfError("A MultiTransaction has been created with inconsistent offsets and sizes");
