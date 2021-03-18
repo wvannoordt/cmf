@@ -121,7 +121,7 @@ endif
 
 VALGRIND_SUPPRESSION_FILE := ${CURRENT_BASEIDIR}/util/cmf_valgrind.supp
 ifeq (${MEMCHECK}, 1)
-VALG := $(shell which valgrind) --error-exitcode=166 --leak-check=full -v --error-limit=no --gen-suppressions=all --suppressions=${VALGRIND_SUPPRESSION_FILE}
+VALG := $(shell which valgrind) --error-exitcode=166 --leak-check=full --error-limit=no --suppressions=${VALGRIND_SUPPRESSION_FILE}
 else
 VALG :=
 endif
