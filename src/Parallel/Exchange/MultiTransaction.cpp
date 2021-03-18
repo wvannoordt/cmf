@@ -1,6 +1,7 @@
 #include "MultiTransaction.h"
 #include "CmfError.h"
 #include <cstring>
+#include "CmfPrint.h"
 
 namespace cmf
 {
@@ -12,14 +13,10 @@ namespace cmf
         sendTarget  = sendTarget_in;
         recvTarget  = recvTarget_in;
         
-        
-        //memory leak here
         sendOffsets = sendOffsets_in;
         recvOffsets = recvOffsets_in;
         sendSizes   = sendSizes_in;
         recvSizes   = recvSizes_in;
-        //memory leak here
-        
         
         if ((sendOffsets_in.size() != sendSizes_in.size()) ||(recvOffsets_in.size() != recvSizes_in.size()))
         {

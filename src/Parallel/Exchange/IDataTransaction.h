@@ -18,7 +18,7 @@ namespace cmf
             
             /// @brief Destructor
         	/// @author WVN
-            ~IDataTransaction(void);
+            virtual ~IDataTransaction(void);
             
             /// @brief Returns the size of the compacted data
         	/// @author WVN
