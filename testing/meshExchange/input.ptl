@@ -26,5 +26,5 @@ Domain
 User
 {
 	doOutput = true
-	doExchange = false
+	doExchange = true
 }

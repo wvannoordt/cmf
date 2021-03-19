@@ -83,7 +83,10 @@ namespace cmf
         
         //Compute the size of a single array "element"
         size_t singleCellSize = meshArray->elementSize;
-        for (auto dim:meshArray->arrayDimensions) singleCellSize *= dim;
+        for (int i = 0; i < meshArray->rank; i++)
+        {
+            singleCellSize *= meshArray->dims[i];
+        }
         
         //Compute array sizes for data transfer
         int niCurrent = currentNodeBlockInfo.totalDataDim[0];

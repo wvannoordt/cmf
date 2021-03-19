@@ -143,9 +143,6 @@ namespace cmf
             /// @brief The handler responsible for this array
             CartesianMeshArrayHandler* handler;
             
-            /// @brief The dimensions of this array
-            std::vector<int> arrayDimensions;
-            
             /// @brief The rank of a single element of this array
             int rank;
             

@@ -13,11 +13,6 @@ namespace cmf
         filter = filter_in;
         exchangePattern = NULL;
         rank = info.rank;
-        arrayDimensions.resize(info.rank, 0);
-        for (int i = 0; i < info.rank; i++)
-        {
-            arrayDimensions[i] = info.dimensions[i];
-        }
         elementSize = info.elementSize;
         GetDefinedNodes();
         Allocate();
