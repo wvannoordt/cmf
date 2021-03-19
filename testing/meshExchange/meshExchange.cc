@@ -9,14 +9,17 @@ void FillArray(cmf::CartesianMeshArray& ar, double value, bool doGuardFilling = 
     int ng = doGuardFilling?1:0;
     for (auto lb: ar)
     {
-        cmf::BlockArray<double> block = ar[lb];
+        cmf::BlockArray<double, 2> block = ar[lb];
         for (cmf::cell_t k = block.kmin - ng*block.exchangeK; k < block.kmax + ng*block.exchangeK; k++)
         {
             for (cmf::cell_t j = block.jmin - ng*block.exchangeJ; j < block.jmax + ng*block.exchangeJ; j++)
             {
                 for (cmf::cell_t i = block.imin - ng*block.exchangeI; i < block.imax + ng*block.exchangeI; i++)
                 {
-                    block(i, j, k) = value;
+                    block(0, 0, i, j, k) = value;
+                    block(1, 0, i, j, k) = value;
+                    block(0, 1, i, j, k) = value;
+                    block(1, 1, i, j, k) = value;
                 }
             }
         }
@@ -29,7 +32,7 @@ void OutputIndividualBlocks(cmf::CartesianMeshArray& ar, bool isPostExchange = f
     for (auto lb: ar)
     {
         auto info = ar.GetBlockInfo(lb);
-        cmf::BlockArray<double> block = ar[lb];
+        cmf::BlockArray<double, 2> block = ar[lb];
         std::string filename;
         if (isPostExchange)
         {
@@ -70,7 +73,7 @@ void OutputIndividualBlocks(cmf::CartesianMeshArray& ar, bool isPostExchange = f
             {
                 for (cmf::cell_t i = block.imin - block.exchangeI; i < block.imax + block.exchangeI; i++)
                 {
-                    myfile << block(i, j, k) << std::endl;
+                    myfile << block(0, 0, i, j, k) << std::endl;
                 }
             }
         }
@@ -100,8 +103,10 @@ int main(int argc, char** argv)
     
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
+    int ni = 2;
+    int nj = 2;
+    auto& var = domain.DefineVariable("data", sizeof(double), {ni, nj});
     
-    auto& var = domain.DefineVariable("data", sizeof(double));
     FillArray(var, -1.0, true);
     FillArray(var, (double)(cmf::globalGroup.Rank()), false);
     domain.GetPartition()->OutputPartitionToVtk("output/partition.vtk");

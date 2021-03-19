@@ -30,7 +30,7 @@ namespace cmf
         BlockArray<arType, elementRank> (const CartesianMeshArrayPointerPair& pointerPair)
         {
             data = (arType*)pointerPair.pointer;
-            int* arDim = pointerPair.array->dims;
+            std::vector<int>& arDim = pointerPair.array->dims;
             int elemRankInput = pointerPair.array->rank;
             size_t elementSizeIn = pointerPair.array->elementSize;
             if (elemRankInput!=elementRank)

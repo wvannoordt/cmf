@@ -87,7 +87,6 @@ namespace cmf
         {
             singleCellSize *= meshArray->dims[i];
         }
-        
         //Compute array sizes for data transfer
         int niCurrent = currentNodeBlockInfo.totalDataDim[0];
         int njCurrent = currentNodeBlockInfo.totalDataDim[1];

@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <vector>
 
 /// \file
 ///
@@ -84,6 +85,41 @@ static inline int Idx2Dim3(int* dims, int* ijk)
 {
     return ijk[0] + ijk[1]*dims[0] + ijk[2]*dims[1]*dims[0];
 }
+
+/// @brief Returns an N-D index based on a 1-D index
+/// @author WVN
+/// @param i The one-dimensional index
+/// @param dims The dimensions of the array
+static inline std::vector<int> Index1DToIndexND(int i, std::vector<int>& dims)
+{
+    std::vector<int> output;
+    output.resize(dims.size(), 0);
+    int acc = 0;
+    int dimProd = 1;
+    for (int d = 0; d < dims.size(); d++)
+    {
+        output[d] = ((i-acc)/dimProd)%dims[d];
+        acc += output[d]*dimProd;
+        dimProd*=dims[d];
+    }
+    return output;
+}
+/// @brief Returns a 1-D index based on an N-D index
+/// @author WVN
+/// @param idx The N-dimensional index
+/// @param dims The dimensions of the array
+static inline int IndexNDToIndex1D(std::vector<int>& idx, std::vector<int>& dims)
+{
+    int output = 0;
+    int acc = 1;
+    for (int i = 0; i < idx.size(); i++)
+    {
+        output += acc*idx[i];
+        acc*= dims[i];
+    }
+    return output;
+}
+
 
 /// @brief Similar to Idx2Dim, but wraps around if ijk exceeds any bounds of dims. wasPeriodic is set to true if the index wrapper around, and false otherwise. \see Idx2Dim Dim2Idx
 /// @param dims a 2-D or 3-D array of dimensions

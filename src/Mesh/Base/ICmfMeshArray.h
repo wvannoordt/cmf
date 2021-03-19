@@ -59,17 +59,39 @@ namespace cmf
             /// @author WVN
             ICmfMeshArray& operator = (const SymbolicEvaluation& rhsExpression);
             
-
+            /// @brief Returns the name of a given sub-component
+            /// @author WVN
+            std::string& ComponentName(std::initializer_list<int> index);
+            
+            /// @brief Returns the name of a given sub-component in the rank-zero case
+            /// @author WVN
+            std::string& ComponentName(void);
+            
         protected:
+            
+            /// @brief Gets the default component name for a variable
+            /// @param index The indices of the sub-component
+            /// @author WVN
+            std::string GetDefaultComponentName(std::vector<int>& index);
+
+            /// @brief Sets the default component names, e.g. an array called "var" of rank 2 will have component names "var_2_2" etc
+            /// @author WVN
+            void SetDefaultComponentNames(void);
 
             /// @brief The name of the variable this array represents
             std::string variableName;
+            
+            /// @brief The names of the individual components of this array
+            std::vector<std::string> variableComponentNames;
+            
+            /// @brief Indicates whether or not variableComponentNames has been filled
+            bool hasInitializedVariableComponentNames = false;
 
             /// @brief The rank of this array
             int rank;
 
             /// @brief The dimensions of this array
-            int dims[MAX_RANK];
+            std::vector<int> dims;
             
             /// @brief The size of a single element
             size_t elementSize;
