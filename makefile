@@ -42,6 +42,10 @@ ifndef GPROF_ENABLE
 GPROF_ENABLE := 0
 endif
 
+ifndef USE_INTEL
+GPROF_ENABLE := 0
+endif
+
 ifndef CUDA_ENABLE
 CUDA_ENABLE := 1
 endif
@@ -95,11 +99,16 @@ endif
 
 TARGET := ${CURRENT_LIB_DIR}/lib${LIB_NAME}.a
 
+DEFAULTCOMPILER := g++
+ifeq (${USE_INTEL}, 1)
+DEFAULTCOMPILER := icpc
+endif
+
 PY_EXE := $(shell which python3)
-CC_HOST := $(shell which mpicxx)
+CC_HOST := $(shell which mpicxx) -cxx=${DEFAULTCOMPILER}
 CC_DEVICE :=  $(shell which nvcc) -ccbin=${CC_HOST}
 ifneq (${PARALLEL}, 1)
-CC_HOST := g++
+CC_HOST := ${DEFAULTCOMPILER}
 CC_DEVICE := none
 endif
 
