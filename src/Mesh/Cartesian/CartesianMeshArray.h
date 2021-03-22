@@ -30,6 +30,7 @@ namespace cmf
     };
     
     class CartesianMeshArrayHandler;
+    class CartesianMesh;
     /// @brief Defines a MeshArray object Cartesian grids
     /// @author WVN
     class CartesianMeshArray : public ICmfMeshArray, public IBlockIterable
@@ -122,6 +123,10 @@ namespace cmf
             /// @author WVN
             /// @brief Returns the base pointer for a node, and NULL if there is not one
             void* GetNodePointerWithNullDefault(RefinementTreeNode* node);
+            
+            /// @author WVN
+            /// @brief Returns the mesh handler
+            CartesianMesh* Mesh(void);
             
         private:
             

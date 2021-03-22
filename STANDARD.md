@@ -4,12 +4,17 @@ This document lays out the expected standard for CMF. This standard is provided 
 
 ## General Guidelines
 
-The general philosophy of this project is straightforward: favor ease-of-use when possible, optimize where it matters, and allow users a great deal of control.
+The general philosophy of this project is straightforward
+
+ - favor ease-of-use when possible
+ - optimize where it matters
+ - allow users a great deal of control
+ - follow the [Principle of Least Astonishment](https://en.wikipedia.org/wiki/Principle_of_least_astonishment)
 
 ## Documentation
 
 Documentation for CMF is done using Doxygen. As such, it is important that functions/variables/classes etc. are documented accordingly. Descriptions should be as comprehensive as possible
-and should be able to be understood when in the context of whatever class/file they appear in. Everything should be documented.
+and should be able to be understood when in the context of whatever class/file they appear in. Everything should be documented, without any exception.
 
 ## Naming Conventions and Namespaces
 
@@ -52,13 +57,13 @@ processed separately.
 CMF makes use of `PTL`, which is a script-like, JSON-like input file reader specifically designed for use in scientific computing. Classes such as `CartesianMesh`
 are constructed using quite a lot of information, so constructor structs are provided to build these objects (e.g. `CartesianMeshInputInfo`). These can be constructed directly
 in an external application, but should also inherit the `ICmfInputObject` interface. `PTL` is designed to provide a simple and easy-to-use input file interface, and
-so should be used for user-provided settings when possible and appropriate.
+so should be used for user-provided settings when possible and appropriate. `PTL` enforces that every input variable has a description, so this should be observed.
 
 ## Error Handling
 
 All errors should be handled through the `CmfError` function. This is because the error is handled as an exception internally, allowing external applications to handle errors
 elegantly if required. `CmfError` also provides the file and line (and, if supported, the function) that the error is called from, allowing for quicker debugging of issues.
-There should be absolutely no use of `abort()` as this will automatically crash any external application that uses CMF. In general, errors should not be thrown from deeply-nested
+There should be absolutely no use of `abort()`, etc. as this will automatically crash any external application that uses CMF. In general, errors should not be thrown from deeply-nested
 loops.
 
 ## Memory Allocation
@@ -85,6 +90,7 @@ shuld generally be minimized.
 - Any comments in the code should not contain any executable code, unless provided as a usage example.
 - There should be no dupluicate functions, including variations ending in `_new`, `_v2`, `_old`, etc. separate functions for
   2D and 3D cases should be avoided as much as possible.
+- Classes should have no public members, except under extenuating circumstances.
 - The selection of methods should not be assigned to an integer. If a differentiating class is not appropriate, then any
   method selection should be implemented using an enumeration with a corresponding string function.
 - There should be no files output unless explicitly enabled or as a consequence of a crash. No files should be output to the current directory explicitly.

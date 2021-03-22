@@ -29,6 +29,7 @@
 #include "Vec.h"
 #include "BlockArray.h"
 #include "CmfPrint.h"
+#include "StringUtils.h"
 
 namespace cmf
 {

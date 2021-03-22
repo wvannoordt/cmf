@@ -76,11 +76,6 @@ namespace cmf
         return output;
     }
     
-    ICmfMeshArrayHandler* ICmfMeshArray::GetHandler(void)
-    {
-        return NULL;
-    }
-    
     std::string ICmfMeshArray::GetVarName(void)
     {
         return variableName;

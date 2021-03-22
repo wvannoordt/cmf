@@ -32,6 +32,11 @@ namespace cmf
         ptr = Cmf_Alloc(totalAllocSize);
     }
     
+    CartesianMesh* CartesianMeshArray::Mesh(void)
+    {
+        return this->handler->mesh;
+    }
+    
     void CartesianMeshArray::CreateExchangePattern()
     {
         exchangePattern = this->handler->GetDefaultExchangeHandler()->CreateMeshArrayExchangePattern(this);

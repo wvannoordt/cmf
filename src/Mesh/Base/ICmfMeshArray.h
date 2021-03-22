@@ -7,6 +7,7 @@
 #include "BinaryExpression.h"
 namespace cmf
 {
+    class ICmfMesh;
     class ICmfMeshArrayHandler;
     /// @brief Defines a general MeshArray object for various grid types
     /// @author WVN
@@ -22,10 +23,6 @@ namespace cmf
             /// @brief Explicitly release resources used by this array
             /// @author WVN
             virtual void Destroy(void);
-            
-            /// @brief Returns the handler for the current array
-            /// @author WVN
-            virtual ICmfMeshArrayHandler* GetHandler(void);
 
             /// @brief Empty destructor
             /// @author WVN
