@@ -11,9 +11,4 @@ namespace cmf
     {
         
     }
-    
-    ICmfMeshArrayHandler* ICmfMesh::GetArrayHandler(void)
-    {
-        return NULL;
-    }
 }

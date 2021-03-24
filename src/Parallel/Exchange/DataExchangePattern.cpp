@@ -101,6 +101,7 @@ namespace cmf
     
     void DataExchangePattern::ExchangeData(void)
     {
+        group->Synchronize();
         for (int rank = 0; rank < group->Size(); rank++)
         {
             if (resizeOutBufferRequired[rank] || !sendBufferIsAllocated[rank])    this->ResizeOutBuffer(rank);

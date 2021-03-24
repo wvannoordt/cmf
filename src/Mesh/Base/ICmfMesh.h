@@ -50,7 +50,7 @@ namespace cmf
 
             /// @brief Returns the array handler object for the given mesh
             /// @author WVN
-            virtual ICmfMeshArrayHandler* GetArrayHandler(void);
+            virtual ICmfMeshArrayHandler* GetArrayHandler(void)=0;
 
             /// @brief Defines a variable on the given mesh
             /// @param name The name of the variable
