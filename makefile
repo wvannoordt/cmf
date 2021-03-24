@@ -105,7 +105,7 @@ DEFAULTCOMPILER := icpc
 endif
 
 PY_EXE := $(shell which python3)
-CC_HOST := $(shell which mpicxx) -cxx=${DEFAULTCOMPILER}
+CC_HOST := $(shell which mpicxx)
 CC_DEVICE :=  $(shell which nvcc) -ccbin=${CC_HOST}
 ifneq (${PARALLEL}, 1)
 CC_HOST := ${DEFAULTCOMPILER}
