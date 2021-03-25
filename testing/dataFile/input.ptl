@@ -25,6 +25,5 @@ Domain
 }
 User
 {
-	doOutput = false
-	doExchange = true
+	dataFileTitle = cmfTestFile
 }

@@ -96,3 +96,4 @@ shuld generally be minimized.
 - There should be no files output unless explicitly enabled or as a consequence of a crash. No files should be output to the current directory explicitly.
 - Avoid deallocating memory only to immediately re-allocate it, unless it is part of an isolated resizing or repartitioning operation.
 - Avoid functions with too many responibilities. If a function is more than 100-200 lines long, it is too big.
+- Do not micro-optimize.
