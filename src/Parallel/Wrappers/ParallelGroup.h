@@ -65,6 +65,11 @@ namespace cmf
             /// @author WVN
             double Sum(double val);
             
+            /// @brief Returns the max of the values on all ranks
+            /// @param val The value to sum
+            /// @author WVN
+            double Max(double val);
+            
             /// @brief Returns the sum of the values on all ranks
             /// @param val The value to sum
             /// @author WVN

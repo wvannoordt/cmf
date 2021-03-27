@@ -37,5 +37,8 @@ namespace cmf
     /// @brief parallel sum operation
     extern ParallelOperation parallelSum;
     
+    /// @brief parallel sum operation
+    extern ParallelOperation parallelMax;
+    
 }
 #endif

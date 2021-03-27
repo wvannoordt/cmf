@@ -167,6 +167,14 @@ namespace cmf
         return gVal;
     }
     
+    double ParallelGroup::Max(double val)
+    {
+        if (serialMode) return val;
+        double gVal = 0;
+        AllReduce(&val, &gVal, 1, parallelDouble, parallelMax);
+        return gVal;
+    }
+    
     double ParallelGroup::Sum(double val)
     {
         if (serialMode) return val;

@@ -30,6 +30,7 @@
 #include "BlockArray.h"
 #include "CmfPrint.h"
 #include "StringUtils.h"
+#include "CmfDataFile.h"
 
 namespace cmf
 {

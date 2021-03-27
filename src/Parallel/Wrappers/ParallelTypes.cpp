@@ -10,6 +10,7 @@ namespace cmf
     ParallelDataType parallelChar = MPI_CHAR;
     ParallelDataType parallelLong = MPI_LONG;
     ParallelOperation parallelSum = MPI_SUM;
+    ParallelOperation parallelMax = MPI_MAX;
 #else
     CmfParallelCommunicator defaultCommunicator = 0;
     ParallelDataType parallelDouble = 0;
@@ -17,6 +18,7 @@ namespace cmf
     ParallelDataType parallelChar = 0;
     ParallelDataType parallelLong = 0;
     ParallelOperation parallelSum = 0;
+    ParallelOperation parallelMax = 0;
 #endif
 
 }

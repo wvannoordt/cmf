@@ -23,6 +23,10 @@ int main(int argc, char** argv)
     {
         cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
         cmf::CartesianMesh domain(inputInfo);
+        
+        cmf::CmfDataFile outputDatabase("output");
+        
+        
     }
     
     return 0;

@@ -154,6 +154,16 @@ namespace cmf
     	{
     		Ralloc(0, ts...);
     	}
+        
+        /// @brief Constructor, including external data pointer
+        /// @author WVN
+        /// @param ptr The pointer to the data
+        /// @param ts the remaining indices
+    	template <typename... Ts> MdArray(arType* ptr, Ts... ts)
+    	{
+            data = ptr;
+    		Ralloc(0, ts...);
+    	}
     	
         /// @brief internal indexer, base case
         /// @author WVN
