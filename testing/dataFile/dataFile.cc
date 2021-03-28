@@ -20,13 +20,13 @@ int main(int argc, char** argv)
     
     user.StrictParse();
     
+    
     {
         cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
         cmf::CartesianMesh domain(inputInfo);
+        cmf::CmfDataBase outputDatabase("output");
         
-        cmf::CmfDataFile outputDatabase("output");
-        
-        
+        outputDatabase << domain;
     }
     
     return 0;

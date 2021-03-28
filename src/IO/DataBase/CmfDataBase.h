@@ -1,28 +1,35 @@
-#ifndef CMF_DATA_FILE_H
-#define CMF_DATA_FILE_H
+#ifndef CMF_DATABASE_H
+#define CMF_DATABASE_H
 #include <string>
 #include <vector>
-#include "ICmfDataFileReadWriteObject.h"
+#include "ICmfDataBaseReadWriteObject.h"
+#include "ObjectList.h"
 namespace cmf
 {
     /// @brief A class that represents a complete state of CMF. This can be written to disk or read from disk, and contains
     /// a collection of generic input/output files
     /// @author WVN
-    class CmfDataFile
+    class CmfDataBase
     {
         public:
             /// @brief Constructor
             /// @param directory The directory_in where this data file will output to. It is possible that the object will create subdirectories
             /// @author WVN
-            CmfDataFile(std::string directory_in);
+            CmfDataBase(std::string directory_in);
             
             /// @brief Constructor
             /// @author WVN
-            CmfDataFile(void);
+            CmfDataBase(void);
             
             /// @brief Destructor
             /// @author WVN
-            ~CmfDataFile(void);
+            ~CmfDataBase(void);
+            
+            /// @brief Steam operator for adding object to database
+            /// @param os The current stream object
+            /// @param newObject The object to add to the database
+            /// @author WVN
+            CmfDataBase& operator<<(ICmfDataBaseReadWriteObject& newObject);
         
         private:
             
@@ -33,6 +40,9 @@ namespace cmf
             
             /// @brief The directory where files (and possible subdirectories) will be output
             std::string directory;
+            
+            /// @brief a list of objects that are contained within the current database
+            ObjectList<ICmfDataBaseReadWriteObject*> databaseObjects;
     };
 }
 

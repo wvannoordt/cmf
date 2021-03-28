@@ -5,6 +5,7 @@
 #include "ICmfMeshArrayHandler.h"
 #include "CmfScreen.h"
 #include "ParallelGroup.h"
+#include "ICmfDataBaseReadWriteObject.h"
 namespace cmf
 {
     namespace MeshType
@@ -31,7 +32,7 @@ namespace cmf
             : ICmfInputObject(inputTree){}
     };
 
-    class ICmfMesh
+    class ICmfMesh: public ICmfDataBaseReadWriteObject
     {
         public:
             /// @brief Default input-info constructor for ICmfMesh
