@@ -10,6 +10,7 @@ namespace cmf
     {
         isAllocated = false;
         handler = handler_in;
+        arrayHandler = handler_in;
         filter = filter_in;
         exchangePattern = NULL;
         rank = info.rank;
@@ -18,6 +19,8 @@ namespace cmf
         Allocate();
         DefinePointerMap();
         CreateExchangePattern();
+        SetRequiredPrereqtuisiteDataBaseObjects();
+        SetAutomaticallyAddedObjects();
     }
     
     void CartesianMeshArray::Allocate(void)

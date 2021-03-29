@@ -17,6 +17,11 @@ namespace cmf
         hash = (hash * PRIMEA) ^ (size_t)(value * PRIMEB);
     }
     
+    void ICmfHashable::AugmentHash(std::string value)
+    {
+        for (auto& c:value) this->AugmentHash((int)c);
+    }
+    
     size_t ICmfHashable::GetHash(void)
     {
         return hash;

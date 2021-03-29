@@ -28,6 +28,11 @@ namespace cmf
             /// @param value The value to use for hash augmentation
             /// @author WVN
             void AugmentHash(int value);
+            
+            /// @brief Augments the value of the current hash
+            /// @param value The value to use for hash augmentation
+            /// @author WVN
+            void AugmentHash(std::string value);
         
         private:
             /// @brief Empty destructor

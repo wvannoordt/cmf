@@ -5,6 +5,9 @@
 #include "Utils.hx"
 #include "CmfPrint.h"
 #include "StringUtils.h"
+#include "ICmfMeshArrayHandler.h"
+#include "ICmfMesh.h"
+#include "CmfDataBase.h"
 namespace cmf
 {
     ICmfMeshArray::ICmfMeshArray(ArrayInfo info)
@@ -24,6 +27,23 @@ namespace cmf
     {
         return ComponentName({});
     }
+    
+    void ICmfMeshArray::SetRequiredPrereqtuisiteDataBaseObjects(void)
+    {
+        objectsRequiredBeforeAddingToDataBase.Add(arrayHandler);
+        objectsRequiredBeforeAddingToDataBase.Add(arrayHandler->Mesh());
+    }
+    
+    void ICmfMeshArray::SetAutomaticallyAddedObjects(void)
+    {
+        
+    }
+    
+    std::string ICmfMeshArray::DataBaseName(void)
+    {
+        return strformat("{}{}{}", arrayHandler->Mesh()->GetTitle(), CmfDataBase::GetDataBaseDlimiter(), variableName);
+    }
+    
     std::string& ICmfMeshArray::ComponentName(std::initializer_list<int> index)
     {
         if (index.size() != rank)

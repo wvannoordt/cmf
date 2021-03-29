@@ -8,6 +8,7 @@ namespace cmf
     CartesianMeshArrayHandler::CartesianMeshArrayHandler(CartesianMesh* mesh_in)
     {
         mesh = mesh_in;
+        baseMesh = mesh_in;
         this->RegisterToBlocks(mesh_in->Blocks());
         defaultHandler = NULL;
         requireDeleteDefaultHandler = false;

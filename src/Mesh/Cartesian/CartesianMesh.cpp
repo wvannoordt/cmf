@@ -17,11 +17,14 @@ namespace cmf
         meshDataDim = input.meshDataDim;
         exchangeDim = input.exchangeInfo.exchangeDim;
         arrayHandler = new CartesianMeshArrayHandler(this);
+        baseMeshArrayHandler = arrayHandler;
         meshGroup = &globalGroup;
         hasParallelPartition = false;
         partition = NULL;
         CreateParallelPartition(input.partitionInfo);
         arrayHandler->CreateExchangeHandler(input.exchangeInfo);
+        SetAutomaticallyAddedObjects();
+        SetRequiredPrereqtuisiteDataBaseObjects();
     }
 
     RefinementBlock* CartesianMesh::Blocks(void)

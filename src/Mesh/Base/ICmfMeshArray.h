@@ -5,13 +5,14 @@
 #include "CmfError.h"
 #include "SymbolicEvaluation.h"
 #include "BinaryExpression.h"
+#include "ICmfDataBaseReadWriteObject.h"
 namespace cmf
 {
     class ICmfMesh;
     class ICmfMeshArrayHandler;
     /// @brief Defines a general MeshArray object for various grid types
     /// @author WVN
-    class ICmfMeshArray
+    class ICmfMeshArray : public ICmfDataBaseReadWriteObject
     {
         public:
             /// @brief Copy constructor
@@ -52,17 +53,30 @@ namespace cmf
             /// @author WVN
             BinaryExpression operator / (ICmfMeshArray& rhs);
             
+            /// @brief Returns a string that uniquely identifies the current object in a database
+            /// @author WVN
+            virtual std::string DataBaseName(void) override final;
+            
             /// @brief Allows for assignment of array values based on an expression involving other arrays
             /// @author WVN
             ICmfMeshArray& operator = (const SymbolicEvaluation& rhsExpression);
             
             /// @brief Returns the name of a given sub-component
+            /// @param The indices of the sub-component
             /// @author WVN
-            std::string& ComponentName(std::initializer_list<int> index);
+            std::string& ComponentName(std::initializer_list<int> index);            
             
             /// @brief Returns the name of a given sub-component in the rank-zero case
-            /// @author WVN
+            /// @author WVN0
             std::string& ComponentName(void);
+            
+            /// @brief Adds the set of prerequisite objects to objectsRequiredBeforeAddingToDataBase
+            ///@author WVN
+            virtual void SetRequiredPrereqtuisiteDataBaseObjects(void) override final;
+            
+            /// @brief Adds the set of automatically added objects to objectsToAutomaticallyAddWhenAddingToDataBase
+            ///@author WVN
+            virtual void SetAutomaticallyAddedObjects(void) override final;
             
         protected:
             
@@ -89,6 +103,9 @@ namespace cmf
 
             /// @brief The dimensions of this array
             std::vector<int> dims;
+            
+            /// @brief The handler for this array
+            ICmfMeshArrayHandler* arrayHandler;
             
             /// @brief The size of a single element
             size_t elementSize;

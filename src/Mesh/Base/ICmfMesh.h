@@ -58,6 +58,22 @@ namespace cmf
             /// @author WVN
             virtual ICmfMeshArray& DefineVariable(std::string name)=0;
             
+            /// @brief Returns a string that uniquely identifies the current object in a database
+            /// @author WVN
+            virtual std::string DataBaseName(void) override final;
+            
+            /// @brief Returns the mesh title
+            /// @author WVN
+            std::string GetTitle(void);
+            
+            /// @brief Adds the set of prerequisite objects to objectsRequiredBeforeAddingToDataBase
+            ///@author WVN
+            virtual void SetRequiredPrereqtuisiteDataBaseObjects(void) override final;
+            
+            /// @brief Adds the set of automatically added objects to objectsToAutomaticallyAddWhenAddingToDataBase
+            ///@author WVN
+            virtual void SetAutomaticallyAddedObjects(void) override final;
+            
             /// @author WVN
             /// @brief Returns a mesh array with the given name
             /// @param name The name of the array to fetch
@@ -72,6 +88,9 @@ namespace cmf
             
             /// @brief The parallel group that processes this mesh
             ParallelGroup* meshGroup;
+            
+            /// @brief The handler object for this mesh
+            ICmfMeshArrayHandler* baseMeshArrayHandler = NULL;
     };
 }
 

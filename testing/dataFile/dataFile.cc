@@ -3,7 +3,7 @@
 #include "cmf.h"
 #include "cmftestutils.h"
 #include <chrono>
-
+using cmf::print;
 int main(int argc, char** argv)
 {
     EXIT_WARN_IF_PARALLEL;
@@ -25,8 +25,9 @@ int main(int argc, char** argv)
         cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
         cmf::CartesianMesh domain(inputInfo);
         cmf::CmfDataBase outputDatabase("output");
-        
+        auto& var = domain.DefineVariable("data");
         outputDatabase << domain;
+        outputDatabase << var;
     }
     
     return 0;
