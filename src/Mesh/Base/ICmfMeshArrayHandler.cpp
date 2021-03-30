@@ -24,6 +24,11 @@ namespace cmf
         return (varList.find(name)!=varList.end());
     }
     
+    ParallelGroup* ICmfMeshArrayHandler::GetDatabaseParallelGroup(void)
+    {
+        return this->Mesh()->GetGroup();
+    }
+    
     void ICmfMeshArrayHandler::SetRequiredPrereqtuisiteDataBaseObjects(void)
     {
         objectsRequiredBeforeAddingToDataBase.Add(baseMesh);

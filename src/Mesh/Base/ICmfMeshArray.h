@@ -37,6 +37,15 @@ namespace cmf
             /// @author WVN
             virtual void Exchange(void)=0;
             
+            /// @brief Indicates whether the object has a ParallelGroup associated with it. Default implementation returns true for safety.
+            /// If this returns false, it is assumed that the object is treated in parallel
+            ///@author WVN
+            virtual bool HasParallelGroup(void) override final {return true;}
+            
+            /// @brief Returns the parallel group for the object, or NULL if it is a serial object
+            /// @author WVN
+            virtual ParallelGroup* GetDatabaseParallelGroup(void) override final;
+            
             /// @brief Addition symbolic operator
             /// @author WVN
             BinaryExpression operator + (ICmfMeshArray& rhs);

@@ -7,6 +7,16 @@ namespace cmf
         
     }
     
+    bool ICmfDataBaseReadWriteObject::HasParallelGroup(void)
+    {
+        return true;
+    }
+    
+    ParallelGroup* ICmfDataBaseReadWriteObject::GetDatabaseParallelGroup(void)
+    {
+        return NULL;
+    }
+    
     bool ICmfDataBaseReadWriteObject::RequiredObjectsAreInList(ObjectList<ICmfDataBaseReadWriteObject*>& listToCheck, std::string& missingObjects)
     {
         missingObjects = "";

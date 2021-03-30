@@ -119,6 +119,26 @@ namespace cmf
         }
         subStrings.push_back(templateStrCopy);
     }
+    
+    /// @brief Helper functin for strformat()
+    /// @param subStrings The vector of substrings to format
+    /// @param templateStr The template string
+    /// @author WVN
+    static inline std::vector<std::string> StringSplit(std::string templateStr, std::string delimiter)
+    {
+        std::vector<std::string> subStrings;
+        std::string templateStrCopy = templateStr;
+        size_t pos = 0;
+        std::string token;
+        while ((pos = templateStrCopy.find(delimiter)) != std::string::npos)
+        {
+            token = templateStrCopy.substr(0, pos);
+            subStrings.push_back(token);
+            templateStrCopy.erase(0, pos + delimiter.length());
+        }
+        subStrings.push_back(templateStrCopy);
+        return subStrings;
+    }
 
     /// @brief Helper function for strformat
     /// @author WVN

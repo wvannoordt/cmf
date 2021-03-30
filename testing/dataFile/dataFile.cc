@@ -28,6 +28,8 @@ int main(int argc, char** argv)
         auto& var = domain.DefineVariable("data");
         outputDatabase << domain;
         outputDatabase << var;
+        
+        outputDatabase.Write("testDatabase");
     }
     
     return 0;

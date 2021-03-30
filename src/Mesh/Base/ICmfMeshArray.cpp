@@ -39,6 +39,11 @@ namespace cmf
         
     }
     
+    ParallelGroup* ICmfMeshArray::GetDatabaseParallelGroup(void)
+    {
+        return this->arrayHandler->Mesh()->GetGroup();
+    }
+    
     std::string ICmfMeshArray::DataBaseName(void)
     {
         return strformat("{}{}{}", arrayHandler->Mesh()->GetTitle(), CmfDataBase::GetDataBaseDlimiter(), variableName);

@@ -52,6 +52,11 @@ namespace cmf
             /// @brief Returns the standard delimiter for database sub-ojects
             /// @author WVN
             static std::string GetDataBaseDlimiter(void) {return "::";}
+            
+            /// @brief Writes out the database using the given title. The title should not include a file extension
+            /// as multiple files may be written. The title should also not include the directory
+            /// @author WVN
+            void Write(std::string databaseTitle);
         
         private:
             

@@ -48,6 +48,15 @@ namespace cmf
             /// @brief Returns the parallel group responsible for this mesh
             /// @author WVN
             ParallelGroup* GetGroup(void) {return meshGroup;}
+            
+            /// @brief Indicates whether the object has a ParallelGroup associated with it. Default implementation returns true for safety.
+            /// If this returns false, it is assumed that the object is treated in parallel
+            ///@author WVN
+            virtual bool HasParallelGroup(void) override final {return true;}
+            
+            /// @brief Returns the parallel group for the object, or NULL if it is a serial object
+            /// @author WVN
+            virtual ParallelGroup* GetDatabaseParallelGroup(void) override final {return this->GetGroup();}
 
             /// @brief Returns the array handler object for the given mesh
             /// @author WVN
