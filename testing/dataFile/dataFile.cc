@@ -20,16 +20,27 @@ int main(int argc, char** argv)
     
     user.StrictParse();
     
+    cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     
     {
-        cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
         cmf::CartesianMesh domain(inputInfo);
         cmf::CmfDataBase outputDatabase("output");
         auto& var = domain.DefineVariable("data");
         outputDatabase << domain;
         outputDatabase << var;
         
-        outputDatabase.Write("testDatabase");
+        outputDatabase.Write(dataFileTitle);
+    }
+
+    {
+        
+        cmf::CartesianMesh domain(inputInfo);
+        // cmf::CmfDataBase inputDatabase("output");
+        // inputDatabase.Read("testDatabase");
+        // 
+        // cmf::CartesianMesh* domain;
+        
+        
     }
     
     return 0;

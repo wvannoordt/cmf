@@ -17,15 +17,26 @@ namespace cmf
         return NULL;
     }
     
-    void ICmfDataBaseReadWriteObject::ReadFromFile(ParallelFile& file)
+    void ICmfDataBaseReadWriteObject::ReadInfoFromFile(ParallelFile& file)
     {
-        //Do nothing
+        // Do nothing
     }
     
-    void ICmfDataBaseReadWriteObject::WriteToFile(ParallelFile& file)
+    void ICmfDataBaseReadWriteObject::ReadDataFromFile(ParallelFile& file)
     {
-        //Do nothing
+        // Do nothing
     }
+    
+    void ICmfDataBaseReadWriteObject::WriteInfoToFile(ParallelFile& file)
+    {
+        // Do nothing
+    }
+    
+    void ICmfDataBaseReadWriteObject::WriteDataToFile(ParallelFile& file)
+    {
+        // Do nothing
+    }
+    
     
     bool ICmfDataBaseReadWriteObject::RequiredObjectsAreInList(ObjectList<ICmfDataBaseReadWriteObject*>& listToCheck, std::string& missingObjects)
     {

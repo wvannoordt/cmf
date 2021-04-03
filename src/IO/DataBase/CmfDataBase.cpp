@@ -119,7 +119,7 @@ namespace cmf
         for (auto& obj:databaseObjects)
         {
             WriteLine(4, strformat("Write object \"{}\" to database \"{}\"", obj->DataBaseName() , outputPath));
-            obj->WriteToFile(outputFile);
+            // obj->WriteToFile(outputFile);
         }
         
         outputFile.Close();

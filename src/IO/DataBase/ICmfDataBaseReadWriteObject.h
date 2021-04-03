@@ -6,7 +6,10 @@
 #include "ParallelFile.h"
 namespace cmf
 {
-    /// @brief Represents an object that can read from and written to a CMF data file
+    /// @brief Represents an object that can read from and written to a CMF data file.
+    /// It is expected that objects that implement this interface are composed of "information",
+    /// which is lightweight data such as sizes, strings, names, etc. and "data", which
+    /// consists of large arrays of numerics etc
     /// @author WVN
     class ICmfDataBaseReadWriteObject
     {
@@ -46,15 +49,25 @@ namespace cmf
             /// @author WVN
             virtual ParallelGroup* GetDatabaseParallelGroup(void);
             
-            /// @brief Reads the object from a parallel file
+            /// @brief Reads the information ("light-weight" data) from the parallel file
             /// @param file The file to read from
             /// @author WVN
-            virtual void ReadFromFile(ParallelFile& file);
+            virtual void ReadInfoFromFile(ParallelFile& file);
             
-            /// @brief Writes the object to a parallel file
+            /// @brief Reads the data ("heavy-weight" data) from the parallel file
+            /// @param file The file to read from
+            /// @author WVN
+            virtual void ReadDataFromFile(ParallelFile& file);
+            
+            /// @brief Writes the information ("light-weight" data) to the parallel file
             /// @param file The file to write to
             /// @author WVN
-            virtual void WriteToFile(ParallelFile& file);
+            virtual void WriteInfoToFile(ParallelFile& file);
+            
+            /// @brief Writes the data ("heavy-weight" data) to the parallel file
+            /// @param file The file to write to
+            /// @author WVN
+            virtual void WriteDataToFile(ParallelFile& file);
         
         protected:
             ///@brief A list of database objects that must be found in a database before this object is allowed to be added.
