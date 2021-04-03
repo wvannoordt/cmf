@@ -206,6 +206,16 @@ namespace cmf
             /// @author WVN
             /// @brief Returns the parallel partition object
             CartesianMeshParallelPartition* GetPartition(void);
+            
+            /// @brief Reads the mesh (mesh only) from a parallel file
+            /// @param file The file to read from
+            /// @author WVN
+            virtual void ReadFromFile(ParallelFile& file) override final;
+            
+            /// @brief Writes the mesh (mesh only) to a parallel file
+            /// @param file The file to write to
+            /// @author WVN
+            virtual void WriteToFile(ParallelFile& file) override final;
 
         private:
             

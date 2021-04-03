@@ -3,6 +3,7 @@
 #include <string>
 #include "ObjectList.h"
 #include "ParallelGroup.h"
+#include "ParallelFile.h"
 namespace cmf
 {
     /// @brief Represents an object that can read from and written to a CMF data file
@@ -44,6 +45,16 @@ namespace cmf
             /// @brief Returns the parallel group for the object, or NULL if it is a serial object
             /// @author WVN
             virtual ParallelGroup* GetDatabaseParallelGroup(void);
+            
+            /// @brief Reads the object from a parallel file
+            /// @param file The file to read from
+            /// @author WVN
+            virtual void ReadFromFile(ParallelFile& file);
+            
+            /// @brief Writes the object to a parallel file
+            /// @param file The file to write to
+            /// @author WVN
+            virtual void WriteToFile(ParallelFile& file);
         
         protected:
             ///@brief A list of database objects that must be found in a database before this object is allowed to be added.

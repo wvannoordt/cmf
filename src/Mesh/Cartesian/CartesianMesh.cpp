@@ -228,6 +228,16 @@ namespace cmf
         return GetBlockInfo(blockIter.Node());
     }
     
+    void CartesianMesh::ReadFromFile(ParallelFile& file)
+    {
+        
+    }
+    
+    void CartesianMesh::WriteToFile(ParallelFile& file)
+    {
+        
+    }
+    
     size_t CartesianMesh::Size(void)
     {
         return blocks->Size();

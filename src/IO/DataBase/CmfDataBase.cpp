@@ -5,6 +5,7 @@
 #include "CmfError.h"
 #include "ParallelGroup.h"
 #include "Path.h"
+#include "ParallelFile.h"
 namespace cmf
 {
     CmfDataBase::CmfDataBase(void)
@@ -98,6 +99,11 @@ namespace cmf
         AugmentHash(directory_in);
         directory = directory_in;
         WriteLine(3, strformat("Defining database in directory \"{}\"", directory));
+        if (!group->HasSameValue(this->GetHash()))
+        {
+            CmfError("Database hash check failed: this is likely because different ranks are attempting to write a database in separate directories");
+        }
+        group->Synchronize();
     }
     
     
@@ -107,6 +113,16 @@ namespace cmf
         std::string filename = databaseTitle + ".csd";
         outputPath += filename;
         WriteLine(1, strformat("Outputting database: \"{}\"", outputPath));
+        ParallelFile outputFile(this->group);
+        outputFile.Open(outputPath.Str());
+        
+        for (auto& obj:databaseObjects)
+        {
+            WriteLine(4, strformat("Write object \"{}\" to database \"{}\"", obj->DataBaseName() , outputPath));
+            obj->WriteToFile(outputFile);
+        }
+        
+        outputFile.Close();
         
         group->Synchronize();
     }
