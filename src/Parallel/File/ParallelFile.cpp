@@ -7,6 +7,8 @@ namespace cmf
         filename = "";
         group = &globalGroup;
         isOpen = false;
+        isInParallelMode = false;
+        isInBinaryMode = false;
     }
     
     ParallelFile::ParallelFile(ParallelGroup* group_in)
@@ -14,6 +16,8 @@ namespace cmf
         filename = "";
         group = group_in;
         isOpen = false;
+        isInParallelMode = false;
+        isInBinaryMode = false;
     }
     
     void ParallelFile::Open(std::string filename_in)

@@ -1,10 +1,13 @@
 #ifndef CMF_PARALLEL_FILE_H
 #define CMF_PARALLEL_FILE_H
 #include <string>
+#include <fstream>
+#include <sstream>
 #include "ParallelGroup.h"
 namespace cmf
 {
-    ///@brief A class that is used for parallel file input and output
+    ///@brief A class that is used for parallel file input and output.
+    ///Note that this implementation is slow for large chunks of ascii data
     ///@author WVN
     class ParallelFile
     {
@@ -41,6 +44,15 @@ namespace cmf
             
             ///@brief Indicates whether or nor the file is open
             bool isOpen;
+            
+            ///@brief Indicates whether or not all ranks will write provided data to the file
+            bool isInParallelMode;
+            
+            ///@brief Indicates whether or not the data will be written in binary format or ascii format
+            bool isInBinaryMode;
+            
+            ///@brief String stream for ascii data writing
+            std::ostringstream asciiStream;
     };
 }
 

@@ -1,7 +1,7 @@
 #ifndef CMF_PARALLEL_TYPES
 #define CMF_PARALLEL_TYPES
 #include "CmfMPI.h"
-
+#include <stdio.h>
 namespace cmf
 {
 #if(CMF_PARALLEL)
@@ -39,6 +39,14 @@ namespace cmf
     
     /// @brief parallel sum operation
     extern ParallelOperation parallelMax;
+    
+#if(CMF_PARALLEL)
+    typedef MPI_File   CmfMpiFileHandle;
+    typedef MPI_Status CmfMpiFileStatus;
+#else
+    typedef int        CmfMpiFileHandle;
+    typedef int        CmfMpiFileStatus;
+#endif
     
 }
 #endif
