@@ -35,17 +35,13 @@ namespace cmf
             ParallelWriteAt(0, (void*)strn.c_str(), writeSize);
         }
         size_t globalWriteSize = group->Sum(writeSize);
-        SetPosition(position + writeSize);
+        SetPosition(position + globalWriteSize);
         asciiStream = std::ostringstream();
     }
     
     void ParallelFile::SetPosition(size_t newPosition)
     {
         position = newPosition;
-        print(position);
-#if (CMF_PARALLEL)
-        CMF_MPI_CHECK(MPI_File_set_view(parFileHandle, position, MPI_CHAR, MPI_CHAR, "native", MPI_INFO_NULL));
-#endif
     }
     
     void ParallelFile::SetSerialRank(int serialRank_in)

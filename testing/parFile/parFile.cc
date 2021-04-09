@@ -17,10 +17,10 @@ int main(int argc, char** argv)
     cmf::ParallelFile ofile(&glob);
     ofile.Open("output/testFile.par");
     
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < glob.Size(); i++)
     {
-        ofile.SetSerialRank(0);
-        ofile.SerialWrite(strformat("Hello from {}", glob.Rank()));
+        ofile.SetSerialRank(i);
+        ofile.SerialWrite("Hello from", glob.Rank());
     }
     
     return 0;
