@@ -75,6 +75,9 @@ namespace cmf
             /// @author WVN
             int Sum(int val);
             
+            /// @brief Returns the parallel communicator
+            /// @author WVN
+            CmfParallelCommunicator GetComm(void) { return communicator; }
             
             /// @brief Eqivalent to <a href="https://www.mpich.org/static/docs/v3.3/www3/MPI_Irecv.html">MPI_Irecv</a>
             /// @param buf initial address of receive buffer

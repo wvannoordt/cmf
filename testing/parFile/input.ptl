@@ -1,0 +1,29 @@
+GlobalSettings
+{
+	Display
+	{
+		debugLevel = 4
+		trackOutputOrigins = false
+	}
+	Memory
+	{
+		allowStackAllocation = false
+	}
+}
+Domain
+{
+	blockDim = [2, 2, 2]
+	blockBounds = [0, 1, 0, 1, 0, 1]
+	meshDataDim = [12, 14, 16]
+	refinementConstraintType = factor2CompletelyConstrained
+	periodicRefinement = [true,true,true]
+	Exchanges
+	{
+		exchangeDim = [3, 3, 3]
+		interpolationOrder = 2
+	}
+}
+User
+{
+	dataFileTitle = cmfTestFile
+}
