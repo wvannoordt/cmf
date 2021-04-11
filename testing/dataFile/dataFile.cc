@@ -21,9 +21,9 @@ int main(int argc, char** argv)
     user.StrictParse();
     
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
+    cmf::CartesianMesh domain(inputInfo);
     
     {
-        cmf::CartesianMesh domain(inputInfo);
         cmf::CmfDataBase outputDatabase("output");
         auto& var = domain.DefineVariable("data");
         outputDatabase << domain;

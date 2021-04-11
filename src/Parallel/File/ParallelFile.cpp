@@ -70,14 +70,18 @@ namespace cmf
     
     void ParallelFile::ParallelWrite(ParallelDataBuffer& dataBuffer)
     {
+        PurgeAsciiStream();
+        group->Synchronize();
         size_t numBufs = dataBuffer.pointers.size();
         size_t totalWriteSize = 0;
         for (auto& s:dataBuffer.sizes) totalWriteSize += s;
+        size_t totalWriteSizeGlob = group->Sum(totalWriteSize);
         for (size_t i = 0; i < numBufs; i++)
         {
             ParallelWriteAt(dataBuffer.offsets[i], dataBuffer.pointers[i], dataBuffer.sizes[i]);
         }
-        SetPosition(position + totalWriteSize);
+        SetPosition(position + totalWriteSizeGlob);
+        group->Synchronize();
     }
 
     void ParallelFile::ParallelWriteAt(size_t offset, void* pointer, size_t writeSize)
