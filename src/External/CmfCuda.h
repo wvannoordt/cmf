@@ -1,5 +1,6 @@
 #ifndef CMF_CUDA_INCL_H
 #define CMF_CUDA_INCL_H
+#include "ConfigParams.h"
 #include "CmfError.h"
 //Enables usage of CUDA kernels
 #ifndef CUDA_ENABLE

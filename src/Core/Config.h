@@ -1,6 +1,8 @@
 #ifndef CONFIG_H_CMF
 #define CONFIG_H_CMF
 
+#include "ConfigParams.h"
+
 //Dimension of the simulation
 #ifndef CMF_DIM
 #define CMF_DIM 2

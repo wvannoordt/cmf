@@ -37,6 +37,8 @@ int main(int argc, char** argv)
         cmf::CartesianMesh domain(inputInfo);
         // cmf::CmfDataBase inputDatabase("output");
         // inputDatabase.Read("testDatabase");
+        // outputDatabase >> domain;
+        // outputDatabase >> var;
         // 
         // cmf::CartesianMesh* domain;
         

@@ -1,6 +1,6 @@
 #ifndef CMF_MPI_H
 #define CMF_MPI_H
-
+#include "ConfigParams.h"
 #ifndef CMF_PARALLEL
 #define CMF_PARALLEL 0
 #endif

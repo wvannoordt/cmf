@@ -1,6 +1,5 @@
 #ifndef CMF_H
 #define CMF_H
-
 #include "CmfError.h"
 #include <string>
 #include "Config.h"
@@ -52,15 +51,31 @@ namespace cmf
     
     /// @brief Returns CMF_DIM, used to check that the host code is using the correct dimension (determined at compile time) of CMF.\see Config.h
     /// @author WVN
-    int GetDim(void);
+    constexpr int Dim(void)
+    {
+        return CMF_DIM;
+    }
+    
+    /// @brief Returns CMF_DIM, used to check that the host code is using the correct dimension (determined at compile time) of CMF.\see Config.h
+    /// @author WVN
+    constexpr int GetDim(void)
+    {
+        return CMF_DIM;
+    }
     
     /// @brief Returns true if CMF was compiled with parallel MPI support
     /// @author WVN
-    bool IsParallel(void);
+    constexpr bool IsParallel(void)
+    {
+        return CMF_PARALLEL?true:false;
+    }
     
     /// @brief Returns true if CMF was compiled with GPU support
     /// @author WVN
-    bool HasGpuSupport(void);
+    constexpr bool HasGpuSupport(void)
+    {
+        return CUDA_ENABLE?true:false;
+    }
 }
 
 #endif

@@ -20,23 +20,4 @@ namespace cmf
     {
 
     }
-    bool HasGpuSupport(void)
-    {
-        return CUDA_ENABLE?true:false;
-    }
-    
-    bool IsParallel(void)
-    {
-#if(CMF_PARALLEL)
-        return true;
-#else
-        return false;
-#endif
-    }
-
-    int GetDim(void)
-    {
-        //To test if a 2D code calls a 3D api etc.
-        return CMF_DIM;
-    }
 }

@@ -1,6 +1,6 @@
 #ifndef CMF_ZLIB_H
 #define CMF_ZLIB_H
-
+#include "ConfigParams.h"
 #ifndef CMF_ZLIB_EXT_ENABLE
 #define CMF_ZLIB_EXT_ENABLE 0
 #endif
