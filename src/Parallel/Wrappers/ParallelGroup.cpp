@@ -17,6 +17,7 @@ namespace cmf
         serialMode = true;
         mpiAutoInitIfRequiredCalled = false;
         deleteCudaDeviceHandler = false;
+        synchCount = 0;
     }
     
     
@@ -105,6 +106,8 @@ namespace cmf
     
     void ParallelGroup::Synchronize(void)
     {
+        synchCount++;
+        this->AugmentHash(synchCount); // could use this to debug parallel halts if need be.
         CMF_MPI_CHECK(MPI_Barrier(communicator));
     }
     

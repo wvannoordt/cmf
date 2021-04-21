@@ -4,11 +4,12 @@
 #include "Parallel.h"
 #include "ParallelTypes.h"
 #include "CudaDeviceHandler.h"
+#include "ICmfHashable.h"
 namespace cmf
 {
     /// @brief Class defining a parrallel group around a parallel communicator.
 	/// @author WVN
-    class ParallelGroup
+    class ParallelGroup : ICmfHashable
     {
         public:
             
@@ -164,6 +165,9 @@ namespace cmf
             
             /// @brief Indicates whether or not this parallelgroup needs to delete the deviceHandler
             bool deleteCudaDeviceHandler;
+            
+            /// @brief Counts the number of times Synchronize() is called, used for debugging
+            int synchCount;
     };
 
     /// @brief The default parallel group for global parallel operations

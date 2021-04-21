@@ -23,7 +23,6 @@ namespace cmf
             /// @author WVN
             size_t GetHash(void);
             
-        protected:
             /// @brief Augments the value of the current hash
             /// @param value The value to use for hash augmentation
             /// @author WVN
