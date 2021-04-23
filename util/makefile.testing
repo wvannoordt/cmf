@@ -53,6 +53,7 @@ main: setup
 	${CC_HOST} ${TEST_FLAGS} ${COMPFLAGS} ${CURRENT_ICONFIG} ${MAINCC} -o ${TARGET} ${CURRENT_LCONFIG}
 
 setup:
+	rm -rf ./output
 	mkdir -p output
 	ln -sf ${CURRENT_BASEIDIR}/util/makefile.latex output/makefile
 

@@ -110,6 +110,8 @@ namespace cmf
             
             ///@brief Seeks the provided string and returns the offset from the current poition until the first character
             ///of the first instance of that string, or returns std::string::npos otherwise. This function might be slow.
+            ///Note that this will yield a flase negative if the next instance of the token is futher than maxLineLength
+            ///away from the current position
             ///@param token The string to search for
             ///@author WVN
             size_t SeekString(std::string token);
@@ -134,6 +136,9 @@ namespace cmf
             
             ///@brief String stream for ascii data writing
             std::ostringstream asciiStream;
+            
+            ///@brief The size of the current open file, only valid for reading
+            size_t openFileSize;
             
             ///@brief The filename for this file handle
             std::string filename;
