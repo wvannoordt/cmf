@@ -27,14 +27,13 @@ int main(int argc, char** argv)
         cmf::CmfDataBase outputDatabase("output");
         auto& var = domain.DefineVariable("data");
         outputDatabase << domain;
-        outputDatabase << var;
         
         outputDatabase.Write(dataFileTitle);
     }
 
     {
         
-        cmf::CartesianMesh domain(inputInfo);
+        // cmf::CartesianMesh domain(inputInfo);
         // cmf::CmfDataBase inputDatabase("output");
         // inputDatabase.Read("testDatabase");
         // outputDatabase >> domain;

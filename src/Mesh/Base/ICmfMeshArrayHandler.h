@@ -31,10 +31,6 @@ namespace cmf
             /// @author WVN
             virtual ICmfMeshArray* GetVariable(std::string name)=0;
             
-            /// @brief Returns a string that uniquely identifies the current object in a database
-            /// @author WVN
-            virtual std::string DataBaseName(void) override final;
-            
             /// @brief Indicates whether the object has a ParallelGroup associated with it. Default implementation returns true for safety.
             /// If this returns false, it is assumed that the object is treated in parallel
             ///@author WVN
@@ -43,14 +39,6 @@ namespace cmf
             /// @brief Returns the parallel group for the object, or NULL if it is a serial object
             /// @author WVN
             virtual ParallelGroup* GetDatabaseParallelGroup(void) override final;
-            
-            /// @brief Adds the set of prerequisite objects to objectsRequiredBeforeAddingToDataBase
-            ///@author WVN
-            virtual void SetRequiredPrereqtuisiteDataBaseObjects(void) override final;
-            
-            /// @brief Adds the set of automatically added objects to objectsToAutomaticallyAddWhenAddingToDataBase
-            ///@author WVN
-            virtual void SetAutomaticallyAddedObjects(void) override final;
 
             /// @brief Checks if a variable with the given name exists
             /// @param name The name to check

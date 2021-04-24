@@ -28,10 +28,8 @@ namespace cmf
         Builder(".", group_in);
     }
     
-    void CmfDataBase::AddDataBaseObject(ICmfDataBaseReadWriteObject* newObject)
+    void CmfDataBase::AddDataBaseObject(ICmfDataBaseReadWriteObject* newObject, std::string newObjectName)
     {
-        //Get the name of the new object
-        std::string newObjectName = newObject->DataBaseName();
         
         //Check to see that the new object is associated with the same parallel group as the database
         if (newObject->HasParallelGroup())
@@ -42,13 +40,6 @@ namespace cmf
             {
                 CmfError(strformat("Cannot add object \"{}\" to database: object is associated with ParallelGroup {}, but database is associated with ParallelGroup {}", newObjectName, objectGroup, group));
             }
-        }
-        
-        //Check to see that all required prerequisite objects are already in the list
-        std::string missingObjects;
-        if (!newObject->RequiredObjectsAreInList(databaseObjects, missingObjects))
-        {
-            CmfError(strformat("Cannot add object \"{}\" to database, missing the following prerequisite objects:\n{}", newObjectName, missingObjects));
         }
         
         //Skip if database already has object (in the case the multiple objects require the same object)
@@ -66,12 +57,6 @@ namespace cmf
             objectNames.Add(newObjectName);
             this->AugmentHash(newObjectName);
             WriteLine(4, strformat("Added object \"{}\" to database", newObjectName));
-            
-            //Add objects that are automatically added when this object is added
-            for (auto& obj: newObject->objectsToAutomaticallyAddWhenAddingToDataBase)
-            {
-                AddDataBaseObject(obj);
-            }
         }
         
         //Crash if the database is out of sync on the associated parallel group
@@ -84,7 +69,7 @@ namespace cmf
     
     CmfDataBase& CmfDataBase::operator << (ICmfDataBaseReadWriteObject& newObject)
     {
-        this->AddDataBaseObject(&newObject);
+        this->AddDataBaseObject(&newObject, "BROKEN FOR NOW");
         return *this;
     }
     
@@ -106,23 +91,36 @@ namespace cmf
         group->Synchronize();
     }
     
+    void CmfDataBase::WriteDataBaseInfoFile(std::string infoFileName)
+    {
+        ParallelFile infoFile(this->group);
+        infoFile.Open(infoFileName);
+        for (auto& obj:databaseObjects)
+        {
+            size_t idx = databaseObjects[obj];
+            std::string obname = objectNames[idx];
+            infoFile.Write(obname);
+        }
+        infoFile.Close();
+    }
     
     void CmfDataBase::Write(std::string databaseTitle)
     {
-        Path outputPath(directory);
+        Path infoFilePath(directory);
         std::string filename = databaseTitle + ".csd";
-        outputPath += filename;
-        WriteLine(1, strformat("Outputting database: \"{}\"", outputPath));
-        ParallelFile outputFile(this->group);
-        outputFile.Open(outputPath.Str());
+        infoFilePath += filename;
+        WriteLine(1, strformat("Outputting database: \"{}\"", infoFilePath));
+        
+        this->WriteDataBaseInfoFile(infoFilePath.Str());
         
         for (auto& obj:databaseObjects)
         {
-            WriteLine(4, strformat("Write object \"{}\" to database \"{}\"", obj->DataBaseName() , outputPath));
+            Path infoFilePath(directory);
+            std::string objFilename = databaseTitle + ".csd";
+            objFilename += filename;
+            
             // obj->WriteToFile(outputFile);
         }
-        
-        outputFile.Close();
         
         group->Synchronize();
     }

@@ -38,10 +38,10 @@ namespace cmf
             /// @author WVN
             ~CmfDataBase(void);
             
-            /// @brief Adds an object to the database
-            /// @param newObject The object to add to the database
+            /// @brief Writes the database information file
+            /// @param infoFileName The name of the database information file
             /// @author WVN
-            void AddDataBaseObject(ICmfDataBaseReadWriteObject* newObject);
+            void WriteDataBaseInfoFile(std::string infoFileName);
             
             /// @brief Steam operator for adding object to database
             /// @param os The current stream object
@@ -49,16 +49,18 @@ namespace cmf
             /// @author WVN
             CmfDataBase& operator<<(ICmfDataBaseReadWriteObject& newObject);
             
-            /// @brief Returns the standard delimiter for database sub-ojects
-            /// @author WVN
-            static std::string GetDataBaseDlimiter(void) {return "::";}
-            
             /// @brief Writes out the database using the given title. The title should not include a file extension
             /// as multiple files may be written. The title should also not include the directory
             /// @author WVN
             void Write(std::string databaseTitle);
         
         private:
+            
+            /// @brief Adds an object to the database
+            /// @param newObject The object to add to the database
+            /// @param newObjectName The name of the new object
+            /// @author WVN
+            void AddDataBaseObject(ICmfDataBaseReadWriteObject* newObject, std::string newObjectName);
             
             /// @brief The builder function
             /// @param directory The directory_in where this data file will output to. It is possible that the object will create subdirectories

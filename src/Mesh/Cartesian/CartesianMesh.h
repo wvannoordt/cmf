@@ -207,25 +207,15 @@ namespace cmf
             /// @brief Returns the parallel partition object
             CartesianMeshParallelPartition* GetPartition(void);
             
-            /// @brief Reads the information ("light-weight" data) from the parallel file
-            /// @param file The file to read from
-            /// @author WVN
-            virtual void ReadInfoFromFile(ParallelFile& file) override final;
-            
             /// @brief Reads the data ("heavy-weight" data) from the parallel file
             /// @param file The file to read from
             /// @author WVN
-            virtual void ReadDataFromFile(ParallelFile& file) override final;
-            
-            /// @brief Writes the information ("light-weight" data) to the parallel file
-            /// @param file The file to write to
-            /// @author WVN
-            virtual void WriteInfoToFile(ParallelFile& file) override final;
+            virtual void ReadFromFile(ParallelFile& file) override final;
             
             /// @brief Writes the data ("heavy-weight" data) to the parallel file
             /// @param file The file to write to
             /// @author WVN
-            virtual void WriteDataToFile(ParallelFile& file) override final;
+            virtual void WriteToFile(ParallelFile& file) override final;
 
         private:
             

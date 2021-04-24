@@ -28,25 +28,9 @@ namespace cmf
         return ComponentName({});
     }
     
-    void ICmfMeshArray::SetRequiredPrereqtuisiteDataBaseObjects(void)
-    {
-        objectsRequiredBeforeAddingToDataBase.Add(arrayHandler);
-        objectsRequiredBeforeAddingToDataBase.Add(arrayHandler->Mesh());
-    }
-    
-    void ICmfMeshArray::SetAutomaticallyAddedObjects(void)
-    {
-        
-    }
-    
     ParallelGroup* ICmfMeshArray::GetDatabaseParallelGroup(void)
     {
         return this->arrayHandler->Mesh()->GetGroup();
-    }
-    
-    std::string ICmfMeshArray::DataBaseName(void)
-    {
-        return strformat("{}{}{}", arrayHandler->Mesh()->GetTitle(), CmfDataBase::GetDataBaseDlimiter(), variableName);
     }
     
     std::string& ICmfMeshArray::ComponentName(std::initializer_list<int> index)

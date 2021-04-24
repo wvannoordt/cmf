@@ -23,23 +23,6 @@ namespace cmf
             /// @author WVN
             virtual ~ICmfDataBaseReadWriteObject(void){};
             
-            /// @brief Returns a string that uniquely identifies the current object in a database
-            /// @author WVN
-            virtual std::string DataBaseName(void)=0;
-            
-            /// @brief Checks if the given list contains all of the prerequisite objects for the current object to be added
-            /// @param listToCheck The list of objects to check
-            ///@author WVN
-            bool RequiredObjectsAreInList(ObjectList<ICmfDataBaseReadWriteObject*>& listToCheck, std::string& missingObjects);
-            
-            /// @brief Adds the set of prerequisite objects to objectsRequiredBeforeAddingToDataBase
-            ///@author WVN
-            virtual void SetRequiredPrereqtuisiteDataBaseObjects(void)=0;
-            
-            /// @brief Adds the set of automatically added objects to objectsToAutomaticallyAddWhenAddingToDataBase
-            ///@author WVN
-            virtual void SetAutomaticallyAddedObjects(void)=0;
-            
             /// @brief Indicates whether the object has a ParallelGroup associated with it. Default implementation returns true for safety.
             /// If this returns false, it is assumed that the object is treated in parallel
             ///@author WVN
@@ -49,25 +32,15 @@ namespace cmf
             /// @author WVN
             virtual ParallelGroup* GetDatabaseParallelGroup(void);
             
-            /// @brief Reads the information ("light-weight" data) from the parallel file
+            /// @brief Reads the object from the parallel file
             /// @param file The file to read from
             /// @author WVN
-            virtual void ReadInfoFromFile(ParallelFile& file);
+            virtual void ReadFromFile(ParallelFile& file);
             
-            /// @brief Reads the data ("heavy-weight" data) from the parallel file
-            /// @param file The file to read from
-            /// @author WVN
-            virtual void ReadDataFromFile(ParallelFile& file);
-            
-            /// @brief Writes the information ("light-weight" data) to the parallel file
+            /// @brief Writes the object to the parallel file
             /// @param file The file to write to
             /// @author WVN
-            virtual void WriteInfoToFile(ParallelFile& file);
-            
-            /// @brief Writes the data ("heavy-weight" data) to the parallel file
-            /// @param file The file to write to
-            /// @author WVN
-            virtual void WriteDataToFile(ParallelFile& file);
+            virtual void WriteToFile(ParallelFile& file);
         
         protected:
             ///@brief A list of database objects that must be found in a database before this object is allowed to be added.

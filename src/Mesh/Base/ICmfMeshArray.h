@@ -62,10 +62,6 @@ namespace cmf
             /// @author WVN
             BinaryExpression operator / (ICmfMeshArray& rhs);
             
-            /// @brief Returns a string that uniquely identifies the current object in a database
-            /// @author WVN
-            virtual std::string DataBaseName(void) override final;
-            
             /// @brief Allows for assignment of array values based on an expression involving other arrays
             /// @author WVN
             ICmfMeshArray& operator = (const SymbolicEvaluation& rhsExpression);
@@ -78,14 +74,6 @@ namespace cmf
             /// @brief Returns the name of a given sub-component in the rank-zero case
             /// @author WVN0
             std::string& ComponentName(void);
-            
-            /// @brief Adds the set of prerequisite objects to objectsRequiredBeforeAddingToDataBase
-            ///@author WVN
-            virtual void SetRequiredPrereqtuisiteDataBaseObjects(void) override final;
-            
-            /// @brief Adds the set of automatically added objects to objectsToAutomaticallyAddWhenAddingToDataBase
-            ///@author WVN
-            virtual void SetAutomaticallyAddedObjects(void) override final;
             
         protected:
             

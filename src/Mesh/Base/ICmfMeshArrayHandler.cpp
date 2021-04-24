@@ -29,21 +29,6 @@ namespace cmf
         return this->Mesh()->GetGroup();
     }
     
-    void ICmfMeshArrayHandler::SetRequiredPrereqtuisiteDataBaseObjects(void)
-    {
-        objectsRequiredBeforeAddingToDataBase.Add(baseMesh);
-    }
-    
-    void ICmfMeshArrayHandler::SetAutomaticallyAddedObjects(void)
-    {
-        
-    }
-    
-    std::string ICmfMeshArrayHandler::DataBaseName(void)
-    {
-        return strformat("{}{}{}", baseMesh->GetTitle(), CmfDataBase::GetDataBaseDlimiter(), "[handler]");
-    }
-    
     ICmfMesh* ICmfMeshArrayHandler::Mesh(void)
     {
         return baseMesh;

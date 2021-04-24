@@ -88,7 +88,7 @@ namespace cmf
             ///contain the object
             ///@param idx Index for the list
             ///@author WVN
-            size_t& operator [] (listType idx)
+            size_t operator [] (listType idx)
             {
                 if (!this->Has(idx)) return -1;
                 return objIndexList[idx];

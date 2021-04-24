@@ -19,8 +19,6 @@ namespace cmf
         Allocate();
         DefinePointerMap();
         CreateExchangePattern();
-        SetRequiredPrereqtuisiteDataBaseObjects();
-        SetAutomaticallyAddedObjects();
     }
     
     void CartesianMeshArray::Allocate(void)
