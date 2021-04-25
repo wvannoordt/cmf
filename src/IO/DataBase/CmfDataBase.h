@@ -72,6 +72,9 @@ namespace cmf
             /// @brief A list of the object names
             ObjectList<std::string> objectNames;
             
+            /// @brief A list of the object names
+            ObjectList<std::string> objectFilenames;
+            
             /// @brief The parallel group that the database is defined for (in practice, the parallelGroup that the contained mesh is defined over)
             ParallelGroup* group;
     };

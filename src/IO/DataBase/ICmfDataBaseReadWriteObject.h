@@ -43,12 +43,6 @@ namespace cmf
             virtual void WriteToFile(ParallelFile& file);
         
         protected:
-            ///@brief A list of database objects that must be found in a database before this object is allowed to be added.
-            ///For example, a mesh array may not be added to a database without the mesh first being in the database
-            ObjectList<ICmfDataBaseReadWriteObject*> objectsRequiredBeforeAddingToDataBase;
-            
-            /// @brief a list of objects that are automatically added when this object is added to a database.
-            ObjectList<ICmfDataBaseReadWriteObject*> objectsToAutomaticallyAddWhenAddingToDataBase;
             
             friend class CmfDataBase;
     };

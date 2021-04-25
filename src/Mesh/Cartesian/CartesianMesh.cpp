@@ -5,6 +5,8 @@
 #include "Utils.hx"
 #include "BlockIndexing.h"
 #include "BlockArray.h"
+#include "StringUtils.h"
+
 namespace cmf
 {
     CartesianMesh::CartesianMesh(CartesianMeshInputInfo input) : ICmfMesh(input, MeshType::Cartesian)
@@ -233,7 +235,9 @@ namespace cmf
 
     void CartesianMesh::WriteToFile(ParallelFile& file)
     {
-        
+        file.Write("CartesianMesh");
+        file.Write(strformat("title:{}", title));
+        file.Write(strformat("numBlocks:{}", blocks->Size()));
     }
     
     size_t CartesianMesh::Size(void)

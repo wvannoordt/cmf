@@ -18,6 +18,12 @@
 #define CMFMAX(a,b) ((a)>(b)?(a):(b))
 #define CMFMIN(a,b) ((a)<(b)?(a):(b))
 
+static inline bool MachineIsBigEndian(void)
+{
+    int num = 1;
+    return (! ( *(char *)&num == 1 ));
+}
+
 /// @brief Transforms 1-D index into 2-D or 3-D index. For example, if idx is 3, CMF_DIM is 2, and dims = (2, 2), then ijk = (0, 1) \see Idx2Dim
 /// @pre size of dims and ijk must be equal to CMF_DIM \see Config.h
 /// @param idx 1-D index

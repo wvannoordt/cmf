@@ -163,4 +163,14 @@ namespace cmf
         WriteLine(4, "Destroying variable \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\"");
         Cmf_Free(ptr);
     }
+    
+    void CartesianMeshArray::ReadFromFile(ParallelFile& file)
+    {
+        
+    }
+    
+    void CartesianMeshArray::WriteToFile(ParallelFile& file)
+    {
+        file.Write("CartesianMeshArray::WriteToFile");
+    }
 }

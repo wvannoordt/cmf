@@ -175,6 +175,58 @@ namespace cmf
         strstream << subStrings[lev];
         return strstream.str();
     }
+    
+    /// @brief Helper function for strformat
+    /// @author WVN
+    template <typename T> static inline void strunformat_recursive (std::string data, std::string& templateStr, std::vector<std::string>& subStrings, int& lev, T& t)
+    {
+        std::string& startToken = subStrings[lev];
+        std::string& endToken = subStrings[lev+1];
+        size_t spos = data.find(startToken);
+        if (spos==std::string::npos) return;
+        size_t epos = data.find(endToken, spos+startToken.length());
+        if (endToken=="") epos = data.length();
+        if (epos==std::string::npos) return;
+        size_t subStrStart = spos+startToken.length();
+        size_t subStrLength = epos-spos-startToken.length();
+        t = data.substr(subStrStart, subStrLength);
+        lev++;
+    }
+    
+    /// @brief Helper function for unstrformat
+    /// @author WVN
+    template <typename T, typename... Ts> static inline void strunformat_recursive (std::string data, std::string& templateStr, std::vector<std::string>& subStrings, int& lev, T& t, Ts&... ts)
+    {
+        std::string& startToken = subStrings[lev];
+        std::string& endToken = subStrings[lev+1];
+        size_t spos = data.find(startToken);
+        if (spos==std::string::npos) return;
+        size_t epos = data.find(endToken, spos+startToken.length());
+        if (endToken=="") epos = data.length();
+        if (epos==std::string::npos) return;
+        size_t subStrStart = spos+startToken.length();
+        size_t subStrLength = epos-spos-startToken.length();
+        t = data.substr(subStrStart, subStrLength);
+        std::string dataSubStr = data.substr(epos, data.length()-epos);
+        lev++;
+        strunformat_recursive(dataSubStr, templateStr, subStrings, lev, ts...);
+    }
+    
+    /// @brief Un-formats a string arbitrarily (parses based on pattern). This function is not guaranteed to work for complex parsing
+    /// @param templateStr The template string.
+    /// @param ts The arguments to populate, must be strings
+    /// @author WVN
+    template <typename... Ts> static inline void strunformat (std::string data, std::string templateStr, Ts&... ts)
+    {
+        std::vector<std::string> subStrings;
+        GetFormatSubstrings(subStrings, templateStr);
+        if ((sizeof...(Ts))!=(subStrings.size()-1))
+        {
+            CmfError("Formatted string \"" + templateStr + "\" has wrong number of placeholders!");
+        }
+        int lev = 0;
+        strunformat_recursive(data, templateStr, subStrings, lev, ts...);
+    }
 }
 
 #endif

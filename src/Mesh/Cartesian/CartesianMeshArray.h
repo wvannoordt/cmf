@@ -128,6 +128,16 @@ namespace cmf
             /// @brief Returns the mesh handler
             CartesianMesh* Mesh(void);
             
+            /// @brief Reads the data from the parallel file
+            /// @param file The file to read from
+            /// @author WVN
+            virtual void ReadFromFile(ParallelFile& file) override final;
+            
+            /// @brief Writes the data to the parallel file
+            /// @param file The file to write to
+            /// @author WVN
+            virtual void WriteToFile(ParallelFile& file) override final;
+            
         private:
             
             /// @brief Allocates the unferlying pointer
