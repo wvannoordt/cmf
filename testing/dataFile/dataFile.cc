@@ -26,22 +26,9 @@ int main(int argc, char** argv)
         cmf::CartesianMesh domain(inputInfo);
         cmf::CmfDataBase outputDatabase("output");
         auto& var = domain.DefineVariable("data");
-        outputDatabase << domain;
+        auto& item = outputDatabase["mesh"];
         
         outputDatabase.Write(dataFileTitle);
-    }
-
-    {
-        
-        // cmf::CartesianMesh domain(inputInfo);
-        // cmf::CmfDataBase inputDatabase("output");
-        // inputDatabase.Read("testDatabase");
-        // outputDatabase >> domain;
-        // outputDatabase >> var;
-        // 
-        // cmf::CartesianMesh* domain;
-        
-        
     }
     
     return 0;

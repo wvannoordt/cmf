@@ -6,6 +6,8 @@
 #include "ParallelGroup.h"
 #include "Path.h"
 #include "ParallelFile.h"
+#include "Timestamp.h"
+
 namespace cmf
 {
     CmfDataBase::CmfDataBase(void)
@@ -28,54 +30,28 @@ namespace cmf
         Builder(".", group_in);
     }
     
-    void CmfDataBase::AddDataBaseObject(ICmfDataBaseReadWriteObject* newObject, std::string newObjectName)
-    {
-        
-        //Check to see that the new object is associated with the same parallel group as the database
-        if (newObject->HasParallelGroup())
-        {
-            // Throw error if this object belongs to a different parallel group
-            ParallelGroup* objectGroup = newObject->GetDatabaseParallelGroup();
-            if (objectGroup != group)
-            {
-                CmfError(strformat("Cannot add object \"{}\" to database: object is associated with ParallelGroup {}, but database is associated with ParallelGroup {}", newObjectName, objectGroup, group));
-            }
-        }
-        
-        //Skip if database already has object (in the case the multiple objects require the same object)
-        if (!databaseObjects.Has(newObject))
-        {
-            databaseObjects.Add(newObject);
-            
-            //Check for name collisions
-            if (objectNames.Has(newObjectName))
-            {
-                CmfError(strformat("Attempted to add database object with duplicate token \"{}\"", newObjectName));
-            }
-            
-            //Add object and update the object hash
-            objectNames.Add(newObjectName);
-            this->AugmentHash(newObjectName);
-            WriteLine(4, strformat("Added object \"{}\" to database", newObjectName));
-        }
-        
-        //Crash if the database is out of sync on the associated parallel group
-        if (!group->HasSameValue(this->GetHash()))
-        {
-            CmfError("Database hash check failed: this means that some ranks are writing different objects to the same database");
-        }
-        group->Synchronize();
-    }
-    
-    CmfDataBase& CmfDataBase::operator << (ICmfDataBaseReadWriteObject& newObject)
-    {
-        this->AddDataBaseObject(&newObject, "BROKEN FOR NOW");
-        return *this;
-    }
-    
     CmfDataBase::~CmfDataBase(void)
     {
-        
+        for (auto& item:databaseItems)
+        {
+            delete item;
+        }
+    }
+    
+    CmfDataBaseItem& CmfDataBase::operator [] (std::string itemName)
+    {
+        if (objectNames.Has(itemName))
+        {
+            size_t idx = objectNames[itemName];
+            return *(databaseItems[idx]);
+        }
+        else
+        {
+            objectNames.Add(itemName);
+            CmfDataBaseItem* newItem = new CmfDataBaseItem(itemName, NULL);
+            databaseItems.Add(newItem);
+            return *newItem;
+        }
     }
     
     void CmfDataBase::Builder(std::string directory_in, ParallelGroup* group_in)
@@ -95,12 +71,16 @@ namespace cmf
     {
         ParallelFile infoFile(this->group);
         infoFile.Open(infoFileName);
-        for (auto& obj:databaseObjects)
+        std::string timeStampStr = strformat("Database {} written on: {}", infoFileName, GetTimeString());
+        infoFile.Write(timeStampStr);
+        infoFile.Write("[database]");
+        for (auto& item:databaseItems)
         {
-            size_t idx = databaseObjects[obj];
-            std::string obname = objectNames[idx];
-            infoFile.Write(obname);
+            infoFile.Write("[object]");
+            infoFile.Write("name:", item->Name());
+            infoFile.Write("[/object]");
         }
+        infoFile.Write("[database]");
         infoFile.Close();
     }
     
@@ -113,7 +93,7 @@ namespace cmf
         
         this->WriteDataBaseInfoFile(infoFilePath.Str());
         
-        for (auto& obj:databaseObjects)
+        for (auto& item:databaseItems)
         {
             Path infoFilePath(directory);
             std::string objFilename = databaseTitle + ".csd";
@@ -121,7 +101,6 @@ namespace cmf
             
             // obj->WriteToFile(outputFile);
         }
-        
         group->Synchronize();
     }
 }

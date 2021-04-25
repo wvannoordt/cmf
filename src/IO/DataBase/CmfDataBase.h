@@ -6,6 +6,7 @@
 #include "ObjectList.h"
 #include "ICmfHashable.h"
 #include "ParallelGroup.h"
+#include "CmfDataBaseItem.h"
 namespace cmf
 {
     /// @brief A class that represents a complete state of CMF. This can be written to disk or read from disk, and contains
@@ -38,16 +39,11 @@ namespace cmf
             /// @author WVN
             ~CmfDataBase(void);
             
-            /// @brief Writes the database information file
-            /// @param infoFileName The name of the database information file
+            /// @brief Returns the CmfDataBaseItem with the provided name, or creates a new one pointing to a NULL ICmfDataBaseReadWriteObject if the
+            /// item doesn't exist in the list
+            /// @param itemName the name of the desired item
             /// @author WVN
-            void WriteDataBaseInfoFile(std::string infoFileName);
-            
-            /// @brief Steam operator for adding object to database
-            /// @param os The current stream object
-            /// @param newObject The object to add to the database
-            /// @author WVN
-            CmfDataBase& operator<<(ICmfDataBaseReadWriteObject& newObject);
+            CmfDataBaseItem& operator [] (std::string itemName);
             
             /// @brief Writes out the database using the given title. The title should not include a file extension
             /// as multiple files may be written. The title should also not include the directory
@@ -56,11 +52,10 @@ namespace cmf
         
         private:
             
-            /// @brief Adds an object to the database
-            /// @param newObject The object to add to the database
-            /// @param newObjectName The name of the new object
+            /// @brief Writes the database information file
+            /// @param infoFileName The name of the database information file
             /// @author WVN
-            void AddDataBaseObject(ICmfDataBaseReadWriteObject* newObject, std::string newObjectName);
+            void WriteDataBaseInfoFile(std::string infoFileName);
             
             /// @brief The builder function
             /// @param directory The directory_in where this data file will output to. It is possible that the object will create subdirectories
@@ -71,8 +66,8 @@ namespace cmf
             /// @brief The directory where files (and possible subdirectories) will be output
             std::string directory;
             
-            /// @brief a list of objects that are contained within the current database
-            ObjectList<ICmfDataBaseReadWriteObject*> databaseObjects;
+            /// @brief a list of items that are contained within the current database
+            ObjectList<CmfDataBaseItem*> databaseItems;
             
             /// @brief A list of the object names
             ObjectList<std::string> objectNames;
