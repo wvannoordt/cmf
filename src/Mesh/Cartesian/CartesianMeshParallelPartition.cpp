@@ -4,6 +4,7 @@
 #include "CmfError.h"
 #include "ParallelGroup.h"
 #include "BlockVtk.h"
+#include "StringUtils.h"
 namespace cmf
 {
     CartesianMeshParallelPartition::CartesianMeshParallelPartition(CartesianMesh* mesh_in, CartesianMeshParallelPartitionInfo& inputInfo)
@@ -70,7 +71,7 @@ namespace cmf
     {
         if (partition.find(node) == partition.end())
         {
-            CmfError("Attempted to fetch a non-existent node on Cartesian mesh \"" + mesh->GetTitle() + "\".");
+            CmfError(strformat("Attempted to fetch a non-existent node {} on Cartesian mesh \"{}\"", node, mesh->GetTitle()));
             return false;
         }
         else

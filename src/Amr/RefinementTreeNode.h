@@ -11,6 +11,7 @@
 #include "RefinementConstraint.h"
 #include "BlockIterator.h"
 #include "VtkFile.h"
+#include "ParallelFile.h"
 #include <algorithm>
 
 namespace cmf
@@ -208,6 +209,16 @@ namespace cmf
             /// @brief Returns the list of neighbors
             /// @author WVN
             std::vector<std::pair<RefinementTreeNode*, NodeEdge>>& Neighbors(void);
+            
+            /// @brief Reads tree descriptor from the parallel file
+            /// @param file The file to read from
+            /// @author WVN
+            void ReadFromFile(ParallelFile& file);
+            
+            /// @brief Writes the tree descriptor to the parallel file
+            /// @param file The file to write to
+            /// @author WVN
+            void WriteToFile(ParallelFile& file);
             
         private:
             /// @brief Locks the current node from being modified by recursive calls.

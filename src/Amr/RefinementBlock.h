@@ -10,6 +10,8 @@
 #include "RefinementConstraint.h"
 #include "IBlockIterable.h"
 #include "ICmfHashable.h"
+#include "ParallelFile.h"
+
 namespace cmf
 {
     class RefinementTreeNode;
@@ -156,6 +158,16 @@ namespace cmf
             /// @brief Returns the refinement constraint type
             /// @author WVN
             RefinementConstraint::RefinementConstraint GetRefinementConstraintType(void);
+            
+            /// @brief Reads tree descriptor from the parallel file
+            /// @param file The file to read from
+            /// @author WVN
+            void ReadFromFile(ParallelFile& file);
+            
+            /// @brief Writes the tree descriptor to the parallel file
+            /// @param file The file to write to
+            /// @author WVN
+            void WriteToFile(ParallelFile& file);
             
         private:
             

@@ -315,6 +315,20 @@ namespace cmf
             subNodes[i]->ResolveNewRefinementWithNeighbors(recursiveLevel);
         }
     }
+    
+    void RefinementTreeNode::ReadFromFile(ParallelFile& file)
+    {
+        
+    }
+    
+    void RefinementTreeNode::WriteToFile(ParallelFile& file)
+    {
+        file.Write(strformat("<{}::{}::{}>", this->GetLevel(), (int)subNodeRefinementType, numSubNodes));
+        for (int i = 0; i < numSubNodes; i++)
+        {
+            subNodes[i]->WriteToFile(file);
+        }
+    }
 
     void RefinementTreeNode::GenerateNeighborsOfChildAllNodes(void)
     {

@@ -3,6 +3,7 @@
 #include "CmfScreen.h"
 #include "BlockIterator.h"
 #include "BlockFilters.h"
+#include "CmfPrint.h"
 namespace cmf
 {
     CartesianUniformPartition::CartesianUniformPartition(void)

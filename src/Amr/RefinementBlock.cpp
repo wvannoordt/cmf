@@ -249,11 +249,30 @@ namespace cmf
             for (int i = 0; i < totalNumTrunks; i++)
             {
                 trunks[i]->Destroy();
-                WriteLine(8, "Delete block " + PtrToStr(trunks[i]));
                 delete trunks[i];
             }
             delete[] trunks;
         }
+    }
+    
+    void RefinementBlock::ReadFromFile(ParallelFile& file)
+    {
+        
+    }
+    
+    void RefinementBlock::WriteToFile(ParallelFile& file)
+    {
+        file.Write("<tree>");
+        file.Write(strformat("Hash: {}", this->GetHash()));
+        file.Write(strformat("Dim: {}", CMF_DIM));
+        file.Write(strformat("blocks: ({}, {}, {})", blockDim[0], blockDim[1], CMF_IS3D?blockDim[CMF_DIM-1]:1));
+        file.Write("<treedata>");
+        for (int i = 0; i < totalNumTrunks; i++)
+        {
+            trunks[i]->WriteToFile(file);
+        }
+        file.Write("</treedata>");
+        file.Write("</tree>");
     }
 
     //This is for debugging only. For any real VTK output, an externl iterator should be used.

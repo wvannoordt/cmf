@@ -238,6 +238,7 @@ namespace cmf
         file.Write("CartesianMesh");
         file.Write(strformat("title:{}", title));
         file.Write(strformat("numBlocks:{}", blocks->Size()));
+        this->blocks->WriteToFile(file);
     }
     
     size_t CartesianMesh::Size(void)

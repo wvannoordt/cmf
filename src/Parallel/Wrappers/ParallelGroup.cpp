@@ -2,6 +2,8 @@
 #include "CmfScreen.h"
 #include "CmfGC.h"
 #include "cmf.h"
+#include "StringUtils.h"
+#include "CmfPrint.h"
 namespace cmf
 {
     ParallelGroup globalGroup;
@@ -60,12 +62,14 @@ namespace cmf
         }
         if (handleMpiFinalizationInternally)
         {
-            int flag;
+            int flag = 0;
             CMF_MPI_CHECK(MPI_Finalized(&flag));
             if (!flag)
             {
                 WriteLine(2, "Finalize MPI");
-                CMF_MPI_CHECK(MPI_Finalize());
+#if(CMF_PARALLEL)
+                MPI_Finalize();
+#endif
             }
         }
         if (deallocWorkArray)
