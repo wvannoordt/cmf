@@ -39,7 +39,7 @@ namespace cmf
         }
     }
     
-    CmfDataBaseItem& CmfDataBase::operator [] (std::string itemName)
+    CmfDataBaseItem& CmfDataBase::GetDataBaseItemAndAddIfNotFound(std::string itemName)
     {
         if (objectNames.Has(itemName))
         {
@@ -57,6 +57,11 @@ namespace cmf
         }
     }
     
+    CmfDataBaseItem& CmfDataBase::operator [] (std::string itemName)
+    {
+        return this->GetDataBaseItemAndAddIfNotFound(itemName);
+    }
+    
     void CmfDataBase::Builder(std::string directory_in, ParallelGroup* group_in)
     {
         group = group_in;
@@ -68,6 +73,29 @@ namespace cmf
             CmfError("Database hash check failed: this is likely because different ranks are attempting to write a database in separate directories");
         }
         group->Synchronize();
+    }
+    
+    std::string CmfDataBase::GetValidObjectsAsString(void)
+    {
+        std::string output = "";
+        int i = 0;
+        for (auto obj:databaseItems)
+        {
+            if (obj->Filename() != CmfDataBaseItem::NullFileName())
+            {
+                std::string prefix = ((i++==0)?"":"\n");
+                output += (prefix+obj->Name());
+            }
+        }
+        return output;
+    }
+    
+    std::string CmfDataBase::GetDataBaseInfoFileName(std::string databaseTitle)
+    {
+        Path infoFilePath(directory);
+        std::string filename = databaseTitle + ".ptl";
+        infoFilePath += filename;
+        return infoFilePath.Str();
     }
     
     void CmfDataBase::WriteDataBaseInfoFile(std::string infoFileName)
@@ -94,6 +122,30 @@ namespace cmf
         infoFile.Close();
     }
     
+    void CmfDataBase::ReadDataBaseInfoFile(std::string infoFileName)
+    {
+        PTL::PropertyTree infoTree;
+        infoTree.Read(infoFileName);
+        int numDataBaseObjects = infoTree["DataBaseInfo"]["numObjects"];
+        bool inputDataBaseIsBigEndian = infoTree["DataBaseInfo"]["bigEndian"];
+        if (inputDataBaseIsBigEndian != MachineIsBigEndian())
+        {
+            CmfError(strformat("Attempted to read a {}-endian database on a {}-endian machine: operation currently not supported.", inputDataBaseIsBigEndian?"big":"little", MachineIsBigEndian()?"big":"little"));
+        }
+        auto& objects = infoTree["Objects"];
+        for (auto& objptr:objects)
+        {
+            auto& obj = *objptr;
+            std::string directoryName = obj["directory"];
+            std::string objFilename = obj["filename"];
+            std::string itemName = obj["name"];
+            auto& item = GetDataBaseItemAndAddIfNotFound(itemName);
+            Path filePath(this->directory);
+            filePath += objFilename;
+            item.Filename() = filePath.Str();
+        }
+    }
+    
     void CmfDataBase::Write(std::string databaseTitle)
     {
         WriteLine(1, strformat("Outputting database: \"{}\"", databaseTitle));
@@ -110,10 +162,8 @@ namespace cmf
         }
         
         //Create the main database information file
-        Path infoFilePath(directory);
-        std::string filename = databaseTitle + ".ptl";
-        infoFilePath += filename;
-        this->WriteDataBaseInfoFile(infoFilePath.Str());
+        std::string infoFileName = this->GetDataBaseInfoFileName(databaseTitle);
+        this->WriteDataBaseInfoFile(infoFileName);
         
         //Loop through the objects again and output them to files
         for (auto& item:databaseItems)
@@ -124,12 +174,43 @@ namespace cmf
             if (item->Object() == NULL)
             {
                 objectFile.Close();
-                CmfError(strformat("Attempted to write object \"{}\" to \"{}\", but found a numm object", objectNames[idx], item->Filename()));
+                CmfError(strformat("Attempted to write object \"{}\" to \"{}\", but found a null object", objectNames[idx], item->Filename()));
             }
             objectFile.Open(item->Filename());
             item->Object()->WriteToFile(objectFile);
             objectFile.Close();
         }
+        group->Synchronize();
+    }
+    
+    void CmfDataBase::Read(std::string databaseTitle)
+    {
+        WriteLine(1, strformat("Reading database: \"{}\"", databaseTitle));
+        
+        //Read the database information file
+        std::string infoFileName = this->GetDataBaseInfoFileName(databaseTitle);
+        this->ReadDataBaseInfoFile(infoFileName);
+        
+        //Loop through the objects and read
+        for (auto& item:databaseItems)
+        {
+            if (item->Filename() == CmfDataBaseItem::NullFileName())
+            {
+                std::string errorMessage = strformat("Attempted to read object \"{}\" from database \"{}\" in directory \"{}\", but object was not found.", item->Name(), databaseTitle, this->directory);
+                errorMessage += " The following objects are in this database:\n" + this->GetValidObjectsAsString();
+                CmfError(errorMessage);
+            }
+            
+            if (item->Object() != NULL)
+            {
+                WriteLine(3, strformat("Reading: \"{}\" from \"{}\"", item->Name(), item->Filename()));
+                ParallelFile objectFile(this->group);
+                objectFile.Open(item->Filename());
+                item->Object()->ReadFromFile(objectFile);
+                objectFile.Close();
+            }
+        }
+        
         group->Synchronize();
     }
 }

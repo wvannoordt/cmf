@@ -230,7 +230,10 @@ namespace cmf
     
     void CartesianMesh::ReadFromFile(ParallelFile& file)
     {
-        
+        std::string dummy = file.Read();
+        dummy = file.Read();
+        dummy = file.Read();
+        this->blocks->ReadFromFile(file);
     }
 
     void CartesianMesh::WriteToFile(ParallelFile& file)

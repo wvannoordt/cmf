@@ -107,8 +107,8 @@ namespace cmf
             /// @brief The size of a single element
             size_t elementSize;
             
-            /// @brief The base pointer
-            void* ptr;
+            /// @brief The base pointer or pointers. In general, one mesh might have multiple pointers (e.g. AMR)
+            std::vector<void*> pointers;
     };
 }
 

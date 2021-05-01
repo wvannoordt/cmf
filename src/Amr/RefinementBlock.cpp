@@ -168,6 +168,30 @@ namespace cmf
         }
         newlyRefinedNodes.clear();
     }
+    
+    void RefinementBlock::RefineNodes(std::vector<RefinementTreeNode*>& nodes, char refineType)
+    {
+        std::vector<char> vrefineTypes;
+        vrefineTypes.resize(nodes.size(), refineType);
+        this->RefineNodes(nodes, vrefineTypes);
+    }
+    
+    void RefinementBlock::RefineNodes(std::vector<RefinementTreeNode*>& nodes, std::vector<char>& refineTypes)
+    {
+        if (nodes.size() != refineTypes.size())
+        {
+            CmfError(strformat("Attempted call to RefinementBlock::RefineNodes with inconsistent node list size ({}) and refine list size ({})", nodes.size(), refineTypes.size()));
+        }
+        int i = 0;
+        for (auto& n:nodes)
+        {
+            if (n->IsTerminal())
+            {
+                n->Refine(refineTypes[i++]);
+            }
+        }
+        this->PostRefinementCallbacks();
+    }
 
     void RefinementBlock::RefineAt(double coords[CMF_DIM], char refinementType)
     {
@@ -257,7 +281,13 @@ namespace cmf
     
     void RefinementBlock::ReadFromFile(ParallelFile& file)
     {
-        
+        std::string synchError = "RefinementBlock::ReadFromFile synchronization error, expecting line \"{}\", but found \"{}\"";
+        std::string line = "";
+        line = file.Read();
+        if (line != "<tree>")
+        {
+            CmfError(strformat(synchError, "<tree>", line));
+        }
     }
     
     void RefinementBlock::WriteToFile(ParallelFile& file)

@@ -30,7 +30,8 @@ namespace cmf
             handler->mesh->title + "\" over " +
             std::to_string(numBlocksToAllocate) + " blocks. Total size: " +
             NiceCommaString(totalAllocSize));
-        ptr = Cmf_Alloc(totalAllocSize);
+        void* basePointer = Cmf_Alloc(totalAllocSize);
+        this->pointers.push_back(basePointer);
     }
     
     CartesianMesh* CartesianMeshArray::Mesh(void)
@@ -133,9 +134,10 @@ namespace cmf
     void CartesianMeshArray::DefinePointerMap(void)
     {
         size_t pitch = GetArraySizePerBlock();
+        void* basePointer = this->pointers[0];
         for (size_t i = 0; i < definedNodes.size(); i++)
         {
-            pointerMap.insert({definedNodes[i],(void*)((char*)ptr + pitch*i)});
+            pointerMap.insert({definedNodes[i],(void*)((char*)basePointer + pitch*i)});
         }
     }
     
@@ -161,7 +163,10 @@ namespace cmf
     void CartesianMeshArray::Destroy(void)
     {
         WriteLine(4, "Destroying variable \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\"");
-        Cmf_Free(ptr);
+        for (auto ptr:this->pointers)
+        {
+            Cmf_Free(ptr);
+        }
     }
     
     void CartesianMeshArray::ReadFromFile(ParallelFile& file)

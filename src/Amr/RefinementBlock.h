@@ -66,6 +66,18 @@ namespace cmf
             /// @author WVN
             void RefineAt(double coords[CMF_DIM], char refinementType);
             
+            /// @brief Refines the list of the provided nodes and calls all post-refinement callback functions. This is the preferred way of refining large numbers of nodes.
+            /// @param nodes A list of nodes to refine
+            /// @param refineType the refinement type to use
+            /// @author WVN
+            void RefineNodes(std::vector<RefinementTreeNode*>& nodes, char refineType);
+            
+            /// @brief Refines the list of the provided nodes and calls all post-refinement callback functions. This is the preferred way of refining large numbers of nodes.
+            /// @param nodes A list of nodes to refine
+            /// @param refineTypes the list of refinement types to use
+            /// @author WVN
+            void RefineNodes(std::vector<RefinementTreeNode*>& nodes, std::vector<char>& refineTypes);
+            
             /// @brief Returns the node that contains the provided coordinates, or NULL if none are found
             /// @param coords The coordinates to retrieve at
             /// @author WVN
