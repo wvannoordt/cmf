@@ -82,7 +82,7 @@ namespace cmf
         BlockInfo neighborNodeBlockInfo = mesh->GetBlockInfo(neighborNode);
         
         //Compute the size of a single array "element"
-        size_t singleCellSize = meshArray->elementSize;
+        size_t singleCellSize = SizeOfArrayType(meshArray->elementType);
         for (int i = 0; i < meshArray->rank; i++)
         {
             singleCellSize *= meshArray->dims[i];

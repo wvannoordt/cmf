@@ -59,7 +59,7 @@ namespace cmf
 
     }
 
-    BlockIterator BlockIterator::operator++(int dummy)
+    BlockIterator& BlockIterator::operator++(int dummy)
     {
         index++;
         isAtEnd = index>=allNodes->size();

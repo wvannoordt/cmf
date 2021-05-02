@@ -32,7 +32,7 @@ namespace cmf
             data = (arType*)pointerPair.pointer;
             std::vector<int>& arDim = pointerPair.array->dims;
             int elemRankInput = pointerPair.array->rank;
-            size_t elementSizeIn = pointerPair.array->elementSize;
+            size_t elementSizeIn = SizeOfArrayType(pointerPair.array->elementType);
             if (elemRankInput!=elementRank)
             {
                 CmfError("A BlockArray of rank " + std::to_string(elementRank)

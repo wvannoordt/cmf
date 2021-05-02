@@ -15,7 +15,7 @@ namespace cmf
         variableName = info.name;
         if (info.rank > MAX_RANK) CmfError("Rank of variable \"" + variableName + "\" exceeds MAX_RANK (" + std::to_string(MAX_RANK) + "): recompile with greater limit.");
         rank = info.rank;
-        elementSize = info.elementSize;
+        elementType = info.elementType;
         for (int i = 0; i < rank; i++)
         {
             dims.push_back(info.dimensions[i]);

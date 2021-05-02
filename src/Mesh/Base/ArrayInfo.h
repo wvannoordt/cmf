@@ -4,6 +4,7 @@
 #define MAX_RANK 10
 #endif
 #include <string>
+#include "CmfArrayType.h"
 namespace cmf
 {    
     /// @brief Contains (mesh-independent) information about an array
@@ -19,8 +20,8 @@ namespace cmf
         /// @brief The dimensions of the array
         int dimensions[MAX_RANK];
         
-        /// @brief The size of a single element, generally should be one of sizeof(int), sizeof(char), sizeof(double), sizeof(float)
-        size_t elementSize;
+        /// @brief The type of the array elements
+        CmfArrayType::CmfArrayType elementType;
     };
 }
 

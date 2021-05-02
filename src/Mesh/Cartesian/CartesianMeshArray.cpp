@@ -8,30 +8,27 @@ namespace cmf
 {
     CartesianMeshArray::CartesianMeshArray(ArrayInfo info, CartesianMeshArrayHandler* handler_in, NodeFilter_t filter_in) : ICmfMeshArray(info)
     {
+        deleteMeshBuffer = false;
         isAllocated = false;
         handler = handler_in;
         arrayHandler = handler_in;
         filter = filter_in;
         exchangePattern = NULL;
         rank = info.rank;
-        elementSize = info.elementSize;
+        elementType = info.elementType;
         GetDefinedNodes();
         Allocate();
-        DefinePointerMap();
         CreateExchangePattern();
     }
     
     void CartesianMeshArray::Allocate(void)
     {
         size_t numBlocksToAllocate = definedNodes.size();
-        size_t totalAllocSize = numBlocksToAllocate*GetArraySizePerBlock();
-        WriteLine(4, 
-            "Defining variable \"" + variableName + "\" on mesh \"" + 
-            handler->mesh->title + "\" over " +
-            std::to_string(numBlocksToAllocate) + " blocks. Total size: " +
-            NiceCommaString(totalAllocSize));
-        void* basePointer = Cmf_Alloc(totalAllocSize);
-        this->pointers.push_back(basePointer);
+        size_t blockSizeInElements = GetArraySizePerBlock();
+        deleteMeshBuffer = true;
+        meshBuffer = new CartesianMeshBuffer(blockSizeInElements, elementType);
+        meshBuffer->ReserveBlocks(numBlocksToAllocate);
+        DefinePointerMap();
     }
     
     CartesianMesh* CartesianMeshArray::Mesh(void)
@@ -99,7 +96,7 @@ namespace cmf
     
     RefinementBlock* CartesianMeshArray::GetRefinementBlockObject(void)
     {
-        handler->mesh->Blocks();
+        return handler->mesh->Blocks();
     }
     
     std::string CartesianMeshArray::GetFullName(void)
@@ -133,11 +130,10 @@ namespace cmf
     
     void CartesianMeshArray::DefinePointerMap(void)
     {
-        size_t pitch = GetArraySizePerBlock();
-        void* basePointer = this->pointers[0];
-        for (size_t i = 0; i < definedNodes.size(); i++)
+        for (auto& node:definedNodes)
         {
-            pointerMap.insert({definedNodes[i],(void*)((char*)basePointer + pitch*i)});
+            void* newPtr = meshBuffer->Claim();
+            pointerMap.insert({node, newPtr});
         }
     }
     
@@ -152,20 +148,50 @@ namespace cmf
         int rankMult = 1;
         for (int i = 0; i < rank; i++) rankMult *= dims[i];
         for (int d = 0; d < CMF_DIM; d++) numCells *= (handler->mesh->meshDataDim[d] + 2*handler->mesh->exchangeDim[d]);
-        return numCells * elementSize * rankMult;
+        size_t output = numCells * rankMult;
+        return output;
     }
     
     CartesianMeshArray::~CartesianMeshArray(void)
     {
         definedNodes.clear();
+        if (deleteMeshBuffer)
+        {
+            delete meshBuffer;
+        }
     }
     
     void CartesianMeshArray::Destroy(void)
     {
         WriteLine(4, "Destroying variable \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\"");
-        for (auto ptr:this->pointers)
+    }
+    
+    void CartesianMeshArray::GetParallelDataBuffer(ParallelDataBuffer& buf)
+    {
+        size_t currentOffset = 0;
+        size_t blockSizeBytes = meshBuffer->BlockSizeBytes();
+        for (BlockIterator iter(this, this->filter, IterableMode::serial); iter.HasNext(); iter++)
         {
-            Cmf_Free(ptr);
+            auto node = iter.Node();
+            if (pointerMap.find(node) != pointerMap.end())
+            {
+                char* ptr = (char*)pointerMap[node];
+                buf.Add<char>(ptr, blockSizeBytes, currentOffset);
+            }
+            currentOffset += blockSizeBytes;
+        }
+    }
+    
+    void CartesianMeshArray::WriteFilterToFile(ParallelFile& file)
+    {
+        int p = 0;
+        for (BlockIterator iter(this->GetRefinementBlockObject(), BlockFilters::Every, IterableMode::serial); iter.HasNext(); iter++)
+        {
+            if (filter(iter.Node()))
+            {
+                file.Write(p);
+            }
+            p++;
         }
     }
     
@@ -176,6 +202,30 @@ namespace cmf
     
     void CartesianMeshArray::WriteToFile(ParallelFile& file)
     {
-        file.Write("CartesianMeshArray::WriteToFile");
+        file.Write("CartesianMeshArray");
+        file.Write(strformat("mesh: {}", handler->mesh->GetTitle()));
+        file.Write(strformat("name: {}", variableName));
+        file.Write(strformat("type: {}", CmfArrayTypeToString(elementType)));
+        file.Write("<components>");
+        for (auto comp: variableComponentNames)
+        {
+            file.Write(comp);
+        }
+        file.Write("</components>");
+        file.Write(strformat("rank: {}", rank));
+        file.Write("<dims>");
+        for (auto dim: dims)
+        {
+            file.Write(strformat("{}", dim));
+        }
+        file.Write("</dims>");
+        file.Write("<nodes>");
+        this->WriteFilterToFile(file);
+        file.Write("</nodes>");
+        ParallelDataBuffer parallelBuf;
+        this->GetParallelDataBuffer(parallelBuf);
+        file.Write("<data>");
+        file.ParallelWrite(parallelBuf);
+        file.Write("</data>");
     }
 }

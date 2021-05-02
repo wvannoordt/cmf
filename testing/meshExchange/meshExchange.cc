@@ -105,7 +105,7 @@ int main(int argc, char** argv)
     cmf::CartesianMesh domain(inputInfo);
     int ni = 2;
     int nj = 2;
-    auto& var = domain.DefineVariable("data", sizeof(double), {ni, nj});
+    auto& var = domain.DefineVariable("data", cmf::CmfArrayType::CmfDouble, {ni, nj});
     
     FillArray(var, -1.0, true);
     FillArray(var, (double)(cmf::globalGroup.Rank()), false);
@@ -113,11 +113,5 @@ int main(int argc, char** argv)
     if (doOutput) OutputIndividualBlocks(var);
     if (doExchange) var.Exchange();
     if (doOutput) OutputIndividualBlocks(var, true);
-    if (cmf::globalGroup.Size()<2)
-    {
-       cmf::SerialCartesianVtk svtk(domain, "output/data.vtk");
-       svtk << var;
-       svtk.Write();
-    }
     return 0;
 }

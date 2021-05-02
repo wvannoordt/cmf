@@ -11,6 +11,7 @@
 #include "DataExchangePattern.h"
 #include "Typedefs.h"
 #include "BlockInfo.h"
+#include "CartesianMeshBuffer.h"
 namespace cmf
 {
     class CartesianMeshArray;
@@ -140,6 +141,16 @@ namespace cmf
             
         private:
             
+            /// @brief Populates the provided buffer object with the necessary information for parallel IO
+            /// @param buf The buffer to populate
+            /// @author WVN
+            void GetParallelDataBuffer(ParallelDataBuffer& buf);
+            
+            /// @brief Writes the nodes over which this variable is defined to the file
+            /// @param file The file to write to
+            /// @author WVN
+            void WriteFilterToFile(ParallelFile& file);
+            
             /// @brief Allocates the unferlying pointer
             /// @author WVN
             void Allocate(void);
@@ -167,11 +178,17 @@ namespace cmf
             /// @brief Tells whether or not the underlying pointer is allocated or not
             bool isAllocated;
             
-            /// @brief The size of a single element
-            size_t elementSize;
+            /// @brief The type of a single element
+            CmfArrayType::CmfArrayType elementType;
             
             /// @brief The parallel exchange pattern for this mesh array
             DataExchangePattern* exchangePattern;
+            
+            /// @brief indicates if it is necessary to delete the meshBuffer
+            bool deleteMeshBuffer;
+            
+            /// @brief The mesh buffer object
+            CartesianMeshBuffer* meshBuffer;
             
             /// @brief Nodes over which this variable is defined
             std::vector<RefinementTreeNode*> definedNodes;

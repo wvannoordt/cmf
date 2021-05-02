@@ -130,7 +130,7 @@ namespace cmf
             
             /// @brief Returns a pointer to a list of all nodes
             /// @author WVN
-            std::vector<RefinementTreeNode*>* GetAllNodes(void);
+            std::vector<RefinementTreeNode*>* GetAllNodes(void) override;
             
             /// @brief Sets currentIterator to the provided value
             /// @param iter A pointer to the iterator to set

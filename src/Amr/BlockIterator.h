@@ -60,7 +60,7 @@ namespace cmf
             /// @brief Increments the current iterator (postfix).
             /// @param dummy Unused
             /// @author WVN
-            BlockIterator   operator++(int dummy);
+            BlockIterator & operator++(int dummy);
             
             /// @brief Increments the current iterator (prefix).
             /// @author WVN

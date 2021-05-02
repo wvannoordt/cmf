@@ -7,15 +7,7 @@ namespace cmf
     /// @author WVN
     class ICmfMeshBuffer
     {
-        /// @brief Writes the binary mesh data to the provided file
-        /// @param file The file to write to
-        /// @author WVN
-        virtual void WriteMeshDataToFile(ParallelFile& file)=0;
-        
-        /// @brief Reads the binary mesh data from the provided file
-        /// @param file The file to read from
-        /// @author WVN
-        virtual void ReadMeshDataFromFile(ParallelFile& file)=0;
+        //This class might be completely superfluous
     };
 }
 

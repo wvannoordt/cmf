@@ -47,7 +47,7 @@ namespace cmf
         ArrayInfo info;
         info.name = name;
         info.rank = 0;
-        info.elementSize = sizeof(double);
+        info.elementType = CmfArrayType::CmfDouble;
         return DefineVariable(info, BlockFilters::Terminal);
     }
     
@@ -56,29 +56,29 @@ namespace cmf
         ArrayInfo info;
         info.name = name;
         info.rank = 0;
-        info.elementSize = sizeof(double);
+        info.elementType = CmfArrayType::CmfDouble;
         return DefineVariable(info, filter);
     }
     
-    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, size_t elementSize, NodeFilter_t filter)
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, NodeFilter_t filter)
     {
         ArrayInfo info;
         info.name = name;
         info.rank = 0;
-        info.elementSize = elementSize;
+        info.elementType = elementType;
         return DefineVariable(info, filter);
     }
     
-    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, size_t elementSize)
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType)
     {
         ArrayInfo info;
         info.name = name;
         info.rank = 0;
-        info.elementSize = elementSize;
+        info.elementType = elementType;
         return DefineVariable(info, BlockFilters::Terminal);
     }
     
-    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, size_t elementSize, std::initializer_list<int> arrayDimensions, NodeFilter_t filter)
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, std::initializer_list<int> arrayDimensions, NodeFilter_t filter)
     {
         ArrayInfo info;
         info.name = name;
@@ -89,11 +89,11 @@ namespace cmf
         {
             info.dimensions[r++] = dim;
         }
-        info.elementSize = elementSize;
+        info.elementType = elementType;
         return DefineVariable(info, filter);
     }
     
-    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, size_t elementSize, std::initializer_list<int> arrayDimensions)
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, std::initializer_list<int> arrayDimensions)
     {
         ArrayInfo info;
         info.name = name;
@@ -104,7 +104,7 @@ namespace cmf
         {
             info.dimensions[r++] = dim;
         }
-        info.elementSize = elementSize;
+        info.elementType = elementType;
         return DefineVariable(info, BlockFilters::Terminal);
     }
     
@@ -131,7 +131,7 @@ namespace cmf
         }
         info.name = name;
         info.rank = 0;
-        info.elementSize = sizeof(double);
+        info.elementType = CmfArrayType::CmfDouble;
         double coordval[3];
         CartesianMeshArray& coordArray = *(arrayHandler->CreateNewVariable(info, filter));
         for (BlockIterator lb(this, filter, IterableMode::parallel); lb.HasNext(); lb++)

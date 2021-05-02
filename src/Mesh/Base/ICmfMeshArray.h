@@ -6,6 +6,8 @@
 #include "SymbolicEvaluation.h"
 #include "BinaryExpression.h"
 #include "ICmfDataBaseReadWriteObject.h"
+#include "ICmfMeshBuffer.h"
+
 namespace cmf
 {
     class ICmfMesh;
@@ -75,6 +77,10 @@ namespace cmf
             /// @author WVN0
             std::string& ComponentName(void);
             
+            /// @brief Returns the mesh buffer object for this array
+            /// @author WVN
+            virtual ICmfMeshBuffer* MeshBuffer(void) {return NULL;}
+            
         protected:
             
             /// @brief Gets the default component name for a variable
@@ -104,11 +110,8 @@ namespace cmf
             /// @brief The handler for this array
             ICmfMeshArrayHandler* arrayHandler;
             
-            /// @brief The size of a single element
-            size_t elementSize;
-            
-            /// @brief The base pointer or pointers. In general, one mesh might have multiple pointers (e.g. AMR)
-            std::vector<void*> pointers;
+            /// @brief The type of the elements
+            CmfArrayType::CmfArrayType elementType;
     };
 }
 

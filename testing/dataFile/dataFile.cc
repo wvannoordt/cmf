@@ -48,6 +48,7 @@ int main(int argc, char** argv)
         cmf::CartesianMesh domain2(inputInfo);
         
         cmf::CmfDataBase inputDataBase("output");
+        
         inputDataBase["mesh"] >> domain2;
         
         inputDataBase.Read(dataFileTitle);
