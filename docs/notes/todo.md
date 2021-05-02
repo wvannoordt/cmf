@@ -6,6 +6,7 @@ This is a place where items for development can be listed. It feels great to che
  - [x] Make to-do list
  - [x] Design the CMF database I/O model and implement the appropriate base classes
  - [ ] Implement I/O for mesh arrays and block refinement
+ - [ ] Implement CmfMeshDataBuffer class to replace simple void pointer
  - [x] Implement the SeekString() in the parallel file class
  - [ ] Implement allocation, partitioning, and management of GPU arrays
  - [ ] Inter-level operators for block-data exchanges

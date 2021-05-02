@@ -189,7 +189,14 @@ namespace cmf
         if (epos==std::string::npos) return;
         size_t subStrStart = spos+startToken.length();
         size_t subStrLength = epos-spos-startToken.length();
-        t = data.substr(subStrStart, subStrLength);
+        std::stringstream ss;
+        std::string extracted = data.substr(subStrStart, subStrLength);
+        ss << extracted;
+        ss >> t;
+        if (ss.fail())
+        {
+            CmfError("Type-parse failed. \nData: \"" + data + "\"\nTemplate: \"" + templateStr + "\"\nExtracted: \"" + extracted + "\"");
+        }
         lev++;
     }
     
@@ -206,7 +213,14 @@ namespace cmf
         if (epos==std::string::npos) return;
         size_t subStrStart = spos+startToken.length();
         size_t subStrLength = epos-spos-startToken.length();
-        t = data.substr(subStrStart, subStrLength);
+        std::stringstream ss;
+        std::string extracted = data.substr(subStrStart, subStrLength);
+        ss << extracted;
+        ss >> t;
+        if (ss.fail())
+        {
+            CmfError("Type-parse failed. \nData: \"" + data + "\"\nTemplate: \"" + templateStr + "\"\nExtracted: \"" + extracted + "\"");
+        }
         std::string dataSubStr = data.substr(epos, data.length()-epos);
         lev++;
         strunformat_recursive(dataSubStr, templateStr, subStrings, lev, ts...);

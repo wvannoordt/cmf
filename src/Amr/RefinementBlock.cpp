@@ -281,13 +281,31 @@ namespace cmf
     
     void RefinementBlock::ReadFromFile(ParallelFile& file)
     {
-        std::string synchError = "RefinementBlock::ReadFromFile synchronization error, expecting line \"{}\", but found \"{}\"";
+        std::string synchError = "RefinementBlock::ReadFromFile synchronization error, expecting line \"{}\", but found \"{}\". Filename: " + file.OpenFileName();
+        std::string compatError = "RefinementBlock::ReadFromFile compatibility error, expecting \"{}\" value of \"{}\", but found \"{}\". Filename: " + file.OpenFileName();
         std::string line = "";
-        line = file.Read();
-        if (line != "<tree>")
+        if ((line=file.Read()) != "<tree>") CmfError(strformat(synchError, "<tree>", line));
+        
+        size_t readHash = 0;
+        int readDim = 0;
+        int readBlockDims[3] = {0};
+        strunformat((line=file.Read()), "Hash: {}", readHash);
+        strunformat((line=file.Read()), "Dim: {}", readDim);
+        strunformat((line=file.Read()), "Blocks: ({}, {}, {})", readBlockDims[0], readBlockDims[1], readBlockDims[2]);
+        if (readDim != CMF_DIM) CmfError(strformat(compatError, "Dim", CMF_DIM, readDim));
+        if (readBlockDims[0] != blockDim[0]) CmfError(strformat(compatError, "Blocks[0]", blockDim[0], readBlockDims[0]));
+        if (readBlockDims[1] != blockDim[1]) CmfError(strformat(compatError, "Blocks[1]", blockDim[1], readBlockDims[1]));
+#if (CMF_IS3D)
+        if (readBlockDims[2] != blockDim[2]) CmfError(strformat(compatError, "Blocks[2]", blockDim[2], readBlockDims[2]));
+#endif
+        if ((line=file.Read()) != "<treedata>") CmfError(strformat(synchError, "<treedata>", line));
+        for (int i = 0; i < totalNumTrunks; i++)
         {
-            CmfError(strformat(synchError, "<tree>", line));
+            trunks[i]->ReadFromFile(file);
         }
+        if ((line=file.Read()) != "</treedata>") CmfError(strformat(synchError, "</treedata>", line));
+        if ((line=file.Read()) != "</tree>") CmfError(strformat(synchError, "</tree>", line));
+        if (readHash != this->GetHash()) CmfError(strformat("Critical read error from file {}: mesh hash function mismatch, refinement pattern of mesh after read does not match the one in the file", file.OpenFileName()));
     }
     
     void RefinementBlock::WriteToFile(ParallelFile& file)
@@ -295,7 +313,7 @@ namespace cmf
         file.Write("<tree>");
         file.Write(strformat("Hash: {}", this->GetHash()));
         file.Write(strformat("Dim: {}", CMF_DIM));
-        file.Write(strformat("blocks: ({}, {}, {})", blockDim[0], blockDim[1], CMF_IS3D?blockDim[CMF_DIM-1]:1));
+        file.Write(strformat("Blocks: ({}, {}, {})", blockDim[0], blockDim[1], CMF_IS3D?blockDim[CMF_DIM-1]:1));
         file.Write("<treedata>");
         for (int i = 0; i < totalNumTrunks; i++)
         {

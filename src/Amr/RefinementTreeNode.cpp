@@ -318,7 +318,26 @@ namespace cmf
     
     void RefinementTreeNode::ReadFromFile(ParallelFile& file)
     {
-        
+        std::string compatError = "RefinementTreeNode::ReadFromFile compatibility error expecting \"{}\" value of \"{}\", but found \"{}\". Filename: " + file.OpenFileName();
+        int readLevel = 0;
+        int readRefineType = 0;
+        int readNumSubNodes = 0;
+        RefinementConstraint::RefinementConstraint nativeConstraint = this->constraint;
+        // Reset the refinement constraint to free for now: assume that the incoming mesh has a similar refinment constraint
+        this->constraint = RefinementConstraint::free;
+        strunformat(file.Read(), "<{}::{}::{}>", readLevel, readRefineType, readNumSubNodes);
+        if (readRefineType!=0)
+        {
+            this->Refine((char)readRefineType);
+            //This probably is not the best place to call this: need to think about this in the future.
+            this->rootBlock->PostRefinementCallbacks();
+            for (int i = 0; i < numSubNodes; i++)
+            {
+                subNodes[i]->ReadFromFile(file);
+            }
+        }
+        this->constraint = nativeConstraint;
+        if (this->level != readLevel) CmfError(strformat(compatError, "level", this->level, readLevel));
     }
     
     void RefinementTreeNode::WriteToFile(ParallelFile& file)

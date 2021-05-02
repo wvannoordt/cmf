@@ -105,6 +105,10 @@ namespace cmf
             ///@author WVN
             bool AdvanceBeyond(std::string token);
             
+            ///@brief Returns the name of the open file
+            ///@author WVN
+            std::string OpenFileName(void) { return filename;}
+            
         private:
             
             
