@@ -10,6 +10,7 @@
 #include <string>
 #include <exception>
 #include "CmfOutputStream.h"
+#include "TextColor.h"
 #ifndef FUNCSUPPORT
 #define FUNCSUPPORT 1
 #endif
@@ -33,13 +34,13 @@ namespace cmf
     static inline void CmfError_M(std::string message, const int line, const char* file)
 #endif
     {
-        cmfout << "------------------------------------------------------" << cmfendl;
-        cmfout << "CMF Error Thrown.\nFile: " << file << "\nLine: " << line << cmfendl;
+        cmfout << ColorFormatString("------------------------------------------------------", AnsiColor::red, AnsiStyle::bold) << cmfendl;
+        cmfout << ColorFormatString(">> CMF Error Thrown <<", AnsiColor::red, AnsiStyle::bold) << "\nFile: " << file << "\nLine: " << line << cmfendl;
 #if(FUNCSUPPORT)
         cmfout << "Function: " << func << cmfendl;
 #endif
         cmfout << message << cmfendl;
-        cmfout << "------------------------------------------------------" << cmfendl;
+        cmfout << ColorFormatString("------------------------------------------------------", AnsiColor::red, AnsiStyle::bold) << cmfendl;
         throw CmfException();
     }
 }

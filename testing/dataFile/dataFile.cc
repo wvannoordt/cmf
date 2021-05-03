@@ -35,21 +35,24 @@ int main(int argc, char** argv)
         nodes.push_back(node);
         domain.Blocks()->RefineNodes(nodes, 7);
         
-        auto& var = domain.DefineVariable("data");
+        auto& var = domain.DefineVariable("preData");
         
         domain.Blocks()->OutputDebugVtk("output/beforeWrite.vtk");
         
         cmf::CmfDataBase outputDatabase("output");
         outputDatabase["mesh"] << domain;
-        outputDatabase["data"] << var;
+        outputDatabase["preData"] << var;
         
         outputDatabase.Write(dataFileTitle);
         
         cmf::CartesianMesh domain2(inputInfo);
+        // auto& var2 = domain2.DefineVariable("postData");
         
         cmf::CmfDataBase inputDataBase("output");
         
         inputDataBase["mesh"] >> domain2;
+        // inputDataBase["preData"] >> var2;
+        
         
         inputDataBase.Read(dataFileTitle);
         

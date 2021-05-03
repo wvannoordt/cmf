@@ -30,12 +30,11 @@
 #include "CmfPrint.h"
 #include "StringUtils.h"
 #include "CmfDataBase.h"
+#include "CmfGlobalVariables.h"
 
 namespace cmf
 {
-    extern PTL::PropertyTree mainInput;
-    extern GlobalSettings globalSettings;
-    
+
     /// @brief Initializes CMF. Currently does nothing. It is intended that this function does nothing.
     /// @author WVN
     void Initialize(void);

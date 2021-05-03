@@ -39,6 +39,7 @@ namespace cmf
         return newPattern;
     }
     
+    int warnings = 0; // temporary
     void CartesianMeshExchangeHandler::DefineExchangePatternsForArray(CartesianMeshArray* meshArray, DataExchangePattern* pattern)
     {
         WriteLine(5, "Define exchange pattern for variable \"" + meshArray->variableName + "\" on mesh \"" + mesh->title + "\"");
@@ -59,7 +60,11 @@ namespace cmf
                     }
                     else
                     {
-                        WriteLine(1, "WARNING: defining exchange patterns not yet implemented between different refinement levels");
+                        if (warnings<4)
+                        {
+                            WriteLine(1, "WARNING: defining exchange patterns not yet implemented between different refinement levels");
+                        }
+                        warnings++;
                     }
                 }
             }
