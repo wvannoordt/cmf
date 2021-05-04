@@ -25,9 +25,10 @@ namespace cmf
             ~CartesianMeshArrayHandler(void);
             
             /// @brief The callback function for new nodes
-            /// @param newNodes The newly refined nodes to be handled
+            /// @param newChildNodes The newly created child nodes to be handled
+            /// @param newParentNodes The newly refined parent nodes to be handled
             /// @author WVN
-            void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes);
+            void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes) override final;
             
             /// @brief Creates a new variable with the given name
             /// @param info Information about the variable \see ArrayInfo

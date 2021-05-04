@@ -117,7 +117,12 @@ namespace cmf
             /// @brief Called every time a new node is created via refinement, used to build enumerators.
             /// @param newNode A pointer to a node to register
             /// @author WVN
-            void RegisterNewNode(RefinementTreeNode* newNode);
+            void RegisterNewChildNode(RefinementTreeNode* newChild);
+            
+            /// @brief Called every time a node refined, used to build enumerators.
+            /// @param newNode A pointer to a node to register
+            /// @author WVN
+            void RegisterNewParentNode(RefinementTreeNode* newParent);
             
             /// @brief Returns the total number of nodes that are contained within the current block
             /// @author WVN
@@ -225,8 +230,11 @@ namespace cmf
             /// @brief A list of pointers to all nodes contained within this refinement block
             std::vector<RefinementTreeNode*> allNodes;
             
-            /// @brief A list of nodes that are buffered for processing by post-refinement callbacks
-            std::vector<RefinementTreeNode*> newlyRefinedNodes;
+            /// @brief A list of recently-created child nodes that are buffered for processing by post-refinement callbacks
+            std::vector<RefinementTreeNode*> newChildNodes;
+            
+            /// @brief A list of recently-refined parents nodes that are buffered for processing by post-refinement callbacks
+            std::vector<RefinementTreeNode*> newParentNodes;
             
             /// @brief A list of objects that have refinement callbacks to be processed after refinements
             std::vector<IPostRefinementCallback*> postRefinementCallbackObjects;

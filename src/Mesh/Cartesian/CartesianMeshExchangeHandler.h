@@ -59,9 +59,10 @@ namespace cmf
             ~CartesianMeshExchangeHandler(void);
             
             /// @brief The callback function for new nodes
-            /// @param newNodes The newly refined nodes to be handled
+            /// @param newChildNodes The newly created child nodes to be handled
+            /// @param newParentNodes The newly refined parent nodes to be handled
             /// @author WVN
-            void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes);
+            void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes) override final;
             
             /// @brief Creates a new parallel exchange pattern for the provided array
             /// @param meshArray The array to create an exchange pattern for

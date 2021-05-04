@@ -19,6 +19,7 @@ namespace cmf
         GetDefinedNodes();
         Allocate();
         CreateExchangePattern();
+        this->RegisterToBlocks(handler->mesh->Blocks());
     }
     
     void CartesianMeshArray::Allocate(void)
@@ -61,6 +62,15 @@ namespace cmf
             definedNodes.push_back(curNode);
             WriteLine(9, "Define \"" + GetFullName() + "\" on block " + PtrToStr(curNode));
         }
+    }
+    
+    void CartesianMeshArray::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes)
+    {
+        //Could do any of the following:
+        //prolongation operation using built-in procedure, with or without guards
+        //custom prolongation operation
+        //Exchange
+        //Etc
     }
     
     void* CartesianMeshArray::GetNodePointerWithNullDefault(RefinementTreeNode* node)

@@ -11,7 +11,11 @@ namespace cmf
         if (globalSettings.globalOutputEnabledHere && (debugLevel<=globalSettings.debugLevel))
         {
             cmfout << ColorFormatString("cmf :: ", msgColor, msgStyle) << message;
-            if (globalSettings.trackOutputOrigins) cmfout << "\n >> (debug " << debugLevel << " from file " << file << ", line " << line << ")";
+            if (globalSettings.trackOutputOrigins)
+            {
+                std::string debugStr = strformat("\n >> (debug {} from file {}, line {})", debugLevel, file, line);
+                cmfout << ColorFormatString(debugStr, AnsiColor::yellow);
+            }
             cmfout << cmfendl;
         }
     }
@@ -21,7 +25,11 @@ namespace cmf
         if (globalSettings.globalOutputEnabledHere && (debugLevel<=globalSettings.debugLevel))
         {
             std::cout << ColorFormatString("cmf :: ", msgColor, msgStyle) << message;
-            if (globalSettings.trackOutputOrigins) std::cout << "\n >> (debug " << debugLevel << " from file " << file << ", line " << line << ")";
+            if (globalSettings.trackOutputOrigins)
+            {
+                std::string debugStr = strformat("\n >> (debug {} from file {}, line {})", debugLevel, file, line);
+                std::cout << ColorFormatString(debugStr, AnsiColor::yellow);
+            }
             std::cout << std::endl;
         }
     }
@@ -31,7 +39,11 @@ namespace cmf
         if ((debugLevel<=globalSettings.debugLevel))
         {
             cmfout << ColorFormatString("cmf :: ", msgColor, msgStyle) << message;
-            if (globalSettings.trackOutputOrigins) cmfout << "\n >> (debug " << debugLevel << " from file " << file << ", line " << line << ")";
+            if (globalSettings.trackOutputOrigins)
+            {
+                std::string debugStr = strformat("\n >> (debug {} from file {}, line {})", debugLevel, file, line);
+                cmfout << ColorFormatString(debugStr, AnsiColor::yellow);
+            }
             cmfout << cmfendl;
         }
     }
@@ -41,7 +53,11 @@ namespace cmf
         if ((debugLevel<=globalSettings.debugLevel))
         {
             std::cout << ColorFormatString("cmf :: ", msgColor, msgStyle) << message;
-            if (globalSettings.trackOutputOrigins) std::cout << "\n >> (debug " << debugLevel << " from file " << file << ", line " << line << ")";
+            if (globalSettings.trackOutputOrigins)
+            {
+                std::string debugStr = strformat("\n >> (debug {} from file {}, line {})", debugLevel, file, line);
+                std::cout << ColorFormatString(debugStr, AnsiColor::yellow);
+            }
             std::cout << std::endl;
         }
     }

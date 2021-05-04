@@ -298,8 +298,9 @@ namespace cmf
             newRefinementOrientation = (char)((i&1)*((basis&0x00ff0000)>>16) + ((i&2)>>1)*((basis&0x0000ff00)>>8) + ((i&4)>>2)*((basis&0x000000ff)));
             subNodes[i] = new RefinementTreeNode(blockBounds, newRefinementType, newRefinementOrientation, level+1, this, constraint, rootBlock);
             //Add the node to the list of all nodes in the base tree
-            rootBlock->RegisterNewNode(subNodes[i]);
+            rootBlock->RegisterNewChildNode(subNodes[i]);
         }
+        rootBlock->RegisterNewParentNode(this);
         //new child nodes need neighbor relationships
         GenerateNeighborsOfChildAllNodes();
         //The current node's neghbors should no longer have a neighbor relationship with this node, but rather with its children

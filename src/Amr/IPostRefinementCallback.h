@@ -19,9 +19,10 @@ namespace cmf
             ~IPostRefinementCallback(void){}
             
             /// @brief The callback function for new nodes
-            /// @param newNodes The newly refined nodes to be handled
+            /// @param newChildNodes The newly created child nodes to be handled
+            /// @param newParentNodes The newly refined parent nodes to be handled
             /// @author WVN
-            virtual void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)=0;
+            virtual void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes)=0;
             
             /// @brief Adds the current object as a post-refinement callback object to the provided AMR block
             /// @param blocks The blocks to register this object to

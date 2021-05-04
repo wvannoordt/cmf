@@ -110,11 +110,12 @@ namespace cmf
                 localBounds[2*d+1] = blockBounds[2*d]+(idx[d]+1)*dx[d];
             }
             trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL, refinementConstraintType, this);
-            RegisterNewNode(trunks[i]);
+            RegisterNewChildNode(trunks[i]);
             trunks[i]->SetRefineLimiter(&refineLimiter);
         }
         //This is added because it is assumed that any post-refinemet callback object is registered afterwards
-        newlyRefinedNodes.clear();
+        newChildNodes.clear();
+        newParentNodes.clear();
         for (int i = 0; i < totalNumTrunks; i++)
         {
             int blockIndex[CMF_DIM];
@@ -142,11 +143,17 @@ namespace cmf
         }
     }
     
-    void RefinementBlock::RegisterNewNode(RefinementTreeNode* newNode)
+    void RefinementBlock::RegisterNewChildNode(RefinementTreeNode* newChild)
     {
-        allNodes.push_back(newNode);
-        this->AugmentHash(newNode->GetHashableValue());
-        newlyRefinedNodes.push_back(newNode);
+        allNodes.push_back(newChild);
+        this->AugmentHash(newChild->GetHashableValue());
+        newChildNodes.push_back(newChild);
+    }
+    
+    void RefinementBlock::RegisterNewParentNode(RefinementTreeNode* newParent)
+    {
+        this->AugmentHash(newParent->GetHashableValue());
+        newParentNodes.push_back(newParent);
     }
 
     void RefinementBlock::SetRefineLimitCriterion(NodeFilter_t limiter_in)
@@ -162,11 +169,13 @@ namespace cmf
     
     void RefinementBlock::PostRefinementCallbacks(void)
     {
+        WriteLine(3, strformat("Calling post-refinement callbacks on {} objects: {} new child nodes, {} new parent nodes", postRefinementCallbackObjects.size(), newChildNodes.size(), newParentNodes.size()));
         for (int i = 0; i < postRefinementCallbackObjects.size(); i++)
         {
-            postRefinementCallbackObjects[i]->OnPostRefinementCallback(newlyRefinedNodes);
+            postRefinementCallbackObjects[i]->OnPostRefinementCallback(newChildNodes, newParentNodes);
         }
-        newlyRefinedNodes.clear();
+        newChildNodes.clear();
+        newParentNodes.clear();
     }
     
     void RefinementBlock::RefineNodes(std::vector<RefinementTreeNode*>& nodes, char refineType)

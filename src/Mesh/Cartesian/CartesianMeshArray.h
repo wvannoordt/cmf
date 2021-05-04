@@ -12,6 +12,7 @@
 #include "Typedefs.h"
 #include "BlockInfo.h"
 #include "CartesianMeshBuffer.h"
+#include "IPostRefinementCallback.h"
 namespace cmf
 {
     class CartesianMeshArray;
@@ -34,7 +35,7 @@ namespace cmf
     class CartesianMesh;
     /// @brief Defines a MeshArray object Cartesian grids
     /// @author WVN
-    class CartesianMeshArray : public ICmfMeshArray, public IBlockIterable
+    class CartesianMeshArray : public ICmfMeshArray, public IBlockIterable, public IPostRefinementCallback
     {
         public:
             
@@ -56,6 +57,12 @@ namespace cmf
             /// @brief Returns the size of the total data stored in a block
             /// @author WVN
             size_t GetArraySizePerBlock(void);
+            
+            /// @brief The callback function for new nodes
+            /// @param newChildNodes The newly created child nodes to be handled
+            /// @param newParentNodes The newly refined parent nodes to be handled
+            /// @author WVN
+            virtual void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes) override final;
             
             /// @brief Returns the blocks to be iterated over
             /// @author WVN

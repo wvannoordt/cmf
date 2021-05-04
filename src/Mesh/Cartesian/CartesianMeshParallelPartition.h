@@ -64,9 +64,10 @@ namespace cmf
             bool Mine(RefinementTreeNode* node);
             
             /// @brief The callback function for new nodes
-            /// @param newNodes The newly refined nodes to be handled
+            /// @param newChildNodes The newly created child nodes to be handled
+            /// @param newParentNodes The newly refined parent nodes to be handled
             /// @author WVN
-            void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes);
+            void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes) override final;
             
             /// @brief Outputs the parallel partition to a VTK file
             /// @param filename The file to be written to

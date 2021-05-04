@@ -43,12 +43,12 @@ namespace cmf
         return partition[node];
     }
     
-    void CartesianMeshParallelPartition::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newNodes)
+    void CartesianMeshParallelPartition::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes)
     {
-        WriteLine(3, "\"" + mesh->GetTitle() + "\" parallel partition handling new blocks");
-        for (int i = 0; i < newNodes.size(); i++)
+        WriteLine(4, "\"" + mesh->GetTitle() + "\" parallel partition handling new blocks");
+        for (int i = 0; i < newChildNodes.size(); i++)
         {
-            builder->AddNewNode(newNodes[i]);
+            builder->AddNewNode(newChildNodes[i]);
         }
         mesh->AssertSynchronizeBlocks();
     }

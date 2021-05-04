@@ -6,6 +6,27 @@
 using cmf::print;
 using cmf::strformat;
 using cmf::strunformat;
+using cmf::cell_t;
+
+void FillAr(cmf::CartesianMeshArray& ar, double val)
+{
+    for (auto lb: ar)
+    {
+        cmf::BlockArray<double> arLb = ar[lb];
+        cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
+        for (cell_t k = arLb.kmin-arLb.exchangeK; k < arLb.kmax+arLb.exchangeK; k++)
+        {
+            for (cell_t j = arLb.jmin-arLb.exchangeJ; j < arLb.jmax+arLb.exchangeJ; j++)
+            {
+                for (cell_t i = arLb.imin-arLb.exchangeI; i < arLb.imax+arLb.exchangeI; i++)
+                {
+                    arLb(i, j, k) = val;
+                }
+            }
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     EXIT_WARN_IF_PARALLEL;
@@ -33,9 +54,10 @@ int main(int argc, char** argv)
         auto node = domain.Blocks()->GetNodeAt(coords);
         std::vector<decltype(node)> nodes;
         nodes.push_back(node);
-        domain.Blocks()->RefineNodes(nodes, 7);
+        domain.Blocks()->RefineNodes(nodes, 3);
         
         auto& var = domain.DefineVariable("preData");
+        FillAr(var, 0.9);
         
         domain.Blocks()->OutputDebugVtk("output/beforeWrite.vtk");
         
