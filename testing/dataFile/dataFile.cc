@@ -10,8 +10,10 @@ using cmf::cell_t;
 
 void FillAr(cmf::CartesianMeshArray& ar, double val)
 {
+    int y = -1;
     for (auto lb: ar)
     {
+        y++;
         cmf::BlockArray<double> arLb = ar[lb];
         cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
         for (cell_t k = arLb.kmin-arLb.exchangeK; k < arLb.kmax+arLb.exchangeK; k++)
@@ -20,7 +22,7 @@ void FillAr(cmf::CartesianMeshArray& ar, double val)
             {
                 for (cell_t i = arLb.imin-arLb.exchangeI; i < arLb.imax+arLb.exchangeI; i++)
                 {
-                    arLb(i, j, k) = val;
+                    arLb(i, j, k) = val+y;
                 }
             }
         }
@@ -73,7 +75,7 @@ int main(int argc, char** argv)
         cmf::CmfDataBase inputDataBase("output");
         
         inputDataBase["mesh"] >> domain2;
-        // inputDataBase["preData"] >> var2;
+        inputDataBase["preData"] >> var2;
         
         
         inputDataBase.Read(dataFileTitle);

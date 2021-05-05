@@ -2,6 +2,7 @@
 #define CARTESIAN_MESH_BUFFER_H
 #include <vector>
 #include <set>
+#include <deque>
 #include "CmfArrayType.h"
 #include "ICmfMeshBuffer.h"
 
@@ -18,7 +19,7 @@ namespace cmf
         int numBlocks = 0;
         
         /// @brief A list of free blocks
-        std::vector<int> vacantBlocks;
+        int numberOfVacantBlocks = 0;
     };
     
     /// @brief Handles memory allocation for a Cartesian mesh array
@@ -58,10 +59,20 @@ namespace cmf
             /// @author WVN
             size_t BlockSizeBytes(void);
             
+            /// @brief Identifies the chunks with all blocks free and deallocates them. Does not destroy them.
+            /// @author WVN
+            void ClearVacantChunks(void);
+            
         private:
             
             /// @brief The list of base pointers for this buffer
             std::vector<CartesianDataChunk> chunks;
+            
+            /// @brief A map of base pointers to blocks (not chunks) to the chunk they belong to
+            std::map<void*, CartesianDataChunk*> pointerToChunks;
+            
+            /// @brief A list of vacant block arrays and their corresponding chunk objects
+            std::deque<std::pair<void*, CartesianDataChunk*>> vacantBlocks;
             
             /// @brief the size (in elements) of each block
             size_t blockArraySize;

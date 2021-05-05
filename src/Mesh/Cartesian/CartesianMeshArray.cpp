@@ -17,12 +17,12 @@ namespace cmf
         rank = info.rank;
         elementType = info.elementType;
         GetDefinedNodes();
-        Allocate();
+        AllocateInitialBlocks();
         CreateExchangePattern();
         this->RegisterToBlocks(handler->mesh->Blocks());
     }
     
-    void CartesianMeshArray::Allocate(void)
+    void CartesianMeshArray::AllocateInitialBlocks(void)
     {
         size_t numBlocksToAllocate = definedNodes.size();
         size_t blockSizeInElements = GetArraySizePerBlock();
@@ -40,7 +40,7 @@ namespace cmf
     void CartesianMeshArray::CreateExchangePattern()
     {
         exchangePattern = this->handler->GetDefaultExchangeHandler()->CreateMeshArrayExchangePattern(this);
-        WriteLine(0, "WARNING: CartesianMeshArray::CreateExchangePattern not fully implemented");
+        WriteLine(0, WarningStr() + " CartesianMeshArray::CreateExchangePattern not fully implemented");
     }
     
     void CartesianMeshArray::Exchange(void)
@@ -73,7 +73,6 @@ namespace cmf
         //Exchange
         //Etc
         
-        print("num defined nodes, before:", definedNodes.size());
         //Recompute this list of nodes over which this variable is defined
         this->GetDefinedNodes();
         for (auto p:newParentNodes)
@@ -81,16 +80,22 @@ namespace cmf
             if (pointerMap.find(p)!=pointerMap.end() && !this->filter(p))
             {
                 //Yield the block data to the mesh buffer object if the parent no longer needs it
+                meshBuffer->Yield(pointerMap[p]);
                 pointerMap.erase(p);
-                
             }
         }
         
         for (auto p:newChildNodes)
         {
-            
+            void* newChildBasePtr = meshBuffer->Claim();
+            if (pointerMap.find(p)!=pointerMap.end())
+            {
+                CmfError("Attempted to re-allocate an already-allocated pointer for a new child block after refinement...");
+            }
+            pointerMap.insert({p, newChildBasePtr});
         }
-        print("num defined nodes, after:", definedNodes.size());
+        
+        meshBuffer->ClearVacantChunks();
     }
     
     void* CartesianMeshArray::GetNodePointerWithNullDefault(RefinementTreeNode* node)

@@ -158,9 +158,9 @@ namespace cmf
             /// @author WVN
             void WriteFilterToFile(ParallelFile& file);
             
-            /// @brief Allocates the unferlying pointer
+            /// @brief Allocates the underlying pointer
             /// @author WVN
-            void Allocate(void);
+            void AllocateInitialBlocks(void);
             
             /// @brief Populates definedNodes
             /// @author WVN

@@ -62,7 +62,7 @@ namespace cmf
                     {
                         if (warnings<4)
                         {
-                            WriteLine(1, "WARNING: defining exchange patterns not yet implemented between different refinement levels");
+                            WriteLine(1, WarningStr() + " defining exchange patterns not yet implemented between different refinement levels");
                         }
                         warnings++;
                     }
@@ -232,7 +232,7 @@ namespace cmf
     
     void CartesianMeshExchangeHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes)
     {
-        WriteLine(1, "WARNING!!!!!!! CartesianMeshExchangeHandler::OnPostRefinementCallback not implemented");
+        WriteLine(1, WarningStr() + " CartesianMeshExchangeHandler::OnPostRefinementCallback not implemented");
     }
     
     CartesianMeshExchangeHandler::~CartesianMeshExchangeHandler(void)
