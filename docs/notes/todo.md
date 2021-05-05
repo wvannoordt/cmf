@@ -5,11 +5,11 @@ This is a place where items for development can be listed. It feels great to che
 
  - [x] Make to-do list
  - [x] Design the CMF database I/O model and implement the appropriate base classes
- - [ ] Implement I/O for mesh arrays and block refinement
+ - [x] Implement I/O for mesh arrays and block refinement
  - [x] Implement CmfMeshDataBuffer class to replace simple void pointer
  - [ ] Design and implement the post-refinement callback sequence
  - [x] Complete implementation of CartesianMeshBuffer
- - [ ] Ensure that exchange cells are properly output for cartesian mesh
+ - [x] Ensure that exchange cells are properly output for cartesian mesh
  - [x] Implement the SeekString() in the parallel file class
  - [ ] Implement allocation, partitioning, and management of GPU arrays
  - [ ] Inter-level operators for block-data exchanges

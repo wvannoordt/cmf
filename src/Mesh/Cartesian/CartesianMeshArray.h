@@ -158,6 +158,11 @@ namespace cmf
             /// @author WVN
             void WriteFilterToFile(ParallelFile& file);
             
+            /// @brief Verifies that the filtered nodes are the same between the current variable and the provided file
+            /// @param file The file to read from
+            /// @author WVN
+            void VerifyFilterFromFile(ParallelFile& file);
+            
             /// @brief Allocates the underlying pointer
             /// @author WVN
             void AllocateInitialBlocks(void);

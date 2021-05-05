@@ -230,9 +230,63 @@ namespace cmf
         }
     }
     
+    void CartesianMeshArray::VerifyFilterFromFile(ParallelFile& file)
+    {
+        int p = 0;
+        for (BlockIterator iter(this->GetRefinementBlockObject(), BlockFilters::Every, IterableMode::serial); iter.HasNext(); iter++)
+        {
+            if (filter(iter.Node()))
+            {
+                int readNode = -1;
+                strunformat(file.Read(), "{}", readNode);
+                if (p != readNode)
+                {
+                    CmfError(strformat("VerifyFilterFromFile filter compatibility error: expecting node {}, found node {} in file \"{}\"", p, readNode, file.OpenFileName()));
+                }
+            }
+            p++;
+        }
+    }
+    
     void CartesianMeshArray::ReadFromFile(ParallelFile& file)
     {
+        std::string synchErrorStr = "CartesianMeshArray::ReadFromFile synchronization error: expecting token \"{}\", but found \"{}\" in file " + file.OpenFileName();
+        std::string compatErrorStr = "CartesianMeshArray::ReadFromFile compatibility error: expecting value of \"{}\" for \"{}\", but found \"{}\" in file " + file.OpenFileName();
+        std::string line;
+        if ((line=file.Read())!="CartesianMeshArray") CmfError(strformat(synchErrorStr, "CartesianMeshArray", line));
+        line = file.Read();
+        line = file.Read();
+        std::string readType;
+        strunformat(line=file.Read(), "type: {}", readType);
+        if (readType != CmfArrayTypeToString(elementType)) CmfError(strformat(synchErrorStr, CmfArrayTypeToString(elementType), readType));
         
+        int readRank;
+        strunformat(line=file.Read(), "rank: {}", readRank);
+        if (rank != readRank) CmfError(strformat(compatErrorStr, rank, "rank", readRank));
+        if ((line=file.Read())!="<dims>") CmfError(strformat(synchErrorStr, "<dims>", line));
+        for (int i = 0; i < readRank; i++)
+        {
+            int readDim = -1;
+            strunformat(line=file.Read(), "{}", readDim);
+            if (dims[i] != readDim) CmfError(strformat(compatErrorStr, dims[i], strformat("dims[{}]", i), readDim));
+        }
+        if ((line=file.Read())!="</dims>") CmfError(strformat(synchErrorStr, "</dims>", line));
+        if ((line=file.Read())!="<components>") CmfError(strformat(synchErrorStr, "<components>", line));
+        for (auto comp: variableComponentNames)
+        {
+            line = file.Read();
+        }
+        if ((line=file.Read())!="</components>") CmfError(strformat(synchErrorStr, "</components>", line));
+        
+        if ((line=file.Read())!="<nodes>") CmfError(strformat(synchErrorStr, "<nodes>", line));
+        this->VerifyFilterFromFile(file);
+        if ((line=file.Read())!="</nodes>") CmfError(strformat(synchErrorStr, "</nodes>", line));
+        
+        ParallelDataBuffer parallelBuf;
+        this->GetParallelDataBuffer(parallelBuf);
+        if ((line=file.Read())!="<data>") CmfError(strformat(synchErrorStr, "<data>", line));
+        file.ParallelRead(parallelBuf);
+        if ((line=file.Read())!="</data>") CmfError(strformat(synchErrorStr, "</data>", line));
     }
     
     void CartesianMeshArray::WriteToFile(ParallelFile& file)
@@ -241,12 +295,6 @@ namespace cmf
         file.Write(strformat("mesh: {}", handler->mesh->GetTitle()));
         file.Write(strformat("name: {}", variableName));
         file.Write(strformat("type: {}", CmfArrayTypeToString(elementType)));
-        file.Write("<components>");
-        for (auto comp: variableComponentNames)
-        {
-            file.Write(comp);
-        }
-        file.Write("</components>");
         file.Write(strformat("rank: {}", rank));
         file.Write("<dims>");
         for (auto dim: dims)
@@ -254,6 +302,12 @@ namespace cmf
             file.Write(strformat("{}", dim));
         }
         file.Write("</dims>");
+        file.Write("<components>");
+        for (auto comp: variableComponentNames)
+        {
+            file.Write(comp);
+        }
+        file.Write("</components>");
         file.Write("<nodes>");
         this->WriteFilterToFile(file);
         file.Write("</nodes>");

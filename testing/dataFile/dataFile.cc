@@ -29,6 +29,31 @@ void FillAr(cmf::CartesianMeshArray& ar, double val)
     }
 }
 
+bool CheckArr(cmf::CartesianMeshArray& ar, double val)
+{
+    double localErrorSq = 0.0;
+    int y = -1;
+    for (auto lb: ar)
+    {
+        y++;
+        cmf::BlockArray<double> arLb = ar[lb];
+        cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
+        for (cell_t k = arLb.kmin-arLb.exchangeK; k < arLb.kmax+arLb.exchangeK; k++)
+        {
+            for (cell_t j = arLb.jmin-arLb.exchangeJ; j < arLb.jmax+arLb.exchangeJ; j++)
+            {
+                for (cell_t i = arLb.imin-arLb.exchangeI; i < arLb.imax+arLb.exchangeI; i++)
+                {
+                    localErrorSq += (arLb(i, j, k) - (val+y))*(arLb(i, j, k) - (val+y));
+                }
+            }
+        }
+    }
+    double globErrorSq = cmf::globalGroup.Sum(localErrorSq);
+    double globalError = sqrt(globErrorSq);
+    return globalError < 1e-6;
+}
+
 int main(int argc, char** argv)
 {
     EXIT_WARN_IF_PARALLEL;
@@ -46,6 +71,8 @@ int main(int argc, char** argv)
     user.StrictParse();
     
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
+    
+    bool success = false;
     
     {
         cmf::CartesianMesh domain(inputInfo);        
@@ -78,10 +105,19 @@ int main(int argc, char** argv)
         inputDataBase["preData"] >> var2;
         
         
+        
         inputDataBase.Read(dataFileTitle);
+        
+        success = CheckArr(var, 0.9);
         
         domain2.Blocks()->OutputDebugVtk("output/afterWrite.vtk");
     }
-    
-    return 0;
+    if (!success)
+    {
+        if (cmf::globalGroup.IsRoot())
+        {
+            print("Error in test case: failed database input/output check!", __FILE__);
+        }
+    }
+    return success?0:1;
 }
