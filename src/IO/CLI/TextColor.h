@@ -48,6 +48,10 @@ namespace cmf
     ///@param style The style of the text
     ///@author WVN
     std::string ColorFormatString(std::string msg, AnsiColor::AnsiColor color);
+    
+    ///@brief Returns "Warning" in bold yellow
+    ///@author WVN
+    std::string WarningStr(void);
 }
 
 #endif

@@ -15,4 +15,9 @@ namespace cmf
     {
         return ColorFormatString(msg, color, AnsiStyle::revert);
     }
+    
+    std::string WarningStr(void)
+    {
+        return ColorFormatString("Warning:", AnsiColor::yellow, AnsiStyle::bold);
+    }
 }

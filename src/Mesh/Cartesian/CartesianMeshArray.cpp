@@ -56,6 +56,7 @@ namespace cmf
     
     void CartesianMeshArray::GetDefinedNodes(void)
     {
+        definedNodes.clear();
         for (BlockIterator i(handler->mesh, filter, IterableMode::parallel); i.HasNext(); i++)
         {
             RefinementTreeNode* curNode = i.Node();
@@ -71,6 +72,25 @@ namespace cmf
         //custom prolongation operation
         //Exchange
         //Etc
+        
+        print("num defined nodes, before:", definedNodes.size());
+        //Recompute this list of nodes over which this variable is defined
+        this->GetDefinedNodes();
+        for (auto p:newParentNodes)
+        {
+            if (pointerMap.find(p)!=pointerMap.end() && !this->filter(p))
+            {
+                //Yield the block data to the mesh buffer object if the parent no longer needs it
+                pointerMap.erase(p);
+                
+            }
+        }
+        
+        for (auto p:newChildNodes)
+        {
+            
+        }
+        print("num defined nodes, after:", definedNodes.size());
     }
     
     void* CartesianMeshArray::GetNodePointerWithNullDefault(RefinementTreeNode* node)

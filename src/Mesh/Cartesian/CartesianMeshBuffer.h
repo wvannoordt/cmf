@@ -1,11 +1,26 @@
 #ifndef CARTESIAN_MESH_BUFFER_H
 #define CARTESIAN_MESH_BUFFER_H
 #include <vector>
+#include <set>
 #include "CmfArrayType.h"
 #include "ICmfMeshBuffer.h"
 
 namespace cmf
 {
+    /// @brief Represents a series of block arrays
+    /// @author WVN
+    struct CartesianDataChunk
+    {
+        /// @brief The base pointer for this chunk
+        void* base = NULL;
+        
+        /// @brief The number of blocks this chunk has
+        int numBlocks = 0;
+        
+        /// @brief A list of free blocks
+        std::vector<int> vacantBlocks;
+    };
+    
     /// @brief Handles memory allocation for a Cartesian mesh array
     /// @author WVN
     class CartesianMeshBuffer : public ICmfMeshBuffer
@@ -35,6 +50,10 @@ namespace cmf
             /// @author WVN
             void* Claim(void);
             
+            /// @brief Marks the provided block as available. Should be treated as freeing the block array
+            /// @author WVN
+            void Yield(void* ptr);
+            
             /// @brief Returns the size of a single block's memory in bytes
             /// @author WVN
             size_t BlockSizeBytes(void);
@@ -42,7 +61,7 @@ namespace cmf
         private:
             
             /// @brief The list of base pointers for this buffer
-            std::vector<void*> pointers;
+            std::vector<CartesianDataChunk> chunks;
             
             /// @brief the size (in elements) of each block
             size_t blockArraySize;

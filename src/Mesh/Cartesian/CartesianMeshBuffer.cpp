@@ -19,15 +19,17 @@ namespace cmf
     
     void CartesianMeshBuffer::ReserveBlocks(int numBlocks)
     {
-        void* newPtr = Cmf_Alloc(numBlocks*blockArraySize*SizeOfArrayType(arrayType));
-        pointers.push_back(newPtr);
+        CartesianDataChunk newChunk;
+        newChunk.base = Cmf_Alloc(numBlocks*blockArraySize*SizeOfArrayType(arrayType));
+        newChunk.numBlocks = numBlocks;
+        chunks.push_back(newChunk);
     }
     
     void CartesianMeshBuffer::Clear(void)
     {
-        for (auto p:pointers)
+        for (auto ch:chunks)
         {
-            Cmf_Free(p);
+            Cmf_Free(ch.base);
         }
     }
     
@@ -36,9 +38,14 @@ namespace cmf
         return blockArraySize*SizeOfArrayType(arrayType);
     }
     
+    void CartesianMeshBuffer::Yield(void* ptr)
+    {
+        
+    }
+    
     void* CartesianMeshBuffer::Claim(void)
     {
-        void* output = (void*)((char*)pointers[0] + tempCounter*blockArraySize);
+        void* output = (void*)((char*)chunks[0].base + tempCounter*blockArraySize);
         tempCounter++;
         return output;
     }

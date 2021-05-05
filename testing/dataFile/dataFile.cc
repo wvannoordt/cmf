@@ -54,7 +54,7 @@ int main(int argc, char** argv)
         auto node = domain.Blocks()->GetNodeAt(coords);
         std::vector<decltype(node)> nodes;
         nodes.push_back(node);
-        domain.Blocks()->RefineNodes(nodes, 3);
+        domain.Blocks()->RefineNodes(nodes, 7);
         
         auto& var = domain.DefineVariable("preData");
         FillAr(var, 0.9);
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
         outputDatabase.Write(dataFileTitle);
         
         cmf::CartesianMesh domain2(inputInfo);
-        // auto& var2 = domain2.DefineVariable("postData");
+        auto& var2 = domain2.DefineVariable("postData");
         
         cmf::CmfDataBase inputDataBase("output");
         
