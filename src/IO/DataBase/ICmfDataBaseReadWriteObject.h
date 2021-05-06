@@ -23,7 +23,7 @@ namespace cmf
             /// @author WVN
             virtual ~ICmfDataBaseReadWriteObject(void){};
             
-            /// @brief Indicates whether the object has a ParallelGroup associated with it. Default implementation returns true for safety.
+            /// @brief Indicates whether the object has a ParallelGroup associated with it. Default implementation returns false.
             /// If this returns false, it is assumed that the object is treated in parallel
             ///@author WVN
             virtual bool HasParallelGroup(void);

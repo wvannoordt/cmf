@@ -9,7 +9,7 @@ namespace cmf
     
     bool ICmfDataBaseReadWriteObject::HasParallelGroup(void)
     {
-        return true;
+        return false;
     }
     
     ParallelGroup* ICmfDataBaseReadWriteObject::GetDatabaseParallelGroup(void)
