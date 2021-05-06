@@ -153,6 +153,11 @@ namespace cmf
             /// @author WVN
             void GetParallelDataBuffer(ParallelDataBuffer& buf);
             
+            /// @author WVN
+            /// @brief Returns true if the iterable object has this node in its parallel partition
+            /// @param node The node to check
+            virtual bool ParallelPartitionContainsNode(RefinementTreeNode* node) override final;
+            
             /// @brief Writes the nodes over which this variable is defined to the file
             /// @param file The file to write to
             /// @author WVN
@@ -167,9 +172,9 @@ namespace cmf
             /// @author WVN
             void AllocateInitialBlocks(void);
             
-            /// @brief Populates definedNodes
+            /// @brief Populates definedNodes and allocatedNodes. Does not allocate memory
             /// @author WVN
-            void GetDefinedNodes(void);
+            void GetDefinedNodesAndAllocatedNodes(void);
             
             /// @brief Creates the exchange pattern for this array
             /// @author WVN
@@ -202,8 +207,13 @@ namespace cmf
             /// @brief The mesh buffer object
             CartesianMeshBuffer* meshBuffer;
             
-            /// @brief Nodes over which this variable is defined
+            /// @brief Nodes over which this variable is defined. It is not 
+            /// necessarily true that the variable has an allocated array over each of these.
             std::vector<RefinementTreeNode*> definedNodes;
+            
+            /// @brief Nodes over which this variable is allocated. This is a subset
+            /// of definedNodes.
+            std::vector<RefinementTreeNode*> allocatedNodes;
             
             template <typename arType, const int elementRank> friend struct BlockArray;
             friend class CartesianMeshExchangeHandler;

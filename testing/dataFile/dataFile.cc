@@ -13,7 +13,6 @@ void FillAr(cmf::CartesianMeshArray& ar, double val)
     int y = -1;
     for (auto lb: ar)
     {
-        y++;
         cmf::BlockArray<double> arLb = ar[lb];
         cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
         for (cell_t k = arLb.kmin-arLb.exchangeK; k < arLb.kmax+arLb.exchangeK; k++)
@@ -22,6 +21,7 @@ void FillAr(cmf::CartesianMeshArray& ar, double val)
             {
                 for (cell_t i = arLb.imin-arLb.exchangeI; i < arLb.imax+arLb.exchangeI; i++)
                 {
+                    y++;
                     arLb(i, j, k) = val+y;
                 }
             }
@@ -35,7 +35,6 @@ bool CheckArr(cmf::CartesianMeshArray& ar, double val)
     int y = -1;
     for (auto lb: ar)
     {
-        y++;
         cmf::BlockArray<double> arLb = ar[lb];
         cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
         for (cell_t k = arLb.kmin-arLb.exchangeK; k < arLb.kmax+arLb.exchangeK; k++)
@@ -44,6 +43,7 @@ bool CheckArr(cmf::CartesianMeshArray& ar, double val)
             {
                 for (cell_t i = arLb.imin-arLb.exchangeI; i < arLb.imax+arLb.exchangeI; i++)
                 {
+                    y++;
                     localErrorSq += (arLb(i, j, k) - (val+y))*(arLb(i, j, k) - (val+y));
                 }
             }
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
         
         inputDataBase.Read(dataFileTitle);
         
-        success = CheckArr(var, 0.9);
+        success = CheckArr(var2, 0.9);
         
         domain2.Blocks()->OutputDebugVtk("output/afterWrite.vtk");
     }

@@ -7,6 +7,8 @@ This is a place where items for development can be listed. It feels great to che
  - [x] Design the CMF database I/O model and implement the appropriate base classes
  - [x] Implement I/O for mesh arrays and block refinement
  - [x] Implement CmfMeshDataBuffer class to replace simple void pointer
+ - [ ] Determine if the Synchronize in the DataExchangePattern is strictly necessary
+ - [x] Clearer boundary in CartesianMeshArray between allocated and defined nodes
  - [ ] Design and implement the post-refinement callback sequence
  - [x] Complete implementation of CartesianMeshBuffer
  - [x] Ensure that exchange cells are properly output for cartesian mesh

@@ -16,7 +16,7 @@ namespace cmf
         exchangePattern = NULL;
         rank = info.rank;
         elementType = info.elementType;
-        GetDefinedNodes();
+        GetDefinedNodesAndAllocatedNodes();
         AllocateInitialBlocks();
         CreateExchangePattern();
         this->RegisterToBlocks(handler->mesh->Blocks());
@@ -24,7 +24,7 @@ namespace cmf
     
     void CartesianMeshArray::AllocateInitialBlocks(void)
     {
-        size_t numBlocksToAllocate = definedNodes.size();
+        size_t numBlocksToAllocate = allocatedNodes.size();
         size_t blockSizeInElements = GetArraySizePerBlock();
         deleteMeshBuffer = true;
         meshBuffer = new CartesianMeshBuffer(blockSizeInElements, elementType);
@@ -54,14 +54,19 @@ namespace cmf
         return handler->mesh->GetBlockInfo(node);
     }
     
-    void CartesianMeshArray::GetDefinedNodes(void)
+    void CartesianMeshArray::GetDefinedNodesAndAllocatedNodes(void)
     {
         definedNodes.clear();
-        for (BlockIterator i(handler->mesh, filter, IterableMode::parallel); i.HasNext(); i++)
+        for (BlockIterator i(handler->mesh, filter, IterableMode::serial); i.HasNext(); i++)
         {
             RefinementTreeNode* curNode = i.Node();
             definedNodes.push_back(curNode);
-            WriteLine(9, "Define \"" + GetFullName() + "\" on block " + PtrToStr(curNode));
+        }
+        allocatedNodes.clear();
+        for (BlockIterator i(handler->mesh, filter, IterableMode::parallel); i.HasNext(); i++)
+        {
+            RefinementTreeNode* curNode = i.Node();
+            allocatedNodes.push_back(curNode);
         }
     }
     
@@ -74,7 +79,7 @@ namespace cmf
         //Etc
         
         //Recompute this list of nodes over which this variable is defined
-        this->GetDefinedNodes();
+        this->GetDefinedNodesAndAllocatedNodes();
         for (auto p:newParentNodes)
         {
             if (pointerMap.find(p)!=pointerMap.end() && !this->filter(p))
@@ -87,12 +92,15 @@ namespace cmf
         
         for (auto p:newChildNodes)
         {
-            void* newChildBasePtr = meshBuffer->Claim();
-            if (pointerMap.find(p)!=pointerMap.end())
+            if (this->ParallelPartitionContainsNode(p))
             {
-                CmfError("Attempted to re-allocate an already-allocated pointer for a new child block after refinement...");
+                void* newChildBasePtr = meshBuffer->Claim();
+                if (pointerMap.find(p)!=pointerMap.end())
+                {
+                    CmfError("Attempted to re-allocate an already-allocated pointer for a new child block after refinement...");
+                }
+                pointerMap.insert({p, newChildBasePtr});
             }
-            pointerMap.insert({p, newChildBasePtr});
         }
         
         meshBuffer->ClearVacantChunks();
@@ -106,22 +114,22 @@ namespace cmf
     
     std::vector<RefinementTreeNode*>::iterator CartesianMeshArray::begin() noexcept
     {
-        return definedNodes.begin();
+        return allocatedNodes.begin();
     }
     
     std::vector<RefinementTreeNode*>::const_iterator CartesianMeshArray::begin() const noexcept
     {
-        return definedNodes.begin();
+        return allocatedNodes.begin();
     }
     
     std::vector<RefinementTreeNode*>::iterator CartesianMeshArray::end() noexcept
     {
-        return definedNodes.end();
+        return allocatedNodes.end();
     }
     
     std::vector<RefinementTreeNode*>::const_iterator CartesianMeshArray::end() const noexcept
     {
-        return definedNodes.end();
+        return allocatedNodes.end();
     }
     
     NodeFilter_t CartesianMeshArray::GetFilter(void)
@@ -165,7 +173,7 @@ namespace cmf
     
     void CartesianMeshArray::DefinePointerMap(void)
     {
-        for (auto& node:definedNodes)
+        for (auto& node:allocatedNodes)
         {
             void* newPtr = meshBuffer->Claim();
             pointerMap.insert({node, newPtr});
@@ -190,6 +198,7 @@ namespace cmf
     CartesianMeshArray::~CartesianMeshArray(void)
     {
         definedNodes.clear();
+        allocatedNodes.clear();
         if (deleteMeshBuffer)
         {
             delete meshBuffer;
@@ -215,6 +224,11 @@ namespace cmf
             }
             currentOffset += blockSizeBytes;
         }
+    }
+    
+    bool CartesianMeshArray::ParallelPartitionContainsNode(RefinementTreeNode* node)
+    {
+        return this->Mesh()->GetPartition()->Mine(node);
     }
     
     void CartesianMeshArray::WriteFilterToFile(ParallelFile& file)
