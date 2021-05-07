@@ -63,7 +63,7 @@ namespace cmf
             /// @brief The object responsible for handling mesh exchanges.
             /// \pre Note that this is not built in the constructor, 
             /// but is created from an external call from CartesianMesh::CartesianMesh
-            CartesianMeshExchangeHandler* defaultHandler;
+            CartesianMeshExchangeHandler* defaultExchangeHandler;
             
             /// @brief Indicates whether or not the current object should delete defaultHandler
             bool requireDeleteDefaultHandler;

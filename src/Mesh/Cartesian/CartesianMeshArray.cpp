@@ -40,7 +40,6 @@ namespace cmf
     void CartesianMeshArray::CreateExchangePattern()
     {
         exchangePattern = this->handler->GetDefaultExchangeHandler()->CreateMeshArrayExchangePattern(this);
-        WriteLine(0, WarningStr() + " CartesianMeshArray::CreateExchangePattern not fully implemented");
     }
     
     void CartesianMeshArray::Exchange(void)
@@ -104,6 +103,7 @@ namespace cmf
         }
         
         meshBuffer->ClearVacantChunks();
+        this->handler->defaultExchangeHandler->CreateMeshArrayExchangePattern(this);
     }
     
     void* CartesianMeshArray::GetNodePointerWithNullDefault(RefinementTreeNode* node)

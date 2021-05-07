@@ -8,6 +8,7 @@
 #include "Vec.h"
 #include "BlockArray.h"
 #include "CmfPrint.h"
+#include "StringUtils.h"
 namespace cmf
 {
     CartesianMeshExchangeHandler::CartesianMeshExchangeHandler(CartesianMesh* mesh_in, CartesianMeshExchangeInfo& inputInfo)
@@ -18,7 +19,6 @@ namespace cmf
         exchangeDim = inputInfo.exchangeDim;
         int maxExchangeDim = 0;
         __dloop(maxExchangeDim = CMFMAX(maxExchangeDim, exchangeDim[d]));
-        this->RegisterToBlocks(mesh->Blocks());
         if ((mesh->Blocks()->GetRefinementConstraintType() != RefinementConstraint::factor2CompletelyConstrained) && (maxExchangeDim>0))
         {
             CmfError("CartesianMeshExchangeHandler cannot currently be created with any RefinementConstraint other than factor2CompletelyConstrained, found \""
@@ -31,7 +31,9 @@ namespace cmf
     {
         if (exchanges.find(meshArray)!=exchanges.end())
         {
-            CmfError("Attempted to define duplicate exchange pattern for array \"" + meshArray->GetFullName() + "\"");
+            WriteLine(4, strformat("Re-define exchange patters for \"{}\" on mesh \"{}\"", meshArray->variableName, mesh->title));
+            delete exchanges[meshArray];
+            exchanges.erase(meshArray);
         }
         DataExchangePattern* newPattern = new DataExchangePattern(mesh->GetGroup());
         DefineExchangePatternsForArray(meshArray, newPattern);
@@ -39,7 +41,6 @@ namespace cmf
         return newPattern;
     }
     
-    int warnings = 0; // temporary
     void CartesianMeshExchangeHandler::DefineExchangePatternsForArray(CartesianMeshArray* meshArray, DataExchangePattern* pattern)
     {
         WriteLine(5, "Define exchange pattern for variable \"" + meshArray->variableName + "\" on mesh \"" + mesh->title + "\"");
@@ -60,11 +61,7 @@ namespace cmf
                     }
                     else
                     {
-                        if (warnings<4)
-                        {
-                            WriteLine(1, WarningStr() + " defining exchange patterns not yet implemented between different refinement levels");
-                        }
-                        warnings++;
+                        CreateGeneralExchangePattern(pattern, meshArray, currentNode, neighborNode, neigh.Edge());
                     }
                 }
             }
@@ -230,9 +227,14 @@ namespace cmf
         pattern->Add(new MultiTransaction(sendBuffer, offsetsSend, sizesSend, currentRank, recvBuffer, offsetsRecv, sizesRecv, neighborRank));
     }
     
-    void CartesianMeshExchangeHandler::OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes)
+    void CartesianMeshExchangeHandler::CreateGeneralExchangePattern(
+        DataExchangePattern* pattern,
+        CartesianMeshArray* meshArray,
+        RefinementTreeNode* currentNode,
+        RefinementTreeNode* neighborNode, 
+        NodeEdge relationship)
     {
-        WriteLine(1, WarningStr() + " CartesianMeshExchangeHandler::OnPostRefinementCallback not implemented");
+        
     }
     
     CartesianMeshExchangeHandler::~CartesianMeshExchangeHandler(void)

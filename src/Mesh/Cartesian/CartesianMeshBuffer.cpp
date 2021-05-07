@@ -66,6 +66,7 @@ namespace cmf
     {
         int numChunksCleared = 0;
         int numBlocksCleared = 0;
+        int numVacantBlocks = 0;
         
         //should I delete the chunks? for now, they are just freed and reset
         for (auto& ch:chunks)
@@ -79,9 +80,10 @@ namespace cmf
                 ch.numBlocks = 0;
                 ch.numberOfVacantBlocks = 0;
             }
+            numVacantBlocks += ch.numberOfVacantBlocks;
         }
         
-        WriteLine(4, strformat("Cleared {} blocks from {} chunks", numBlocksCleared, numChunksCleared));
+        WriteLine(4, strformat("Cleared {} blocks from {} chunks. Available blocks remaining: {}", numBlocksCleared, numChunksCleared, numVacantBlocks));
     }
     
     void* CartesianMeshBuffer::Claim(void)

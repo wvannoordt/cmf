@@ -10,7 +10,7 @@ namespace cmf
         mesh = mesh_in;
         baseMesh = mesh_in;
         this->RegisterToBlocks(mesh_in->Blocks());
-        defaultHandler = NULL;
+        defaultExchangeHandler = NULL;
         requireDeleteDefaultHandler = false;
     }
     
@@ -35,13 +35,13 @@ namespace cmf
     
     CartesianMeshExchangeHandler* CartesianMeshArrayHandler::GetDefaultExchangeHandler(void)
     {
-        return defaultHandler;
+        return defaultExchangeHandler;
     }
     
     void CartesianMeshArrayHandler::CreateExchangeHandler(CartesianMeshExchangeInfo& inputInfo)
     {
         requireDeleteDefaultHandler = true;
-        defaultHandler = new CartesianMeshExchangeHandler(this->mesh, inputInfo);
+        defaultExchangeHandler = new CartesianMeshExchangeHandler(this->mesh, inputInfo);
     }
     
     CartesianMeshArrayHandler::~CartesianMeshArrayHandler(void)
@@ -49,7 +49,7 @@ namespace cmf
         if (requireDeleteDefaultHandler)
         {
             requireDeleteDefaultHandler = false;
-            delete defaultHandler;
+            delete defaultExchangeHandler;
         }
     }
     

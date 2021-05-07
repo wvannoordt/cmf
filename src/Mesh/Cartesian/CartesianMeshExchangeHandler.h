@@ -3,7 +3,6 @@
 #include "CmfError.h"
 #include "CmfScreen.h"
 #include "ICmfInputObject.h"
-#include "IPostRefinementCallback.h"
 #include "RefinementTreeNode.h"
 #include "DataExchangePattern.h"
 #include "CartesianMeshArray.h"
@@ -45,7 +44,7 @@ namespace cmf
     };
     /// @brief Defines an object for handling data exchanges on Cartesian meshes
     /// @author WVN
-    class CartesianMeshExchangeHandler : public IPostRefinementCallback
+    class CartesianMeshExchangeHandler
     {
         public:
             /// @brief Constructor
@@ -57,12 +56,6 @@ namespace cmf
             /// @brief Destructor
             /// @author WVN
             ~CartesianMeshExchangeHandler(void);
-            
-            /// @brief The callback function for new nodes
-            /// @param newChildNodes The newly created child nodes to be handled
-            /// @param newParentNodes The newly refined parent nodes to be handled
-            /// @author WVN
-            void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes) override final;
             
             /// @brief Creates a new parallel exchange pattern for the provided array
             /// @param meshArray The array to create an exchange pattern for
@@ -84,6 +77,20 @@ namespace cmf
             /// @param relationship The senderNode -> receiverNode relationship
             /// @author WVN
             void CreateDirectInjectionTransaction(
+                DataExchangePattern* pattern,
+                CartesianMeshArray* meshArray,
+                RefinementTreeNode* currentNode,
+                RefinementTreeNode* neighborNode, 
+                NodeEdge relationship);
+                
+            /// @brief Creates a generalized exchange pattern between two neighboring nodes
+            /// @param pattern The exchange pattern to add the transaction to
+            /// @param meshArray The array to define an exchange pattern for
+            /// @param currentNode The current node sending information
+            /// @param neighborNode The node that will receive information
+            /// @param relationship The senderNode -> receiverNode relationship
+            /// @author WVN
+            void CreateGeneralExchangePattern(
                 DataExchangePattern* pattern,
                 CartesianMeshArray* meshArray,
                 RefinementTreeNode* currentNode,
