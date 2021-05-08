@@ -10,6 +10,7 @@ This is a place where items for development can be listed. It feels great to che
  - [ ] Determine if the Synchronize in the DataExchangePattern is strictly necessary
  - [x] Clearer boundary in CartesianMeshArray between allocated and defined nodes
  - [ ] Design and implement the post-refinement callback sequence
+ - [ ] Implement single-file output for cartesian mesh array
  - [x] Complete implementation of CartesianMeshBuffer
  - [x] Ensure that exchange cells are properly output for cartesian mesh
  - [x] Implement the SeekString() in the parallel file class
