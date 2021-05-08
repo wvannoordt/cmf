@@ -10,6 +10,8 @@
 
 namespace cmf
 {
+
+    struct ExchangeContextBlockData;
     class CartesianMesh;
     struct CartesianMeshExchangeInfo : public ICmfInputObject
     {
@@ -69,33 +71,51 @@ namespace cmf
             /// @author WVN
             void DefineExchangePatternsForArray(CartesianMeshArray* meshArray, DataExchangePattern* pattern);
             
+            /// @brief Creates an exchange transaction between two neighboring nodes
+            /// @param pattern The exchange pattern to add the transaction to
+            /// @param meshArray The array to define an exchange pattern for
+            /// @param currentNode The current node sending information
+            /// @param neighborNode The node that will receive information
+            /// @param relationship The senderNode -> receiverNode relationship
+            /// @author WVN
+            void CreateExchangeTransaction(
+                DataExchangePattern* pattern,
+                CartesianMeshArray* meshArray,
+                RefinementTreeNode* currentNode,
+                RefinementTreeNode* neighborNode, 
+                NodeEdge relationship);
+            
             /// @brief Creates a direct-injection transaction between two neighboring nodes
             /// @param pattern The exchange pattern to add the transaction to
             /// @param meshArray The array to define an exchange pattern for
-            /// @param currentNode The current node sending information
-            /// @param neighborNode The node that will receive information
+            /// @param currentInfo Contains contextual information about the current node
+            /// @param neighborInfo Contains contextual information about the neighbor node
             /// @param relationship The senderNode -> receiverNode relationship
             /// @author WVN
-            void CreateDirectInjectionTransaction(
-                DataExchangePattern* pattern,
-                CartesianMeshArray* meshArray,
-                RefinementTreeNode* currentNode,
-                RefinementTreeNode* neighborNode, 
-                NodeEdge relationship);
+            void CreateDirectInjectionTransaction
+                (
+                    DataExchangePattern* pattern,
+                    CartesianMeshArray* meshArray,
+                    ExchangeContextBlockData& currentInfo,
+                    ExchangeContextBlockData& neighborInfo,
+                    NodeEdge& relationship
+                );
                 
-            /// @brief Creates a generalized exchange pattern between two neighboring nodes
+            /// @brief Creates a general interpolating transaction between two neighboring nodes
             /// @param pattern The exchange pattern to add the transaction to
             /// @param meshArray The array to define an exchange pattern for
-            /// @param currentNode The current node sending information
-            /// @param neighborNode The node that will receive information
+            /// @param currentInfo Contains contextual information about the current node
+            /// @param neighborInfo Contains contextual information about the neighbor node
             /// @param relationship The senderNode -> receiverNode relationship
             /// @author WVN
-            void CreateGeneralExchangePattern(
-                DataExchangePattern* pattern,
-                CartesianMeshArray* meshArray,
-                RefinementTreeNode* currentNode,
-                RefinementTreeNode* neighborNode, 
-                NodeEdge relationship);
+            void CreateGeneralExchangePattern
+                (
+                    DataExchangePattern* pattern,
+                    CartesianMeshArray* meshArray,
+                    ExchangeContextBlockData& currentInfo,
+                    ExchangeContextBlockData& neighborInfo,
+                    NodeEdge& relationship
+                );
             
             /// @brief mesh The mesh over which the exchanges are defined
             CartesianMesh* mesh;

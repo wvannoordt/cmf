@@ -9,6 +9,7 @@
 #include "BlockArray.h"
 #include "CmfPrint.h"
 #include "StringUtils.h"
+#include "ExchangeContextBlockData.h"
 namespace cmf
 {
     CartesianMeshExchangeHandler::CartesianMeshExchangeHandler(CartesianMesh* mesh_in, CartesianMeshExchangeInfo& inputInfo)
@@ -53,35 +54,28 @@ namespace cmf
                 {
                     RefinementTreeNode* currentNode  = lb.Node();
                     RefinementTreeNode* neighborNode = neigh.Node();
-                    //This might need to become more sophisticated
-                    bool isDirectInjection = currentNode->IsSameDimensionsAs(neighborNode);
-                    if (isDirectInjection)
-                    {
-                        CreateDirectInjectionTransaction(pattern, meshArray, currentNode, neighborNode, neigh.Edge());
-                    }
-                    else
-                    {
-                        CreateGeneralExchangePattern(pattern, meshArray, currentNode, neighborNode, neigh.Edge());
-                    }
+                    
+                    CreateExchangeTransaction(pattern, meshArray, currentNode, neighborNode, neigh.Edge());
                 }
             }
         }
     }
     
-    void CartesianMeshExchangeHandler::CreateDirectInjectionTransaction(
+    void CartesianMeshExchangeHandler::CreateExchangeTransaction(
         DataExchangePattern* pattern,
         CartesianMeshArray* meshArray,
         RefinementTreeNode* currentNode,
-        RefinementTreeNode* neighborNode, 
+        RefinementTreeNode* neighborNode,
         NodeEdge relationship)
     {
-        //This almost certainly needs to be broken up into sub-functions...
+        ExchangeContextBlockData current;
+        ExchangeContextBlockData neighbor;
         
         //Retrieve partition info and block dimensions from the mesh
-        BlockPartitionInfo currentNodeInfo  = mesh->partition->GetPartitionInfo(currentNode);
-        BlockPartitionInfo neighborNodeInfo = mesh->partition->GetPartitionInfo(neighborNode);
-        BlockInfo currentNodeBlockInfo  = mesh->GetBlockInfo(currentNode);
-        BlockInfo neighborNodeBlockInfo = mesh->GetBlockInfo(neighborNode);
+        current.partitionInfo  = mesh->partition->GetPartitionInfo(currentNode);
+        neighbor.partitionInfo = mesh->partition->GetPartitionInfo(neighborNode);
+        current.blockInfo      = mesh->GetBlockInfo(currentNode);
+        neighbor.blockInfo     = mesh->GetBlockInfo(neighborNode);
         
         //Compute the size of a single array "element"
         size_t singleCellSize = SizeOfArrayType(meshArray->elementType);
@@ -89,51 +83,89 @@ namespace cmf
         {
             singleCellSize *= meshArray->dims[i];
         }
+        
         //Compute array sizes for data transfer
-        int niCurrent = currentNodeBlockInfo.totalDataDim[0];
-        int njCurrent = currentNodeBlockInfo.totalDataDim[1];
+        int niCurrent = current.blockInfo.totalDataDim[0];
+        int njCurrent = current.blockInfo.totalDataDim[1];
         int nkCurrent = 1;
-        int niNeighbor = neighborNodeBlockInfo.totalDataDim[0];
-        int njNeighbor = neighborNodeBlockInfo.totalDataDim[1];
+        int niNeighbor = neighbor.blockInfo.totalDataDim[0];
+        int njNeighbor = neighbor.blockInfo.totalDataDim[1];
         int nkNeighbor = 1;
 #if(CMF_IS3D)
-        nkCurrent  = currentNodeBlockInfo.totalDataDim[2];
-        nkNeighbor = neighborNodeBlockInfo.totalDataDim[2];
+        nkCurrent  = current.blockInfo.totalDataDim[2];
+        nkNeighbor = neighbor.blockInfo.totalDataDim[2];
 #endif
         bool exchangeDimsEqual = true;
-        __dloop(exchangeDimsEqual = exchangeDimsEqual && (currentNodeBlockInfo.exchangeDim[d] == neighborNodeBlockInfo.exchangeDim[d]));
+        __dloop(exchangeDimsEqual = exchangeDimsEqual && (current.blockInfo.exchangeDim[d] == neighbor.blockInfo.exchangeDim[d]));
         
         //Create temporary arrays (these are not allocated)
-        MdArray<char, 4> currentData(singleCellSize, niCurrent, njCurrent, nkCurrent);
-        MdArray<char, 4> neighData(singleCellSize, niNeighbor, njNeighbor, nkNeighbor);
+        MdArray<char, 4> curArray(singleCellSize, niCurrent, njCurrent, nkCurrent);
+        current.array = curArray;
+        
+        MdArray<char, 4> neiArray(singleCellSize, niCurrent, njCurrent, nkCurrent);
+        neighbor.array = neiArray;
         
         //Manually assign data pointers
-        currentData.data = (char*)(meshArray->GetNodePointerWithNullDefault(currentNode));
-        neighData.data   = (char*)(meshArray->GetNodePointerWithNullDefault(neighborNode));
+        current.array.data    = (char*)(meshArray->GetNodePointerWithNullDefault(currentNode));
+        neighbor.array.data   = (char*)(meshArray->GetNodePointerWithNullDefault(neighborNode));
         
-        //Check that all dimensions are equal among the blocks
-        bool allDimsEqual = true;
-        allDimsEqual = allDimsEqual && (niNeighbor==niCurrent);
-        allDimsEqual = allDimsEqual && (njNeighbor==njCurrent);
-        allDimsEqual = allDimsEqual && (nkNeighbor==nkCurrent);
-        
-        Vec3<int> exchangeSizeCurrent(currentNodeBlockInfo.exchangeDim[0], currentNodeBlockInfo.exchangeDim[1], 0);
-        Vec3<int> exchangeSizeNeighbor(neighborNodeBlockInfo.exchangeDim[0], neighborNodeBlockInfo.exchangeDim[1], 0);
+        Vec3<int> exchangeSizeCurrent(current.blockInfo.exchangeDim[0], current.blockInfo.exchangeDim[1], 0);
+        Vec3<int> exchangeSizeNeighbor(neighbor.blockInfo.exchangeDim[0], neighbor.blockInfo.exchangeDim[1], 0);
         Vec3<int> meshSizeCurrent(niCurrent, njCurrent, nkCurrent);
         Vec3<int> meshSizeNeighbor(niNeighbor, njNeighbor, nkNeighbor);
 #if(CMF_IS3D)
-        exchangeSizeCurrent[2] = currentNodeBlockInfo.exchangeDim[2];
-        exchangeSizeNeighbor[2] = neighborNodeBlockInfo.exchangeDim[2];
+        exchangeSizeCurrent[2] = current.blockInfo.exchangeDim[2];
+        exchangeSizeNeighbor[2] = neighbor.blockInfo.exchangeDim[2];
 #endif
-        Vec3<int> exchangeSize = exchangeSizeNeighbor;
-        Vec3<int> meshSize = meshSizeCurrent - exchangeSize*2;
 
-        if (!exchangeDimsEqual || !allDimsEqual)
+        current.exchangeSize = exchangeSizeCurrent;
+        current.meshSize     = meshSizeCurrent;
+
+        neighbor.exchangeSize = exchangeSizeNeighbor;
+        neighbor.meshSize     = meshSizeNeighbor;
+        
+        //Check if the transaction will be a direct injection
+        bool isDirectInjection = currentNode->IsSameDimensionsAs(neighborNode);        
+        if (isDirectInjection)
+        {
+            CreateDirectInjectionTransaction(pattern, meshArray, current, neighbor, relationship);
+        }
+        else
+        {
+            CreateGeneralExchangePattern(pattern, meshArray, current, neighbor, relationship);
+        }
+    }
+    
+    void CartesianMeshExchangeHandler::CreateDirectInjectionTransaction
+        (
+            DataExchangePattern* pattern,
+            CartesianMeshArray* meshArray,
+            ExchangeContextBlockData& currentInfo,
+            ExchangeContextBlockData& neighborInfo,
+            NodeEdge& relationship
+        )
+    {
+        size_t singleCellSize = currentInfo.array.dims[0];
+        
+        auto& currentData = currentInfo.array;
+        auto& neighData = neighborInfo.array;
+        
+        //Check that all dimensions are equal among the blocks
+        bool allDimsEqual = true;
+        for (int d = 0; d < CMF_DIM; d++)
+        {
+            allDimsEqual = allDimsEqual && (currentInfo.exchangeSize[d]==neighborInfo.exchangeSize[d]);
+            allDimsEqual = allDimsEqual && (currentInfo.meshSize[d]==neighborInfo.meshSize[d]);
+        }
+
+        if (!allDimsEqual)
         {
             std::string xonmeshy = "\"" + meshArray->variableName + "\" on mesh \"" + mesh->title + "\"";
-            CmfError("Attempted to define a direct-injection pattern for variable " + xonmeshy + ", but found inconsistent dimensions: \nBlock dimensions:    " + 
-                meshSizeCurrent.str() + " / " + meshSizeNeighbor.str() + "\nExchange dimensions: " + exchangeSizeCurrent.str() + " / " + exchangeSizeNeighbor.str());
+            CmfError("Attempted to define a direct-injection pattern for variable " + xonmeshy + ", but found inconsistent dimensions");
         }
+        
+        Vec3<int> exchangeSize = currentInfo.exchangeSize;
+        Vec3<int> meshSize = neighborInfo.meshSize - exchangeSize*2;
         
         //These will evetually determine the offsets
         Vec3<cell_t> ijkMinSend(0, 0, 0);
@@ -211,9 +243,9 @@ namespace cmf
             }
         }
         
-        int currentRank  = currentNodeInfo.rank;
-        int neighborRank = neighborNodeInfo.rank;
-        if (!currentNodeInfo.isCPU || !neighborNodeInfo.isCPU)
+        int currentRank  = currentInfo.partitionInfo.rank;
+        int neighborRank = neighborInfo.partitionInfo.rank;
+        if (!currentInfo.partitionInfo.isCPU || !neighborInfo.partitionInfo.isCPU)
         {
             CmfError("GPU exchanges are not implemented yet!!!!");
         }
@@ -227,12 +259,14 @@ namespace cmf
         pattern->Add(new MultiTransaction(sendBuffer, offsetsSend, sizesSend, currentRank, recvBuffer, offsetsRecv, sizesRecv, neighborRank));
     }
     
-    void CartesianMeshExchangeHandler::CreateGeneralExchangePattern(
-        DataExchangePattern* pattern,
-        CartesianMeshArray* meshArray,
-        RefinementTreeNode* currentNode,
-        RefinementTreeNode* neighborNode, 
-        NodeEdge relationship)
+    void CartesianMeshExchangeHandler::CreateGeneralExchangePattern
+        (
+            DataExchangePattern* pattern,
+            CartesianMeshArray* meshArray,
+            ExchangeContextBlockData& currentInfo,
+            ExchangeContextBlockData& neighborInfo,
+            NodeEdge& relationship
+        )
     {
         
     }

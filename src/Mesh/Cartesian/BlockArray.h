@@ -121,6 +121,28 @@ namespace cmf
     	int dims[arRank];
         int idxCoeff[arRank];
         
+        /// @brief Copy constructor
+        /// @author WVN
+        /// @param rhs The array assigned from
+        MdArray(const MdArray& rhs)
+        {
+            data = rhs.data;
+            rank = rhs.rank;
+            for (int i = 0; i < arRank; i++)
+            {
+                dims[i] = rhs.dims[i];
+                idxCoeff[i] = rhs.idxCoeff[i];
+            }
+        }
+        
+        /// @brief Constructor helper function, allows for default constructor definition
+        /// @author WVN
+        /// @param lev Unused parameter
+    	void Ralloc(int lev)
+    	{
+    		
+    	}
+        
         /// @brief Constructor function
         /// @author WVN
         /// @param lev The recursive level
