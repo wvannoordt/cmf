@@ -54,7 +54,13 @@ namespace cmf
             /// @brief Returns an array with the value given by process i stored at location i \pre Note that the returned array is only valid until the next call of this function!
             /// @param n The value to share
             /// @author WVN
-            void* SharedValues(int n);
+            template <typename sType> sType* SharedValues(sType n)
+            {
+                char* buf = (char*)(&n);
+                int ct = (int)sizeof(sType);
+                AllGather(buf, ct, parallelChar, workArray, ct, parallelChar);
+                return (sType*)workArray;
+            }
             
             /// @brief Returns the sum of the values on all ranks
             /// @param val The value to sum

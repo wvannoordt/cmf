@@ -124,12 +124,6 @@ namespace cmf
         return output;
     }
     
-    void* ParallelGroup::SharedValues(int n)
-    {
-        AllGather(&n, 1, parallelInt, workArray, 1, parallelInt);
-        return workArray;
-    }
-    
     void ParallelGroup::AllGather(const void *sendbuf, int sendcount, ParallelDataType sendtype, void *recvbuf, int recvcount, ParallelDataType recvtype)
     {
         MpiAutoInitIfRequired();
