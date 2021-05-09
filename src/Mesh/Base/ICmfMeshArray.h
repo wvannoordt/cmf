@@ -81,6 +81,13 @@ namespace cmf
             /// @author WVN
             virtual ICmfMeshBuffer* MeshBuffer(void) {return NULL;}
             
+            /// @brief Returns variableComponentNames
+            /// @author WVN
+            std::vector<std::string> GetComponentNames(void)
+            {
+                return variableComponentNames;
+            }
+            
         protected:
             
             /// @brief Gets the default component name for a variable
