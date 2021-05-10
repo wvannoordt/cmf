@@ -71,6 +71,11 @@ namespace cmf
     //This is a bit of a mess at the moment
     void CartesianMeshArrayParallelVtkWriter::Export(CartesianMeshArray& array)
     {
+        if (array.GetElementType() != CmfArrayType::CmfDouble)
+        {
+            CmfError(strformat("CartesianMeshArrayParallelVtkWriter::Export currently only supports double-precision array ouput, found {} instead", CmfArrayTypeToString(array.GetElementType())));
+        }
+        
         //create comma-separated list of the variable components
         auto vnames = array.GetComponentNames();
         std::string varsString = "";
