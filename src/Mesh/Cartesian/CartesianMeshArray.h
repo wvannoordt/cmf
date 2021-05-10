@@ -84,6 +84,10 @@ namespace cmf
             /// @brief Returns the name of this variable including the name of the mesh
             /// @author WVN
             std::string GetFullName(void);
+            
+            /// @brief Returns the size (in bytes) of the data stored in a single cell
+            /// @author WVN
+            size_t GetSingleCellSizeBytes(void);
         
             /// @brief Allows for direct indexing using a block iterator
             /// @param it The block iterator to index with
@@ -145,6 +149,19 @@ namespace cmf
             /// @param file The file to write to
             /// @author WVN
             virtual void WriteToFile(ParallelFile& file) override final;
+            
+            /// @brief Exports the array to an externally-readable format
+            /// @param directory The directory to output the file to
+            /// @param fileTitle The base name of the file, with no file extension
+            /// @author WVN
+            void ExportFile(std::string directory, std::string fileTitle);
+            
+            /// @brief Returns the base type of this array
+            /// @author WVN
+            CmfArrayType::CmfArrayType GetElementType(void)
+            {
+                return elementType;
+            }
             
         private:
             
@@ -216,6 +233,7 @@ namespace cmf
             std::vector<RefinementTreeNode*> allocatedNodes;
             
             template <typename arType, const int elementRank> friend struct BlockArray;
+            friend struct RawUnwrappedBlockArray;
             friend class CartesianMeshExchangeHandler;
     };
 }

@@ -254,6 +254,7 @@ namespace cmf
             friend class CartesianMeshParallelPartition;
             friend class CartesianMeshExchangeHandler;
             template <typename arType, const int elementRank> friend struct BlockArray;
+            friend struct RawUnwrappedBlockArray;
     };
 }
 

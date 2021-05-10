@@ -4,6 +4,7 @@
 #include "CartesianMesh.h"
 #include "StringUtils.h"
 #include "BlockIterator.h"
+#include "CartesianMeshArrayParallelVtkWriter.h"
 namespace cmf
 {
     CartesianMeshArray::CartesianMeshArray(ArrayInfo info, CartesianMeshArrayHandler* handler_in, NodeFilter_t filter_in) : ICmfMeshArray(info)
@@ -157,6 +158,14 @@ namespace cmf
         return (*this)[it.Node()];
     }
     
+    size_t CartesianMeshArray::GetSingleCellSizeBytes(void)
+    {
+        size_t output = SizeOfArrayType(elementType);
+        int rankMult = 1;
+        for (int i = 0; i < rank; i++) rankMult *= dims[i];
+        return output * rankMult;
+    }
+    
     CartesianMeshArrayPointerPair CartesianMeshArray::operator [] (RefinementTreeNode* node)
     {
         if (!IsSupportedBlock(node)) CmfError("Attempted to index variable \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\" on an unsupported block");
@@ -203,6 +212,12 @@ namespace cmf
         {
             delete meshBuffer;
         }
+    }
+    
+    void CartesianMeshArray::ExportFile(std::string directory, std::string fileTitle)
+    {
+        CartesianMeshArrayParallelVtkWriter writerObj(directory, fileTitle);
+        writerObj.Export(*this);
     }
     
     void CartesianMeshArray::Destroy(void)

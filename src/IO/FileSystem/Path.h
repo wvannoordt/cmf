@@ -89,7 +89,7 @@ namespace cmf
     ///@param stream Original stream
     ///@param pth the path to stream
     ///@author WVN
-    std::ostream& operator<< (std::ostream& stream, Path& pth)
+    static std::ostream& operator<< (std::ostream& stream, Path& pth)
     {
         stream << pth.Str();
         return stream;

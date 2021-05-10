@@ -1,0 +1,26 @@
+GlobalSettings
+{
+	Display
+	{
+		debugLevel = 5
+		trackOutputOrigins = false
+		colorOutput = true
+	}
+	Memory
+	{
+		allowStackAllocation = false
+	}
+}
+Domain
+{
+	blockDim = [2, 2, 2]
+	blockBounds = [0, 1, 0, 1, 0, 1]
+	meshDataDim = [2, 2, 2]
+	refinementConstraintType = factor2CompletelyConstrained
+	periodicRefinement = [true,true,true]
+	Exchanges
+	{
+		exchangeDim = [1, 1, 1]
+		interpolationOrder = 2
+	}
+}

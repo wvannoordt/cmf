@@ -22,4 +22,5 @@ This is a place where items for development can be listed. It feels great to che
  - [ ] Change surface representation to accommodate 2-D surfaces
  - [ ] Change surface representation to store nodes and topology (instead of stl-ish format)
  - [ ] Move mesh array define functions to base class
+ - [ ] Move general-purpose mesh array functions into base class
  - [ ] Write config system in Python

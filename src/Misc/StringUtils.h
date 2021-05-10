@@ -241,6 +241,17 @@ namespace cmf
         int lev = 0;
         strunformat_recursive(data, templateStr, subStrings, lev, ts...);
     }
+    
+    /// @brief Returns a stirng of space characters with the specified length
+    /// @param len The length of the string to return
+    /// @author WVN
+    static inline std::string spaces(int len)
+    {
+        std::string output = "";
+        if (len==0) return output;
+        while ((output+= " ").length()<len) {}
+        return output;
+    }
 }
 
 #endif
