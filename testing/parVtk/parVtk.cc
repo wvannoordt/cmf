@@ -35,18 +35,24 @@ void FillAr(cmf::CartesianMeshArray& ar)
     {
         cmf::BlockArray<double, 1> arLb = ar[lb];
         cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
+        int ijk[3] = {0};
         for (cell_t k = arLb.kmin; k < arLb.kmax; k++)
         {
+            ijk[2] = k;
             for (cell_t j = arLb.jmin; j < arLb.jmax; j++)
             {
+                ijk[1] = j;
                 for (cell_t i = arLb.imin; i < arLb.imax; i++)
                 {
-                    double x = info.blockBounds[0] + (0.5 + (double)i)*info.dx[0];
-                    double y = info.blockBounds[2] + (0.5 + (double)j)*info.dx[1];
-                    double z = info.blockBounds[4] + (0.5 + (double)k)*info.dx[2];
-                    arLb(0, i, j, k) = sin(x)*cos(y-0.4) + cos(2.0*x)+sin(z);
-                    arLb(1, i, j, k) = sin(2*x)*cos(y-0.4) + cos(2.0*x)+sin(z);
-                    arLb(2, i, j, k) = cos(x)*sin(y-0.4) + sin(2.0*x)+sin(z);
+                    ijk[0] = i;
+                    double xyz[3] = {0.0};
+                    for (int d = 0; d < CMF_DIM; d++)
+                    {
+                        xyz[d] = info.blockBounds[2*d] + (0.5 + (double)ijk[d])*info.dx[d];
+                    }
+                    arLb(0, i, j, k) = sin(xyz[0])*cos(xyz[1]-0.4) + cos(2.0*xyz[0])+sin(xyz[2]);
+                    arLb(1, i, j, k) = sin(2*xyz[0])*cos(xyz[1]-0.4) + cos(2.0*xyz[0])+sin(xyz[2]);
+                    arLb(2, i, j, k) = cos(xyz[0])*sin(xyz[1]-0.4) + sin(2.0*xyz[0])+sin(xyz[2]);
                 }
             }
         }
@@ -56,9 +62,8 @@ void FillAr(cmf::CartesianMeshArray& ar)
 int main(int argc, char** argv)
 {
     EXIT_WARN_IF_PARALLEL;
-    EXIT_WARN_IF_DIM_NOT(3);
-    
-    cmf::ReadInput("input.ptl");
+    std::string inFile = strformat("input{}D.ptl", CMF_DIM);
+    cmf::ReadInput(inFile);
     cmf::globalSettings = cmf::GlobalSettings(cmf::mainInput["GlobalSettings"]);
     cmf::CreateParallelContext(&argc, &argv);
 
@@ -71,9 +76,18 @@ int main(int argc, char** argv)
     auto node = domain.Blocks()->GetNodeAt(coords);
     std::vector<decltype(node)> nodes;
     nodes.push_back(node);
-    domain.Blocks()->RefineNodes(nodes, 3);
+    domain.Blocks()->RefineNodes(nodes, 1);
+    std::vector<decltype(node)> nodes2;
+    auto node2 = domain.Blocks()->GetNodeAt(coords);
+    nodes2.push_back(node2);
+    domain.Blocks()->RefineNodes(nodes2, 2);
     
     auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble, {3});
+    
+    var.ComponentName({0}) = "array0";
+    var.ComponentName({1}) = "array1";
+    var.ComponentName({2}) = "array2";
+    
     FillArGhost(var, -1.0);
     FillAr(var);
     
