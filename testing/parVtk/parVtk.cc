@@ -12,7 +12,7 @@ void FillArGhost(cmf::CartesianMeshArray& ar, double val)
 {
     for (auto lb: ar)
     {
-        cmf::BlockArray<double> arLb = ar[lb];
+        cmf::BlockArray<double, 1> arLb = ar[lb];
         cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
         for (cell_t k = arLb.kmin-arLb.exchangeK; k < arLb.kmax+arLb.exchangeK; k++)
         {
@@ -20,18 +20,20 @@ void FillArGhost(cmf::CartesianMeshArray& ar, double val)
             {
                 for (cell_t i = arLb.imin-arLb.exchangeI; i < arLb.imax+arLb.exchangeI; i++)
                 {
-                    arLb(i, j, k) = val;
+                    arLb(0, i, j, k) = val;
+                    arLb(1, i, j, k) = val;
+                    arLb(2, i, j, k) = val;
                 }
             }
         }
     }
 }
 
-void FillAr(cmf::CartesianMeshArray& ar, double val)
+void FillAr(cmf::CartesianMeshArray& ar)
 {
     for (auto lb: ar)
     {
-        cmf::BlockArray<double> arLb = ar[lb];
+        cmf::BlockArray<double, 1> arLb = ar[lb];
         cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
         for (cell_t k = arLb.kmin; k < arLb.kmax; k++)
         {
@@ -39,7 +41,12 @@ void FillAr(cmf::CartesianMeshArray& ar, double val)
             {
                 for (cell_t i = arLb.imin; i < arLb.imax; i++)
                 {
-                    arLb(i, j, k) = val;
+                    double x = info.blockBounds[0] + (0.5 + (double)i)*info.dx[0];
+                    double y = info.blockBounds[2] + (0.5 + (double)j)*info.dx[1];
+                    double z = info.blockBounds[4] + (0.5 + (double)k)*info.dx[2];
+                    arLb(0, i, j, k) = sin(x)*cos(y-0.4) + cos(2.0*x)+sin(z);
+                    arLb(1, i, j, k) = sin(2*x)*cos(y-0.4) + cos(2.0*x)+sin(z);
+                    arLb(2, i, j, k) = cos(x)*sin(y-0.4) + sin(2.0*x)+sin(z);
                 }
             }
         }
@@ -64,11 +71,11 @@ int main(int argc, char** argv)
     auto node = domain.Blocks()->GetNodeAt(coords);
     std::vector<decltype(node)> nodes;
     nodes.push_back(node);
-    // domain.Blocks()->RefineNodes(nodes, 7);
+    domain.Blocks()->RefineNodes(nodes, 3);
     
-    auto& var = domain.DefineVariable("preData");
+    auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble, {3});
     FillArGhost(var, -1.0);
-    FillAr(var, 0.9);
+    FillAr(var);
     
     var.ExportFile("output", "test");
     

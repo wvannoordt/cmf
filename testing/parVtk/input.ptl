@@ -14,13 +14,13 @@ GlobalSettings
 Domain
 {
 	blockDim = [2, 2, 2]
-	blockBounds = [0, 1, 0, 1, 0, 1]
-	meshDataDim = [2, 2, 2]
+	blockBounds = [0, 5, 0, 5, 0, 5]
+	meshDataDim = [16, 16, 16]
 	refinementConstraintType = factor2CompletelyConstrained
 	periodicRefinement = [true,true,true]
 	Exchanges
 	{
-		exchangeDim = [1, 1, 1]
+		exchangeDim = [2, 2, 2]
 		interpolationOrder = 2
 	}
 }
