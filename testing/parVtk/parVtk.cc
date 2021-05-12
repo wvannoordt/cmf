@@ -130,7 +130,9 @@ bool refineArr(cmf::CartesianMeshArray& ar)
                         char refY = (gy > refineVal)?2:0;
                         char refZ = (gz > refineVal)?4:0;
                         if (!CMF_IS3D) refZ = 0;
-                        char result = refX | refY | refZ;
+                        char result = refX;
+                        result = result | refY;
+                        result = result | refZ;
                         // result = 0;
                         // if (ff>0.1) result = 3;
                         if (result>0)

@@ -32,6 +32,10 @@ namespace cmf
             /// @author WVN
             std::string GetMetaFileName(CartesianMeshArray& array);
             
+            /// @brief Returns the template string for the level directory
+            /// @author WVN
+            std::string LevelDirectoryFormatString(void);
+            
             /// @brief Returns the template name of a block file relative to the metafile
             /// @param array The array being output
             /// @author WVN

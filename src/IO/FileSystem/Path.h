@@ -43,7 +43,7 @@ namespace cmf
             ///@brief append operator
             ///@param str the string to append
             ///@author WVN
-            Path& operator += (std::string& str)
+            Path& operator += (std::string str)
             {
                 Path addPath(str);
                 this->Append(addPath);

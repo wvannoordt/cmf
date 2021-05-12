@@ -3,9 +3,10 @@
 #include "CartesianMesh.h"
 #include "BlockArray.h"
 #include "Path.h"
+#include "CreateDirectory.h"
 #include "Utils.hx"
 #include "Base64ByteConversionStream.h"
-
+#include <set>
 namespace cmf
 {
     CartesianMeshArrayParallelVtkWriter::CartesianMeshArrayParallelVtkWriter(std::string directory_in, std::string fileTitle_in)
@@ -33,7 +34,9 @@ namespace cmf
     {
         //Create prototype path for the  block outputs
         Path outputPathBlockPrototype(outputDirectory);
+        std::string levelPrototype = "lev{}";
         std::string str1 = fileTitle + "_bk{}.vtr";
+        outputPathBlockPrototype += levelPrototype;
         outputPathBlockPrototype += str1;
         std::string blockTemplateFileName = outputPathBlockPrototype.Str();
         return blockTemplateFileName;
@@ -42,8 +45,11 @@ namespace cmf
     std::string CartesianMeshArrayParallelVtkWriter::GetBlockFileTemplateRelativeToMetaFile(CartesianMeshArray& array)
     {
         //Create prototype path for the  block outputs
+        std::string levelPrototype = "lev{}";
+        Path outputPathBlockPrototype(levelPrototype);
         std::string str1 = fileTitle + "_bk{}.vtr";
-        return str1;
+        outputPathBlockPrototype += str1;
+        return outputPathBlockPrototype.Str();
     }
     
     Vec3<int> CartesianMeshArrayParallelVtkWriter::GetLargestBlockDims(CartesianMeshArray& array)
@@ -68,12 +74,25 @@ namespace cmf
         return output;
     }
     
-    //This is a bit of a mess at the moment
+    std::string CartesianMeshArrayParallelVtkWriter::LevelDirectoryFormatString(void)
+    {
+        return "lev{}";
+    }
+    
+    //This is a bit of a mess at the moment, split this up into sub-functions!
     void CartesianMeshArrayParallelVtkWriter::Export(CartesianMeshArray& array)
     {
         if (array.GetElementType() != CmfArrayType::CmfDouble)
         {
             CmfError(strformat("CartesianMeshArrayParallelVtkWriter::Export currently only supports double-precision array ouput, found {} instead", CmfArrayTypeToString(array.GetElementType())));
+        }
+        
+        //Create a top-level directory
+        Path topLevelDirectory(outputDirectory);
+        topLevelDirectory += fileTitle;
+        if (!CreateDirectory(topLevelDirectory))
+        {
+            CmfError(strformat("CartesianMeshArrayParallelVtkWriter::Export failed to create directory {}", topLevelDirectory.Str()));
         }
         
         //create comma-separated list of the variable components
@@ -104,10 +123,24 @@ namespace cmf
         
         int numBlocksWritten = 0;
         int numBlocksLocal = 0;
+        std::set<int> allLevels;
+        std::map<int, int> blockIndexToLevels;
         for (auto lb: array)
         {
+            if (allLevels.find(lb->GetLevel()) == allLevels.end()) allLevels.insert(lb->GetLevel());
+            blockIndexToLevels.insert({numBlocksLocal, lb->GetLevel()});
             numBlocksLocal++;
         }
+        for (auto& l:allLevels)
+        {
+            Path levelDirectory(topLevelDirectory);
+            levelDirectory += strformat(this->LevelDirectoryFormatString(), l);
+            if (!CreateDirectory(levelDirectory))
+            {
+                CmfError(strformat("CartesianMeshArrayParallelVtkWriter::Export failed to create directory {}", levelDirectory.Str()));
+            }
+        }
+        
         int* allBlocks = parGroup->SharedValues(numBlocksLocal);
         int blocksBefore = 0;
         int totalNumBlocksWritten = parGroup->Sum(numBlocksLocal);
