@@ -7,7 +7,7 @@ This is a place where items for development can be listed. It feels great to che
  - [x] Design the CMF database I/O model and implement the appropriate base classes
  - [x] Implement I/O for mesh arrays and block refinement
  - [x] Implement CmfMeshDataBuffer class to replace simple void pointer
- - [ ] Determine if the Synchronize in the DataExchangePattern is strictly necessary
+ - [x] Determine if the Synchronize in the DataExchangePattern is strictly necessary (it is not)
  - [x] Clearer boundary in CartesianMeshArray between allocated and defined nodes
  - [ ] Design and implement the post-refinement callback sequence
  - [x] Implement single-file output for cartesian mesh array
@@ -25,3 +25,4 @@ This is a place where items for development can be listed. It feels great to che
  - [ ] Move general-purpose mesh array functions into base class
  - [ ] Write config system in Python
  - [ ] Modify fixed-size arrays to be always 3D with 2-D default values
+ - [ ] Vtk blocks in bespoke directories
