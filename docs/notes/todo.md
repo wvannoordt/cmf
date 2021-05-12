@@ -25,4 +25,5 @@ This is a place where items for development can be listed. It feels great to che
  - [ ] Move general-purpose mesh array functions into base class
  - [ ] Write config system in Python
  - [ ] Modify fixed-size arrays to be always 3D with 2-D default values
- - [ ] Vtk blocks in bespoke directories
+ - [x] Vtk blocks in bespoke directories
+ - [ ] Implement Error code handling for CreateDirectory, best bet is probably try-catch

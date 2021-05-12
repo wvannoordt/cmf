@@ -169,6 +169,15 @@ bool refineArr(cmf::CartesianMeshArray& ar)
     return done;
 }
 
+void SillyRefine(cmf::CartesianMeshArray& ar)
+{
+    std::vector<cmf::RefinementTreeNode*> nodes;
+    char refType = 3;
+    double coords[CMF_DIM]={0.3};
+    nodes.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
+    ar.Mesh()->Blocks()->RefineNodes(nodes, refType);
+}
+
 int main(int argc, char** argv)
 {
     EXIT_WARN_IF_PARALLEL;
@@ -180,9 +189,10 @@ int main(int argc, char** argv)
     cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
     cmf::CartesianMesh domain(inputInfo);        
     auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble, {4});
-    refineArr(var);
-    refineArr(var);
-    refineArr(var);
+    // refineArr(var);
+    // refineArr(var);
+    // refineArr(var);
+    SillyRefine(var);
     
     var.ComponentName({0}) = "f";
     var.ComponentName({1}) = "df_dx";

@@ -5,6 +5,7 @@
 #include "ParallelTypes.h"
 #include "CudaDeviceHandler.h"
 #include "ICmfHashable.h"
+#include "CmfPrint.h"
 namespace cmf
 {
     /// @brief Class defining a parrallel group around a parallel communicator.
@@ -117,6 +118,17 @@ namespace cmf
             /// @author WVN
             void AllGather(const void *sendbuf, int sendcount, ParallelDataType sendtype, void *recvbuf, int recvcount, ParallelDataType recvtype);
             
+            /// @brief Eqivalent to <a href="https://www.mpich.org/static/docs/v3.2/www3/MPI_Gatherv.html">MPI_Gatherv</a>
+            /// @param sendbuf starting address of send buffer
+            /// @param sendcount number of elements in send buffer
+            /// @param sendtype data type of send buffer elements
+            /// @param recvbuf starting address of received buffer
+            /// @param recvcounts number of elements received from any process
+            /// @param displs integer array (of length group size). Entry i specifies the displacement (relative to recvbuf) at which to place the incoming data from process i
+            /// @param recvtype data type of receive buffer elements
+            /// @author WVN
+            void Gatherv(const void *sendbuf, int sendcount, ParallelDataType sendtype, void *recvbuf, const int* recvcounts, const int* displs, ParallelDataType recvtype);
+            
             /// @brief Eqivalent to <a href="https://www.mpich.org/static/docs/latest/www3/MPI_Allreduce.html">MPI_Allreduce</a>
             /// @param sendbuf starting address of send buffer
             /// @param recvbuf starting address of received buffer
@@ -126,6 +138,26 @@ namespace cmf
             /// @author WVN
             void AllReduce(const void *sendbuf, void *recvbuf, int count, ParallelDataType datatype, ParallelOperation op);
             
+            /// @brief Returns a vector on only the root rank that contains the rank-ordered and appended list provided.
+            ///Should not be used for large amounts of data
+            /// @param inputList the elements on the local rank
+            /// @param outputList the concatenated elements on the root ranks (output, this vector will be cleared)
+            /// @author WVN
+            template <typename gtype> void GetAppendedListOnRoot(std::vector<gtype>& inputList, std::vector<gtype>& outputList)
+            {
+                outputList.clear();
+                size_t globNumElems = this->Sum(inputList.size());
+                std::vector<int> displacements;
+                displacements.resize(this->Size(), 0);
+                int* numberElementsPerRank = this->SharedValues((int)inputList.size());
+                displacements[0] = 0;
+                for (int i = 1; i < this->Size(); i++)
+                {
+                    displacements[i] = displacements[i-1] + numberElementsPerRank[i-1];
+                }
+                if (this->IsRoot()) outputList.resize(globNumElems);
+                Gatherv(&inputList[0], inputList.size(), parallelInt, &outputList[0], numberElementsPerRank, &displacements[0], parallelInt);
+            }
             /// @brief Initializes MPI if required
             /// @author WVN
             void MpiAutoInitIfRequired(void);
@@ -174,6 +206,9 @@ namespace cmf
             
             /// @brief Counts the number of times Synchronize() is called, used for debugging
             int synchCount;
+            
+            /// @brief The rank of the root rank
+            int rootRank;
     };
 
     /// @brief The default parallel group for global parallel operations

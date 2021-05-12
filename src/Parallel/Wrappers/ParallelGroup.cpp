@@ -14,12 +14,14 @@ namespace cmf
         processCount = 1;
         communicator = defaultCommunicator;
         workArray = NULL;
+        isRoot = true;
         deallocWorkArray = false;
         isInitialized = false;
         serialMode = true;
         mpiAutoInitIfRequiredCalled = false;
         deleteCudaDeviceHandler = false;
         synchCount = 0;
+        rootRank = 0;
     }
     
     
@@ -42,7 +44,7 @@ namespace cmf
         communicator = comm;
         CMF_MPI_CHECK(MPI_Comm_rank(comm, &processId));
         CMF_MPI_CHECK(MPI_Comm_size(comm, &processCount));
-        isRoot = (processId==0);
+        isRoot = (processId==rootRank);
         serialMode = false;
         globalSettings.globalOutputEnabledHere = isRoot;
         deallocWorkArray = true;
@@ -128,6 +130,12 @@ namespace cmf
     {
         MpiAutoInitIfRequired();
         CMF_MPI_CHECK(MPI_Allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, communicator));
+    }
+    
+    void ParallelGroup::Gatherv(const void *sendbuf, int sendcount, ParallelDataType sendtype, void *recvbuf, const int* recvcounts, const int* displs, ParallelDataType recvtype)
+    {
+        MpiAutoInitIfRequired();
+        CMF_MPI_CHECK(MPI_Gatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, rootRank, communicator));
     }
     
     void ParallelGroup::AllReduce(const void *sendbuf, void *recvbuf, int count, ParallelDataType datatype, ParallelOperation op)

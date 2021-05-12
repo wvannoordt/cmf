@@ -36,6 +36,7 @@ namespace cmf
         Path outputPathBlockPrototype(outputDirectory);
         std::string levelPrototype = "lev{}";
         std::string str1 = fileTitle + "_bk{}.vtr";
+        outputPathBlockPrototype += fileTitle;
         outputPathBlockPrototype += levelPrototype;
         outputPathBlockPrototype += str1;
         std::string blockTemplateFileName = outputPathBlockPrototype.Str();
@@ -46,8 +47,9 @@ namespace cmf
     {
         //Create prototype path for the  block outputs
         std::string levelPrototype = "lev{}";
-        Path outputPathBlockPrototype(levelPrototype);
+        Path outputPathBlockPrototype(fileTitle);
         std::string str1 = fileTitle + "_bk{}.vtr";
+        outputPathBlockPrototype += levelPrototype;
         outputPathBlockPrototype += str1;
         return outputPathBlockPrototype.Str();
     }
@@ -87,12 +89,18 @@ namespace cmf
             CmfError(strformat("CartesianMeshArrayParallelVtkWriter::Export currently only supports double-precision array ouput, found {} instead", CmfArrayTypeToString(array.GetElementType())));
         }
         
+        //Get the parallel group
+        auto parGroup = array.Mesh()->GetGroup();
+        
         //Create a top-level directory
         Path topLevelDirectory(outputDirectory);
         topLevelDirectory += fileTitle;
-        if (!CreateDirectory(topLevelDirectory))
+        if (parGroup->IsRoot())
         {
-            CmfError(strformat("CartesianMeshArrayParallelVtkWriter::Export failed to create directory {}", topLevelDirectory.Str()));
+            if (!CreateDirectory(topLevelDirectory))
+            {
+                CmfError(strformat("CartesianMeshArrayParallelVtkWriter::Export failed to create directory {}", topLevelDirectory.Str()));
+            }
         }
         
         //create comma-separated list of the variable components
@@ -108,8 +116,6 @@ namespace cmf
         std::string blockTemplateFileName         = this->GetBlockFileTemplate(array);
         std::string blockTemplateFileNameRelative = this->GetBlockFileTemplateRelativeToMetaFile(array);
         
-        //Get the parallel group
-        auto parGroup = array.Mesh()->GetGroup();
         int blocksWrittenByMe = 0;
         
         //We will allocate a temporary array to store the block data in,
@@ -124,20 +130,27 @@ namespace cmf
         int numBlocksWritten = 0;
         int numBlocksLocal = 0;
         std::set<int> allLevels;
-        std::map<int, int> blockIndexToLevels;
+        std::vector<int> blockLevelsLocal;
         for (auto lb: array)
         {
             if (allLevels.find(lb->GetLevel()) == allLevels.end()) allLevels.insert(lb->GetLevel());
-            blockIndexToLevels.insert({numBlocksLocal, lb->GetLevel()});
             numBlocksLocal++;
+            blockLevelsLocal.push_back(lb->GetLevel());
         }
+        
+        std::vector<int> blockLevelsGlobal;
+        parGroup->GetAppendedListOnRoot(blockLevelsLocal, blockLevelsGlobal);
+        
         for (auto& l:allLevels)
         {
             Path levelDirectory(topLevelDirectory);
-            levelDirectory += strformat(this->LevelDirectoryFormatString(), l);
-            if (!CreateDirectory(levelDirectory))
+            levelDirectory += strformat(this->LevelDirectoryFormatString(), ZFill(l, 3));
+            if (parGroup->IsRoot())
             {
-                CmfError(strformat("CartesianMeshArrayParallelVtkWriter::Export failed to create directory {}", levelDirectory.Str()));
+                if (!CreateDirectory(levelDirectory))
+                {
+                    CmfError(strformat("CartesianMeshArrayParallelVtkWriter::Export failed to create directory {}", levelDirectory.Str()));
+                }
             }
         }
         
@@ -168,7 +181,7 @@ namespace cmf
                     int nTotalj = nCellsj + 2*nGuardj;
                     int nTotalk = nCellsk + 2*nGuardk;
                     
-                    std::string filename = strformat(blockTemplateFileName, ZFill(blocksWrittenByMe+blocksBefore, 7));
+                    std::string filename = strformat(blockTemplateFileName, ZFill(lb->GetLevel(), 3), ZFill(blocksWrittenByMe+blocksBefore, 7));
                     double bds[6] = {0.0};
                     for (int i = 0; i < 2*CMF_DIM; i++) bds[i] = info.blockBounds[i];
                     double ghostBnds[6] = {0.0};
@@ -282,7 +295,7 @@ namespace cmf
             myfile << spaces(8) << "<Block index =\"0\">" << std::endl;
             for (int b = 0; b < totalNumBlocksWritten; b++)
             {
-                std::string blockFileName = strformat(blockTemplateFileNameRelative, ZFill(b, 7));
+                std::string blockFileName = strformat(blockTemplateFileNameRelative, ZFill(blockLevelsGlobal[b],3), ZFill(b, 7));
                 myfile << spaces(12) << strformat("<DataSet index=\"{}\" file=\"{}\"/>", b, blockFileName) << std::endl;
             }
             myfile << spaces(8) << "</Block>" << std::endl;
