@@ -66,7 +66,7 @@ namespace cmf
         private:
             
             /// @brief The list of base pointers for this buffer
-            std::vector<CartesianDataChunk> chunks;
+            std::vector<CartesianDataChunk*> chunks;
             
             /// @brief A map of base pointers to blocks (not chunks) to the chunk they belong to
             std::map<void*, CartesianDataChunk*> pointerToChunks;

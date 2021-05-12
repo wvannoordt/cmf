@@ -21,28 +21,29 @@ namespace cmf
     
     void CartesianMeshBuffer::ReserveBlocks(int numBlocks)
     {
-        CartesianDataChunk newChunk;
-        newChunk.base = Cmf_Alloc(numBlocks*blockArraySize*SizeOfArrayType(arrayType));
-        newChunk.numBlocks = numBlocks;
-        newChunk.numberOfVacantBlocks = numBlocks;
+        CartesianDataChunk* newChunk = new CartesianDataChunk();
+        newChunk->base = Cmf_Alloc(numBlocks*blockArraySize*SizeOfArrayType(arrayType));
+        newChunk->numBlocks = numBlocks;
+        newChunk->numberOfVacantBlocks = numBlocks;
         chunks.push_back(newChunk);
         for (size_t i = 0; i < numBlocks; i++)
         {
             size_t offset = i*blockArraySize*SizeOfArrayType(arrayType);
-            void* blockPointer = (void*)((char*)newChunk.base + offset);
-            pointerToChunks.insert({blockPointer, &chunks[chunks.size()-1]});
-            vacantBlocks.push_back({blockPointer, &chunks[chunks.size()-1]});
+            void* blockPointer = (void*)((char*)newChunk->base + offset);
+            pointerToChunks.insert({blockPointer, newChunk});
+            vacantBlocks.push_back({blockPointer, newChunk});
         }
     }
     
     void CartesianMeshBuffer::Clear(void)
     {
-        for (auto ch:chunks)
+        for (auto& ch:chunks)
         {
-            if (ch.base != NULL)
+            if (ch->base != NULL)
             {
-                Cmf_Free(ch.base);
+                Cmf_Free(ch->base);
             }
+            delete ch;
         }
     }
     
@@ -71,16 +72,16 @@ namespace cmf
         //should I delete the chunks? for now, they are just freed and reset
         for (auto& ch:chunks)
         {
-            if (ch.numBlocks == ch.numberOfVacantBlocks)
+            if (ch->numBlocks == ch->numberOfVacantBlocks)
             {
                 numChunksCleared++;
-                numBlocksCleared += ch.numBlocks;
-                Cmf_Free(ch.base);
-                ch.base = NULL;
-                ch.numBlocks = 0;
-                ch.numberOfVacantBlocks = 0;
+                numBlocksCleared += ch->numBlocks;
+                Cmf_Free(ch->base);
+                ch->base = NULL;
+                ch->numBlocks = 0;
+                ch->numberOfVacantBlocks = 0;
             }
-            numVacantBlocks += ch.numberOfVacantBlocks;
+            numVacantBlocks += ch->numberOfVacantBlocks;
         }
         
         WriteLine(4, strformat("Cleared {} blocks from {} chunks. Available blocks remaining: {}", numBlocksCleared, numChunksCleared, numVacantBlocks));
