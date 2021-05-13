@@ -156,7 +156,8 @@ namespace cmf
                     displacements[i] = displacements[i-1] + numberElementsPerRank[i-1];
                 }
                 if (this->IsRoot()) outputList.resize(globNumElems);
-                Gatherv(&inputList[0], inputList.size(), parallelInt, &outputList[0], numberElementsPerRank, &displacements[0], parallelInt);
+                auto parType = GetParallelType<gtype>();
+                Gatherv(&inputList[0], inputList.size(), parType, &outputList[0], numberElementsPerRank, &displacements[0], parType);
             }
             /// @brief Initializes MPI if required
             /// @author WVN

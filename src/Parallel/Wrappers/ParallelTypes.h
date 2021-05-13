@@ -2,6 +2,7 @@
 #define CMF_PARALLEL_TYPES
 #include "CmfMPI.h"
 #include <stdio.h>
+#include "CmfError.h"
 namespace cmf
 {
 #if(CMF_PARALLEL)
@@ -47,6 +48,16 @@ namespace cmf
     typedef int        CmfMpiFileHandle;
     typedef int        CmfMpiFileStatus;
 #endif
+
+    template <typename ptype> ParallelDataType GetParallelType(void)
+    {
+        if (typeid(ptype) == typeid(int))    return parallelInt;
+        if (typeid(ptype) == typeid(double)) return parallelDouble;
+        if (typeid(ptype) == typeid(size_t)) return parallelLong;
+        if (typeid(ptype) == typeid(char))   return parallelChar;
+        CmfError("Requested invalid type, no further information is available here, unfortunately");
+        return 0;
+    }
     
 }
 #endif
