@@ -71,8 +71,20 @@ namespace cmf
 
     void RefinementTreeNode::DefineDirectionLevels(void)
     {
-        if (host) {for (int d = 0; d<CMF_DIM; d++) directionLevels[d] = host->directionLevels[d] + CharBit(refineType, d);}
-        else {for (int d = 0; d<CMF_DIM; d++) directionLevels[d] = 0;}
+        if (host)
+        {
+            for (int d = 0; d < CMF_DIM; d++)
+            {
+                directionLevels[d] = host->directionLevels[d] + CharBit(refineType, d);
+            }
+        }
+        else
+        {
+            for (int d = 0; d < CMF_DIM; d++)
+            {
+                directionLevels[d] = 0;
+            }
+        }
     }
 
     void RefinementTreeNode::DefineBounds(double* hostBounds, char refineType_in, char refineOrientation_in)

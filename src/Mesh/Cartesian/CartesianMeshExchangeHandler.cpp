@@ -8,7 +8,6 @@
 #include "NeighborIterator.h"
 #include "Vec.h"
 #include "BlockArray.h"
-#include "CmfPrint.h"
 #include "StringUtils.h"
 #include "ExchangeContextBlockData.h"
 namespace cmf
@@ -78,6 +77,9 @@ namespace cmf
         neighbor.partitionInfo = mesh->partition->GetPartitionInfo(neighborNode);
         current.blockInfo      = mesh->GetBlockInfo(currentNode);
         neighbor.blockInfo     = mesh->GetBlockInfo(neighborNode);
+        
+        current.node = currentNode;
+        neighbor.node = neighborNode;
         
         //Compute the size of a single array "element"
         size_t singleCellSize = SizeOfArrayType(meshArray->elementType);
@@ -278,9 +280,10 @@ namespace cmf
         for (int i = 0; i < 6; i++) nonDimGhostOverlapRegion[i] = 0;
         
         //refinement level of neighbor - refinement level of current
-        // Vec3<int> neighborLevels = neighborInfo.node->GetDirectionLevels();
-        // Vec3<int> currentLevels  = currentInfo.node->GetDirectionLevels();
-        // Vec3<int> refineLevelDifference = neighborLevels - currentLevels;
+        Vec3<int> neighborLevels = neighborInfo.node->GetDirectionLevels();
+        Vec3<int> currentLevels  = currentInfo.node->GetDirectionLevels();
+        Vec3<int> refineLevelDifference = neighborLevels - currentLevels;
+        print(refineLevelDifference);
         
         
     }
