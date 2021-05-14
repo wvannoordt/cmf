@@ -33,7 +33,7 @@ namespace cmf
                 Cmf_Free(receiveBuffer[rank]);
             }
         }
-        for (auto& tr:transactions)
+        for (auto tr:transactions)
         {
             delete tr;
         }

@@ -104,7 +104,9 @@ namespace cmf
         }
         
         meshBuffer->ClearVacantChunks();
-        this->handler->defaultExchangeHandler->CreateMeshArrayExchangePattern(this);
+        
+        //Redefine the exchange pattern (there is definitely a better way to do this)
+        exchangePattern = this->handler->defaultExchangeHandler->CreateMeshArrayExchangePattern(this);
     }
     
     void* CartesianMeshArray::GetNodePointerWithNullDefault(RefinementTreeNode* node)

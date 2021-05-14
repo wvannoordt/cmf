@@ -34,7 +34,8 @@ namespace cmf
         if (exchanges.find(meshArray)!=exchanges.end())
         {
             WriteLine(4, strformat("Re-define exchange patters for \"{}\" on mesh \"{}\"", meshArray->variableName, mesh->title));
-            delete exchanges[meshArray];
+            DataExchangePattern* oldPattern = exchanges[meshArray];
+            delete oldPattern;
             exchanges.erase(meshArray);
         }
         DataExchangePattern* newPattern = new DataExchangePattern(mesh->GetGroup());
