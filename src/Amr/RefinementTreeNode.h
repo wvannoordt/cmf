@@ -13,6 +13,7 @@
 #include "VtkFile.h"
 #include "ParallelFile.h"
 #include <algorithm>
+#include "Vec.h"
 
 namespace cmf
 {
@@ -219,6 +220,10 @@ namespace cmf
             /// @param file The file to write to
             /// @author WVN
             void WriteToFile(ParallelFile& file);
+            
+            /// @brief Returns a vector containing directionLevels
+            /// @author WVN
+            Vec3<int> GetDirectionLevels(void);
             
         private:
             /// @brief Locks the current node from being modified by recursive calls.

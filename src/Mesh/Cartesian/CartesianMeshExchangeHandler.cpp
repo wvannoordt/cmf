@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "CmfPrint.h"
 #include "CartesianMeshExchangeHandler.h"
 #include "CartesianMesh.h"
@@ -268,6 +269,18 @@ namespace cmf
             NodeEdge& relationship
         )
     {
+        Vec3<int> edgeVector(relationship.edgeVector[0], relationship.edgeVector[1], CMF_IS3D?0:relationship.edgeVector[CMF_DIM-1]);
+        
+        //the intersection of the ghost cells of the neighbor with the interior cells if the current form a rectangular prism
+        //Interpreted in index-space coordinates
+        Vec<double, 6> nonDimGhostOverlapRegion;
+        for (int i = 0; i < 6; i++) nonDimGhostOverlapRegion[i] = 0;
+        
+        //refinement level of neighbor - refinement level of current
+        // Vec3<int> neighborLevels = neighborInfo.node->GetDirectionLevels();
+        // Vec3<int> currentLevels  = currentInfo.node->GetDirectionLevels();
+        // Vec3<int> refineLevelDifference = neighborLevels - currentLevels;
+        
         
     }
     

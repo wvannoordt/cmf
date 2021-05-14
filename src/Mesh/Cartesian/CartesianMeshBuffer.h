@@ -3,6 +3,7 @@
 #include <vector>
 #include <set>
 #include <deque>
+#include <map>
 #include "CmfArrayType.h"
 #include "ICmfMeshBuffer.h"
 

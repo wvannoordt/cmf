@@ -317,6 +317,16 @@ namespace cmf
         }
     }
     
+    Vec3<int> RefinementTreeNode::GetDirectionLevels(void)
+    {
+        Vec3<int> output(0);
+        for (int i = 0; i < CMF_DIM; i++)
+        {
+            output[i] = directionLevels[i];
+        }
+        return output;
+    }
+    
     void RefinementTreeNode::ReadFromFile(ParallelFile& file)
     {
         std::string compatError = "RefinementTreeNode::ReadFromFile compatibility error expecting \"{}\" value of \"{}\", but found \"{}\". Filename: " + file.OpenFileName();

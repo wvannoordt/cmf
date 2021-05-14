@@ -14,9 +14,7 @@ int main(int argc, char** argv)
     coords[1] = 0.1;
     coords[2] = 0.00001;
     //domain.Blocks()->RefineAt(coords, 7);
-    //domain.Blocks()->RefineAt(coords, 7);
-    domain.Blocks()->RefineRandom();
-    domain.Blocks()->RefineRandom();
+    domain.Blocks()->RefineAt(coords, 7);
     std::string filename = "output/domain.vtk";
     domain.Blocks()->OutputDebugVtk(filename);
     cmf::Finalize();

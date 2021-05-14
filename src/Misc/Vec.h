@@ -25,6 +25,11 @@ namespace cmf
         /// @author WVN
         Vec3(numericType* x) {v[0] = x[0]; v[1] = x[1]; v[2] = x[2];}
         
+        /// @brief Constructor
+        /// @param x value to initialize all elements with
+        /// @author WVN
+        Vec3(numericType x) {v[0] = x; v[1] = x; v[2] = x;}
+        
         /// @brief Constructor, using initial and final values
         /// @param ini Pointer (of size > 3) to the coordinates of initial point
         /// @param ter Pointer (of size > 3) to the coordinates of terminal point
@@ -36,6 +41,9 @@ namespace cmf
         /// @author WVN
         Vec3(const Vec3& w) {v[0] = w.v[0]; v[1] = w.v[1]; v[2] = w.v[2];}
         
+        /// @brief index operator
+        /// @param i index
+        /// @author WVN
         numericType & operator [] (int i) {return *(v+i);}
         
         ///@brief the data
@@ -108,7 +116,12 @@ namespace cmf
         Vec(const Vec& w) {for (int i = 0; i < VECDIM; i++) v[i] = w.v[i];}
         
         ///@brief the data
-        double v[VECDIM];
+        numericType v[VECDIM];
+        
+        /// @brief index operator
+        /// @param i index
+        /// @author WVN
+        numericType & operator [] (int i) {return *(v+i);}
         
         ///@brief Normalize in-place by L2-norm
         void Normalize(void)
