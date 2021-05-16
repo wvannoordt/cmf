@@ -2,7 +2,7 @@ GlobalSettings
 {
 	Display
 	{
-		debugLevel = 5
+		debugLevel = 3
 		trackOutputOrigins = false
 		colorOutput = true
 	}
@@ -15,12 +15,12 @@ Domain
 {
 	blockDim = [2, 2]
 	blockBounds = [0, 2, 0, 2]
-	meshDataDim = [32, 32]
+	meshDataDim = [10, 10]
 	refinementConstraintType = factor2CompletelyConstrained
 	periodicRefinement = [false, false]
 	Exchanges
 	{
-		exchangeDim = [2, 2]
+		exchangeDim = [3, 3]
 		interpolationOrder = 2
 	}
 }

@@ -225,6 +225,10 @@ namespace cmf
             /// @author WVN
             Vec3<int> GetDirectionLevels(void);
             
+            /// @brief Returns a vector representing the coordinates of the center of the block
+            /// @author WVN
+            Vec3<double> GetBlockCenter(void);
+            
         private:
             /// @brief Locks the current node from being modified by recursive calls.
             /// \see Unlock

@@ -17,6 +17,19 @@ namespace cmf
         };
     }
     
+    /// @brief Indicates whether or not a CmfArrayType is a floating-point number
+    /// @param atype The type to check
+    /// @author WVN
+    static inline bool CmfArrayTypeIsFloatingPointType(CmfArrayType::CmfArrayType atype)
+    {
+        switch(atype)
+        {
+            case CmfArrayType::CmfDouble: return true;
+            case CmfArrayType::CmfFloat:  return true;
+            default: return false;
+        }
+    }
+    
     /// @brief Returns a string representation of a CmfArrayType
     /// @param atype The type to convert
     /// @author WVN

@@ -97,6 +97,13 @@ namespace cmf
             blockBounds[2*d+1] = hostBounds[2*d+1] * (1-(iRefined&~iShift)) + (iRefined&~iShift)*(0.5*(hostBounds[2*d]+hostBounds[2*d+1]));
         }
     }
+    
+    Vec3<double> RefinementTreeNode::GetBlockCenter(void)
+    {
+        Vec3<double> output(0.0);
+        for (int d = 0; d < CMF_DIM; d++) output[d] = 0.5*(blockBounds[2*d] + blockBounds[2*d+1]);
+        return output;
+    }
 
     void RefinementTreeNode::SetRefineLimiter(NodeFilter_t* limiter_in)
     {

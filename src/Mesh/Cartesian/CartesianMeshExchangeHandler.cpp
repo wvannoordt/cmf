@@ -47,6 +47,11 @@ namespace cmf
     {
         WriteLine(5, "Define exchange pattern for variable \"" + meshArray->variableName + "\" on mesh \"" + mesh->title + "\"");
         NodeFilter_t arFilter = meshArray->GetFilter();
+        if (!CmfArrayTypeIsFloatingPointType(meshArray->GetElementType()))
+        {
+            std::string errmsg = "Definition of exchange patterns is only valid for floating point types: Variable \"{}\" on mesh \"{}\" is of type \"{}\"";
+            CmfError(strformat(errmsg, meshArray->variableName, mesh->title, CmfArrayTypeToString(meshArray->GetElementType())));
+        }
         for (BlockIterator lb(mesh, arFilter, IterableMode::serial); lb.HasNext(); lb++)
         {
             for (NeighborIterator neigh(lb.Node()); neigh.Active(); neigh++)
@@ -272,20 +277,40 @@ namespace cmf
             NodeEdge& relationship
         )
     {
-        Vec3<int> edgeVector(relationship.edgeVector[0], relationship.edgeVector[1], CMF_IS3D?0:relationship.edgeVector[CMF_DIM-1]);
-        
-        //the intersection of the ghost cells of the neighbor with the interior cells if the current form a rectangular prism
-        //Interpreted in index-space coordinates
-        Vec<double, 6> nonDimGhostOverlapRegion;
-        for (int i = 0; i < 6; i++) nonDimGhostOverlapRegion[i] = 0;
+        Vec3<int> edgeVector(relationship.edgeVector[0], relationship.edgeVector[1], CMF_IS3D*(relationship.edgeVector[CMF_DIM-1]));
         
         //refinement level of neighbor - refinement level of current
         Vec3<int> neighborLevels = neighborInfo.node->GetDirectionLevels();
         Vec3<int> currentLevels  = currentInfo.node->GetDirectionLevels();
         Vec3<int> refineLevelDifference = neighborLevels - currentLevels;
-        print(refineLevelDifference);
         
+        //the intersection of the ghost cells of the neighbor with the interior cells of the current form a rectangular prism
+        //Interpreted in index-space coordinates of the current block
+        Vec<double, 6> nonDimGhostOverlapRegion;
+        for (int i = 0; i < 6; i++) nonDimGhostOverlapRegion[i] = 0;
         
+        auto refineFactor = [&](int i){ double vals[3] = {2.0, 1.0, 0.5}; return vals[i+1]; };
+        
+        int sumAbsEdgeVec = 0;
+        //Current node projects neighbor's exchange cells into its own domain and figures out what cells to use to send data
+        for (int i = 0; i < CMF_DIM; i++)
+        {
+            int currentExchangeSize = currentInfo.exchangeSize[i];
+            int neighborExchangeSize = neighborInfo.exchangeSize[i];
+            int currentMeshDimWithoutExchanges = (double)(currentInfo.meshSize[i]-2*currentInfo.exchangeSize[i]);
+            int levelDifference = refineLevelDifference[i];
+            if (__d_abs(levelDifference)>1) CmfError("Attempted to create exchange patterns for larger than factor-2 refinement");
+            double boxWidthInIndexSpace = ((edgeVector[i] == 0)?(currentMeshDimWithoutExchanges):((double)neighborExchangeSize))*refineFactor(levelDifference);
+            nonDimGhostOverlapRegion[2*i]   = (edgeVector[i] == 1)?(currentMeshDimWithoutExchanges-boxWidthInIndexSpace):0;
+            
+            //This indicates whether or not in this tangential direction, there are two candidate
+            //blocks matching this edgeVector, add half of the block width if that is the case
+            bool directionIsSplit = (edgeVector[i] == 0)&&(refineLevelDifference[i]!=0);
+            nonDimGhostOverlapRegion[2*i] += (directionIsSplit&&(neighborInfo.node->SharesEdgeWithHost(2*i+1)))?0.5*currentMeshDimWithoutExchanges:0.0;
+            
+            nonDimGhostOverlapRegion[2*i+1] = nonDimGhostOverlapRegion[2*i] + boxWidthInIndexSpace;
+            sumAbsEdgeVec += __d_abs(edgeVector[i]);
+        }
     }
     
     CartesianMeshExchangeHandler::~CartesianMeshExchangeHandler(void)
