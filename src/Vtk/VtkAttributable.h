@@ -123,6 +123,7 @@ namespace cmf
                     case VtkAttributableType::intType:    return "int";
                     case VtkAttributableType::longType:   return "long";
                 }
+                return "none";
             }
 
             /// @brief Creates a new VtkAttribute.
@@ -200,6 +201,7 @@ namespace cmf
                     case VtkAttributableType::longType: return sizeof(size_t);
                     case VtkAttributableType::stringType: CmfError("Error: bufferType is set to incompatible type (" + AttrTypeStr(bufferType) + ").");
                 }
+                return 0;
             }
 
             /// @brief Sets a new attribute and parses the provided data.

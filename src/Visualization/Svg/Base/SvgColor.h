@@ -26,7 +26,7 @@ namespace cmf
             
             /// @brief Allows assigning based on a double triplet
             /// @author WVN
-            SvgColor& operator= (double val_r[3]) {val = "#" + NumberToHexValue(val_r[0])+NumberToHexValue(val_r[1])+NumberToHexValue(val_r[2]);}
+            SvgColor& operator= (double val_r[3]) {val = "#" + NumberToHexValue(val_r[0])+NumberToHexValue(val_r[1])+NumberToHexValue(val_r[2]); return *this;}
             
             /// @brief Returns val
             /// @author WVN

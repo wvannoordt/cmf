@@ -22,7 +22,7 @@ namespace cmf
             
             /// @brief Assignment operator
             /// @author WVN
-            virtual SymbolicEvaluation& operator = (const SymbolicEvaluation& rhs){};
+            virtual SymbolicEvaluation& operator = (const SymbolicEvaluation& rhs) {return *this;}
             
         private:
             

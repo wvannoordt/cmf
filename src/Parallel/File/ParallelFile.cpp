@@ -42,7 +42,8 @@ namespace cmf
         }
         size_t globalWriteSize = group->Sum(writeSize);
         SetPosition(position + globalWriteSize);
-        asciiStream = std::ostringstream();
+        asciiStream.str("");
+        asciiStream.clear();
     }
     
     void ParallelFile::SetPosition(size_t newPosition)

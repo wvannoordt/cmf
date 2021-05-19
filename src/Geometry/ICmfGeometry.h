@@ -21,7 +21,7 @@ namespace cmf
             /// @brief Determines whether the provided box intersects the boundary of the geometry
             /// @param bounds The bounds of the box to check (xmin, xmax, ymin, ymax, [zmin, zmax])
             /// @author WVN
-            virtual bool BoxIntersectsBoundary(double* bounds){};
+            virtual bool BoxIntersectsBoundary(double* bounds)=0;
             
         protected:
             
