@@ -71,7 +71,7 @@ namespace cmf
             /// @param xout X-coordinate of the output point
             /// @param yout Y-coordinate of the output point
         	/// @author WVN
-            double MapPoint(double xin, double yin, double* xout, double* yout);
+            void MapPoint(double xin, double yin, double* xout, double* yout);
             
             /// @brief Sets the fill color for the background of the image
             /// @param color The color to fill

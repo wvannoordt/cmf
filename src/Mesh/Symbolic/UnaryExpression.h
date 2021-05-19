@@ -18,7 +18,7 @@ namespace cmf
             
             /// @brief Assignment operator
             /// @author WVN
-            UnaryExpression& operator = (const UnaryExpression& rhs){};
+            UnaryExpression& operator = (const UnaryExpression& rhs){return *this;}
         private:
     };
 }

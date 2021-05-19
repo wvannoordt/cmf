@@ -17,6 +17,7 @@ namespace cmf
     MeshArrayExpression& MeshArrayExpression::operator = (const MeshArrayExpression& rhs)
     {
         arrayObject = rhs.arrayObject;
+        return *this;
     }
     
     MeshArrayExpression::MeshArrayExpression(ICmfMeshArray* arrayObject_in)

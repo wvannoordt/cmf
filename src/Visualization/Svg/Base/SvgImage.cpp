@@ -104,7 +104,7 @@ namespace cmf
         }
     }
     
-    double SvgImage::MapPoint(double xin, double yin, double* xout, double* yout)
+    void SvgImage::MapPoint(double xin, double yin, double* xout, double* yout)
     {
         double youtTemp = bounds[3] - (yin - bounds[2]);
         double xoutTemp = xin;
