@@ -14,7 +14,7 @@ namespace cmf
             /// @param sendRank_in The sending rank
             /// @param recvRank_in The receiving rank
         	/// @author WVN
-            template <typeneame numericType> CartesianInterLevelInterpolationExchange(int sendRank_in, int recvRank_in)
+            CartesianInterLevelInterpolationExchange(int sendRank_in, int recvRank_in)
                 : IDataTransaction(sendRank_in, recvRank_in)
             {
                 
@@ -44,6 +44,11 @@ namespace cmf
             {
                 
             }
+            
+        private:
+            
+            ///@brief the data array on the local rank
+            MdArray<numericType, 4> localArray;
     };
 }
 
