@@ -14,6 +14,7 @@ namespace cmf
     bool SvgManipulateItem::SetVisibility(bool val)
     {
         visible = val;
+        return val;
     }
     bool SvgManipulateItem::IsVisible(void)
     {

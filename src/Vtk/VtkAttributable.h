@@ -418,6 +418,7 @@ namespace cmf
                         return output;
                     }
                 }
+                return "none";
             }
 
             /// @brief Recursively resolves a string within a preprocessor expansion context
