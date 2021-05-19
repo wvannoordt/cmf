@@ -4,6 +4,7 @@
 #include "IDataTransaction.h"
 #include "SingleTransaction.h"
 #include "MultiTransaction.h"
+#include "CartesianInterLevelInterpolationExchange.h"
 #include <vector>
 #include "CmfGC.h"
 namespace cmf
@@ -18,9 +19,9 @@ namespace cmf
             /// @param group_in the group that this exchange pattern is executed over
         	/// @author WVN
             DataExchangePattern(ParallelGroup* group_in);
-            
+
             /// @brief Destructor
-        	/// @author WVN
+        	/// @author WVNHead
             ~DataExchangePattern(void);
             
             /// @brief Performs data exchanges
@@ -32,6 +33,17 @@ namespace cmf
             /// \pre NOTE: this exchange pattern object WILL DELETE this pointer when it is deconstructed.
         	/// @author WVN
             void Add(IDataTransaction* transaction);
+            
+            /// @brief Adds a new data transaction to this data exchange pattern
+            /// @param transaction A new transaction to add
+            /// @param priorityLevel The priority level of the new exchange, the higher the priority, the sooner the exchange happens
+            /// \pre NOTE: this exchange pattern object WILL DELETE this pointer when it is deconstructed.
+        	/// @author WVN
+            void Add(IDataTransaction* transaction, int priorityLevel);
+            
+            /// @brief Sorts the contained data transactions by their priority value
+        	/// @author WVN
+            void SortByPriority(void);
             
         private:
             /// @brief Computes the size of the outgoing buffer for the given rank and allocates it accordingly

@@ -7,10 +7,6 @@ namespace cmf
         sender = sender_in;
         receiver = receiver_in;
     }
-    IDataTransaction::~IDataTransaction(void)
-    {
-        
-    }
     
     int IDataTransaction::Sender(void)
     {

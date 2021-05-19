@@ -10,7 +10,6 @@
 
 namespace cmf
 {
-
     struct ExchangeContextBlockData;
     class CartesianMesh;
     struct CartesianMeshExchangeInfo : public ICmfInputObject

@@ -18,10 +18,6 @@ namespace cmf
         	/// @author WVN
             IDataTransaction(int sender_in, int receiver_in);
             
-            /// @brief Destructor
-        	/// @author WVN
-            virtual ~IDataTransaction(void);
-            
             /// @brief Returns the size of the compacted data
         	/// @author WVN
             virtual size_t GetPackedSize(void)=0;
@@ -46,13 +42,25 @@ namespace cmf
         	/// @author WVN
             int Receiver(void);
             
+            /// @brief Returns the priority of this transaction
+        	/// @author WVN
+            int Priority(void) { return priority; }
+            
+            /// @brief Sets the priority of this transaction
+        	/// @author WVN
+            void SetPriority(const int priorityValue) { priority = priorityValue; }
+            
         protected:
             
-            /// brief The sending rank
+            /// @brief The sending rank
             int sender;
             
-            /// brief The receiving rank
+            /// @brief The receiving rank
             int receiver;
+            
+            /// @@brief The priority of the transaction: when calling Sort() on a DataExchangePattern, transactions are
+            /// sorted according to this value.
+            int priority = -1;
     };
 }
 

@@ -1,6 +1,7 @@
 #include "DataExchangePattern.h"
 #include "CmfScreen.h"
 #include "CmfGC.h"
+#include <algorithm>
 namespace cmf
 {
     DataExchangePattern::DataExchangePattern(ParallelGroup* group_in)
@@ -39,7 +40,18 @@ namespace cmf
         }
     }
     
+    void DataExchangePattern::SortByPriority(void)
+    {
+        auto sortRule = [](IDataTransaction* const& a, IDataTransaction* const& b) -> bool { return (a->Priority() > b->Priority()); };
+        std::sort(transactions.begin(), transactions.end(), sortRule);
+    }
+    
     void DataExchangePattern::Add(IDataTransaction* transaction)
+    {
+        this->Add(transaction, -1);
+    }
+    
+    void DataExchangePattern::Add(IDataTransaction* transaction, int priorityLevel)
     {
         int sender = transaction->Sender();
         int receiver = transaction->Receiver();
@@ -57,6 +69,7 @@ namespace cmf
                 resizeInBufferRequired[sender] = true;
                 receiveSizes[sender] += transaction->GetPackedSize();
             }
+            transaction->SetPriority(priorityLevel);
         }
         else
         {

@@ -65,6 +65,7 @@ namespace cmf
                 }
             }
         }
+        pattern->SortByPriority();
     }
     
     void CartesianMeshExchangeHandler::CreateExchangeTransaction(
@@ -265,7 +266,7 @@ namespace cmf
         void* recvBuffer = (void*)(neighData.data);
         
         //Current node sends to the neighbor
-        pattern->Add(new MultiTransaction(sendBuffer, offsetsSend, sizesSend, currentRank, recvBuffer, offsetsRecv, sizesRecv, neighborRank));
+        pattern->Add(new MultiTransaction(sendBuffer, offsetsSend, sizesSend, currentRank, recvBuffer, offsetsRecv, sizesRecv, neighborRank), 10);
     }
     
     void CartesianMeshExchangeHandler::CreateGeneralExchangePattern
@@ -311,6 +312,8 @@ namespace cmf
             nonDimGhostOverlapRegion[2*i+1] = nonDimGhostOverlapRegion[2*i] + boxWidthInIndexSpace;
             sumAbsEdgeVec += __d_abs(edgeVector[i]);
         }
+        
+        pattern->Add(new CartesianInterLevelInterpolationExchange(currentInfo.partitionInfo.rank, neighborInfo.partitionInfo.rank), 3);
     }
     
     CartesianMeshExchangeHandler::~CartesianMeshExchangeHandler(void)
