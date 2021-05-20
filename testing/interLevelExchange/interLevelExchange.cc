@@ -77,6 +77,16 @@ void SillyRefine(cmf::CartesianMeshArray& ar)
     nodes.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
     refs.push_back(2);
     ar.Mesh()->Blocks()->RefineNodes(nodes, refs);
+    
+    std::vector<cmf::RefinementTreeNode*> nodes2;
+    std::vector<char> refs2;
+    coords[0] = 1.5;
+    coords[1] = 0.75;
+    coords[2] = 0.0;
+    
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
+    refs2.push_back(2);
+    ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
 }
 
 void EvalErr(cmf::CartesianMeshArray& ar, double& l2Err, double& linfErr)

@@ -313,7 +313,31 @@ namespace cmf
             sumAbsEdgeVec += __d_abs(edgeVector[i]);
         }
         
-        pattern->Add(new CartesianInterLevelInterpolationExchange(currentInfo.partitionInfo.rank, neighborInfo.partitionInfo.rank), 3);
+        switch (sumAbsEdgeVec)
+        {
+            case 1:
+            {
+                
+                break;
+            }
+            case 2:
+            {
+                
+                break;
+            }
+            case 3:
+            {
+                
+                break;
+            }
+            case 0:
+            default:
+            {
+                CmfError("Attempting to create exchange pattern with self, something has gone wrong here");
+                break;
+            }
+        }
+        
     }
     
     CartesianMeshExchangeHandler::~CartesianMeshExchangeHandler(void)
