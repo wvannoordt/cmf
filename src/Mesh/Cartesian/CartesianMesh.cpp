@@ -17,6 +17,13 @@ namespace cmf
         refinementConstraintType = input.refinementConstraintType;
         blocks = new RefinementBlock(blockDim, blockBounds, refinementConstraintType, input.periodicRefinement);
         meshDataDim = input.meshDataDim;
+        for (int i = 0; i < CMF_DIM; i++)
+        {
+            if (meshDataDim[i]%2 != 0)
+            {
+                CmfError(strformat("Odd mesh data dimensions are not supported: mesh \"{}\" created with dim[{}] = {}", title, i, meshDataDim[i]));
+            }
+        }
         exchangeDim = input.exchangeInfo.exchangeDim;
         arrayHandler = new CartesianMeshArrayHandler(this);
         baseMeshArrayHandler = arrayHandler;

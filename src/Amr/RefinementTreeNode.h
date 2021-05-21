@@ -14,6 +14,7 @@
 #include "ParallelFile.h"
 #include <algorithm>
 #include "Vec.h"
+#include "CmfPrint.h"
 
 namespace cmf
 {

@@ -287,57 +287,145 @@ namespace cmf
         
         //the intersection of the ghost cells of the neighbor with the interior cells of the current form a rectangular prism
         //Interpreted in index-space coordinates of the current block
-        Vec<double, 6> nonDimGhostOverlapRegion;
-        for (int i = 0; i < 6; i++) nonDimGhostOverlapRegion[i] = 0;
+        Vec<double, 6> exchangeRegionCurrentView = 0;
+        
+        //The same thing, but from the perspective of the neighbor block
+        Vec<double, 6> exchangeRegionNeighborView = 0;
+        
+        //ths dimensions of rhte exchange region in cells
+        Vec3<int> exchangeRegionSize = 0;
         
         auto refineFactor = [&](int i){ double vals[3] = {2.0, 1.0, 0.5}; return vals[i+1]; };
         
         int sumAbsEdgeVec = 0;
+        
+        //temporary
+        bool debug = true;
+        auto c = currentInfo.node->GetBlockCenter();
+        debug = debug && (c-Vec3<double>(1.5, 1.5, 0.0)).Norm() < 1e-4;
+        debug = debug && (edgeVector[0] == 0);
+        debug = debug && (edgeVector[1] == -1);
+        
         //Current node projects neighbor's exchange cells into its own domain and figures out what cells to use to send data
         for (int i = 0; i < CMF_DIM; i++)
         {
             int currentExchangeSize = currentInfo.exchangeSize[i];
             int neighborExchangeSize = neighborInfo.exchangeSize[i];
             int currentMeshDimWithoutExchanges = (double)(currentInfo.meshSize[i]-2*currentInfo.exchangeSize[i]);
+            int neighborMeshDimWithoutExchanges = (double)(neighborInfo.meshSize[i]-2*neighborInfo.exchangeSize[i]);
             int levelDifference = refineLevelDifference[i];
+            bool currentFinerThanNeighbor = levelDifference<0;
+            bool currentSameLevelAsNeighbor = levelDifference=0;
+            bool currentCoarserThanNeighbor = levelDifference>0;
             if (__d_abs(levelDifference)>1) CmfError("Attempted to create exchange patterns for larger than factor-2 refinement");
-            double boxWidthInIndexSpace = ((edgeVector[i] == 0)?(currentMeshDimWithoutExchanges):((double)neighborExchangeSize))*refineFactor(levelDifference);
-            nonDimGhostOverlapRegion[2*i]   = (edgeVector[i] == 1)?(currentMeshDimWithoutExchanges-boxWidthInIndexSpace):0;
+            bool isTangentialDirection = (edgeVector[i] == 0);
+            
+            //This is a bit ugly!
+            if (currentFinerThanNeighbor)
+            {
+                switch(edgeVector[i])
+                {
+                    case -1:
+                    {
+                        exchangeRegionCurrentView[2*i] = 0.5;
+                        exchangeRegionCurrentView[2*i+1] = neighborExchangeSize-0.5;
+                        exchangeRegionSize[i] = neighborExchangeSize;
+                        break;
+                    }
+                    case  0:
+                    {
+                        exchangeRegionCurrentView[2*i] = 0.5;
+                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
+                        exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
+                        break;
+                    }
+                    case  1:
+                    {
+                        exchangeRegionCurrentView[2*i] = currentMeshDimWithoutExchanges + 0.5 - neighborExchangeSize;
+                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
+                        exchangeRegionSize[i] = neighborExchangeSize;
+                        break;
+                    }
+                }
+            }
+            else if (currentCoarserThanNeighbor)
+            {
+                switch(edgeVector[i])
+                {
+                    case -1:
+                    {
+                        exchangeRegionCurrentView[2*i] = 0.5;
+                        exchangeRegionCurrentView[2*i+1] = neighborExchangeSize-0.5;
+                        exchangeRegionSize[i] = neighborExchangeSize;
+                        break;
+                    }
+                    case  0:
+                    {
+                        exchangeRegionCurrentView[2*i] = 0.5;
+                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
+                        exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
+                        break;
+                    }
+                    case  1:
+                    {
+                        exchangeRegionCurrentView[2*i] = currentMeshDimWithoutExchanges + 0.5 - neighborExchangeSize;
+                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
+                        exchangeRegionSize[i] = neighborExchangeSize;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                switch(edgeVector[i])
+                {
+                    case -1:
+                    {
+                        exchangeRegionCurrentView[2*i] = 0.5;
+                        exchangeRegionCurrentView[2*i+1] = neighborExchangeSize-0.5;
+                        exchangeRegionSize[i] = neighborExchangeSize;
+                        break;
+                    }
+                    case  0:
+                    {
+                        exchangeRegionCurrentView[2*i] = 0.5;
+                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
+                        exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
+                        break;
+                    }
+                    case  1:
+                    {
+                        exchangeRegionCurrentView[2*i] = currentMeshDimWithoutExchanges + 0.5 - neighborExchangeSize;
+                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
+                        exchangeRegionSize[i] = neighborExchangeSize;
+                        break;
+                    }
+                }
+            }
+            double boxWidthInIndexSpace = ((edgeVector[i] == 0)?(currentMeshDimWithoutExchanges-1):((double)neighborExchangeSize-1))*refFac;
+            
+            exchangeRegionCurrentView[2*i]   = (edgeVector[i] == 1)?(currentMeshDimWithoutExchanges-0.5*refFac-boxWidthInIndexSpace):0.5*refFac;
+            
+            exchangeRegionSize[i] = neighborExchangeSize;
+            if (edgeVector[i] == 0)
+            {
+                exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
+            }
             
             //This indicates whether or not in this tangential direction, there are two candidate
             //blocks matching this edgeVector, add half of the block width if that is the case
             bool directionIsSplit = (edgeVector[i] == 0)&&(refineLevelDifference[i]!=0);
-            nonDimGhostOverlapRegion[2*i] += (directionIsSplit&&(neighborInfo.node->SharesEdgeWithHost(2*i+1)))?0.5*currentMeshDimWithoutExchanges:0.0;
+            exchangeRegionCurrentView[2*i] += (directionIsSplit&&(neighborInfo.node->SharesEdgeWithHost(2*i+1)))?0.5*currentMeshDimWithoutExchanges:0.0;
             
-            nonDimGhostOverlapRegion[2*i+1] = nonDimGhostOverlapRegion[2*i] + boxWidthInIndexSpace;
+            exchangeRegionCurrentView[2*i+1] = exchangeRegionCurrentView[2*i] + boxWidthInIndexSpace;
             sumAbsEdgeVec += __d_abs(edgeVector[i]);
         }
         
-        switch (sumAbsEdgeVec)
+        //The data in the current block is re-in
+        if (debug)
         {
-            case 1:
-            {
-                
-                break;
-            }
-            case 2:
-            {
-                
-                break;
-            }
-            case 3:
-            {
-                
-                break;
-            }
-            case 0:
-            default:
-            {
-                CmfError("Attempting to create exchange pattern with self, something has gone wrong here");
-                break;
-            }
+            print(exchangeRegionCurrentView, exchangeRegionSize);
         }
-        
     }
     
     CartesianMeshExchangeHandler::~CartesianMeshExchangeHandler(void)

@@ -86,7 +86,7 @@ void SillyRefine(cmf::CartesianMeshArray& ar)
     
     nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
     refs2.push_back(2);
-    ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
+    // ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
 }
 
 void EvalErr(cmf::CartesianMeshArray& ar, double& l2Err, double& linfErr)

@@ -113,6 +113,7 @@ namespace cmf
     void RefinementTreeNode::CreateNewNeighbor(RefinementTreeNode* target, int* deltaijk, char isDomainEdge)
     {
         NodeEdge edgeData;
+        this->RemoveNeighbor(target);
         edgeData.isDomainEdge = isDomainEdge;
         __dloop(edgeData.edgeVector[d] = deltaijk[d]);
         neighbors.push_back({target, edgeData});

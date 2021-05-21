@@ -1,5 +1,6 @@
-#ifndef TRX_VEC3_H
-#define TRX_VEC3_H
+#ifndef CMF_VEC3_H
+#define CMF_VEC3_H
+#include <type_traits>
 #include <iostream>
 #include <cmath>
 namespace cmf
@@ -28,7 +29,7 @@ namespace cmf
         /// @brief Constructor
         /// @param x value to initialize all elements with
         /// @author WVN
-        Vec3(numericType x) {v[0] = x; v[1] = x; v[2] = x;}
+        template <typename othertype> Vec3(othertype x) {v[0] = (othertype)x; v[1] = (othertype)x; v[2] = (othertype)x;}
         
         /// @brief Constructor, using initial and final values
         /// @param ini Pointer (of size > 3) to the coordinates of initial point
@@ -88,6 +89,14 @@ namespace cmf
         
         ///@brief L2 norm
         numericType Norm(void) {return sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);}
+        
+        Vec3& operator = (const numericType rhs)
+        {
+            v[0] = rhs;
+            v[1] = rhs;
+            v[2] = rhs;
+            return *this;
+        }
     };
     
     /// @brief A simple N-D vector class
@@ -104,6 +113,42 @@ namespace cmf
         /// @author WVN
         Vec(numericType* x) {for (int i = 0; i < VECDIM; i++) v[i] = x[i];}
         
+        /// @brief Constructor
+        /// @param x Pointer (of size > VECDIM)
+        /// @author WVN
+        template <typename othertype> Vec(othertype x) {for (int i = 0; i < VECDIM; i++) v[i] = (numericType)x;}
+        
+        
+        /// @brief Variadic Constructor helper function
+        /// @param lev the recursive level
+        /// @param t The next element
+        /// @param ts The elements of the vector
+        /// @author WVN
+        template <typename T> void vrset(int lev, T t)
+    	{
+    		v[lev] = (numericType)t;
+    	}
+        
+        /// @brief Variadic Constructor helper function
+        /// @param lev the recursive level
+        /// @param t The next element
+        /// @param ts The elements of the vector
+        /// @author WVN
+        template <typename T, typename... Ts> void vrset(int lev, T t, Ts... ts)
+    	{
+    		v[lev] = (numericType)t;
+    		vrset(lev+1, ts...);
+    	}
+        
+        /// @brief Variadic Constructor
+        /// @param ts The elements of the vector
+        /// @author WVN
+        template <typename... Ts> Vec(Ts... ts)
+    	{
+            static_assert(sizeof...(Ts)==VECDIM, "Incorrect rank of vector assignment");
+    		vrset(0, ts...);
+    	}
+        
         /// @brief Constructor, using initial and final values
         /// @param ini Pointer (of size > VECDIM) to the coordinates of initial point
         /// @param ter Pointer (of size > VECDIM) to the coordinates of terminal point
@@ -117,6 +162,15 @@ namespace cmf
         
         ///@brief the data
         numericType v[VECDIM];
+        
+        /// @brief assignment operator
+        /// @param rhs the data to assign
+        /// @author WVN
+        template <typename othertype> Vec& operator = (const othertype rhs)
+        {
+            for (int i = 0; i < VECDIM; i++) v[i] = (numericType)rhs;
+            return *this;
+        }
         
         /// @brief index operator
         /// @param i index
@@ -162,10 +216,10 @@ namespace cmf
             os << "[]";
             return os;
         }
-       os << "[" << vec.v[0];
-       for (int i = 1; i < VECDIM; i++) os << ", " << vec.v[i];
-       os << "]";
-       return os;
+        os << "[" << vec.v[0];
+        for (int i = 1; i < VECDIM; i++) os << ", " << vec.v[i];
+        os << "]";
+        return os;
     }
 }
 
