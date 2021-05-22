@@ -302,9 +302,14 @@ namespace cmf
         //temporary
         bool debug = true;
         auto c = currentInfo.node->GetBlockCenter();
-        debug = debug && (c-Vec3<double>(1.5, 1.5, 0.0)).Norm() < 1e-4;
-        debug = debug && (edgeVector[0] == 0);
-        debug = debug && (edgeVector[1] == -1);
+        debug = debug && (c-Vec3<double>(1.5, 0.25, 0.0)).Norm() < 1e-1;
+        if (debug)
+        {
+            // currentInfo.node->PrintNeighbors();
+            // print(edgeVector);
+        }
+        // debug = debug && (edgeVector[0] == 0);
+        // debug = debug && (edgeVector[1] == -1);
         
         //Current node projects neighbor's exchange cells into its own domain and figures out what cells to use to send data
         for (int i = 0; i < CMF_DIM; i++)
@@ -314,12 +319,12 @@ namespace cmf
             int currentMeshDimWithoutExchanges = (double)(currentInfo.meshSize[i]-2*currentInfo.exchangeSize[i]);
             int neighborMeshDimWithoutExchanges = (double)(neighborInfo.meshSize[i]-2*neighborInfo.exchangeSize[i]);
             int levelDifference = refineLevelDifference[i];
-            bool currentFinerThanNeighbor = levelDifference<0;
-            bool currentSameLevelAsNeighbor = levelDifference=0;
-            bool currentCoarserThanNeighbor = levelDifference>0;
+            bool currentFinerThanNeighbor = (levelDifference<0);
+            bool currentSameLevelAsNeighbor = (levelDifference==0);
+            bool currentCoarserThanNeighbor = (levelDifference>0);
             if (__d_abs(levelDifference)>1) CmfError("Attempted to create exchange patterns for larger than factor-2 refinement");
             bool isTangentialDirection = (edgeVector[i] == 0);
-            
+
             //This is a bit ugly!
             if (currentFinerThanNeighbor)
             {
@@ -327,8 +332,9 @@ namespace cmf
                 {
                     case -1:
                     {
-                        exchangeRegionCurrentView[2*i] = 0.5;
-                        exchangeRegionCurrentView[2*i+1] = neighborExchangeSize-0.5;
+                        
+                        exchangeRegionCurrentView[2*i] = 0.25;
+                        exchangeRegionCurrentView[2*i+1] = 0.5*neighborExchangeSize - 0.25;
                         exchangeRegionSize[i] = neighborExchangeSize;
                         break;
                     }
@@ -341,8 +347,9 @@ namespace cmf
                     }
                     case  1:
                     {
-                        exchangeRegionCurrentView[2*i] = currentMeshDimWithoutExchanges + 0.5 - neighborExchangeSize;
-                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
+                        //done
+                        exchangeRegionCurrentView[2*i] = currentMeshDimWithoutExchanges - 2*neighborExchangeSize + 1;
+                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges - 1.0;
                         exchangeRegionSize[i] = neighborExchangeSize;
                         break;
                     }
@@ -354,8 +361,9 @@ namespace cmf
                 {
                     case -1:
                     {
-                        exchangeRegionCurrentView[2*i] = 0.5;
-                        exchangeRegionCurrentView[2*i+1] = neighborExchangeSize-0.5;
+                        //done
+                        exchangeRegionCurrentView[2*i] = 0.25;
+                        exchangeRegionCurrentView[2*i+1] = 0.5*neighborExchangeSize - 0.25;
                         exchangeRegionSize[i] = neighborExchangeSize;
                         break;
                     }
@@ -381,6 +389,7 @@ namespace cmf
                 {
                     case -1:
                     {
+                        //done
                         exchangeRegionCurrentView[2*i] = 0.5;
                         exchangeRegionCurrentView[2*i+1] = neighborExchangeSize-0.5;
                         exchangeRegionSize[i] = neighborExchangeSize;
@@ -388,6 +397,7 @@ namespace cmf
                     }
                     case  0:
                     {
+                        //done
                         exchangeRegionCurrentView[2*i] = 0.5;
                         exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
                         exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
@@ -395,36 +405,37 @@ namespace cmf
                     }
                     case  1:
                     {
+                        //done
                         exchangeRegionCurrentView[2*i] = currentMeshDimWithoutExchanges + 0.5 - neighborExchangeSize;
-                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
+                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges - 0.5;
                         exchangeRegionSize[i] = neighborExchangeSize;
                         break;
                     }
                 }
             }
-            double boxWidthInIndexSpace = ((edgeVector[i] == 0)?(currentMeshDimWithoutExchanges-1):((double)neighborExchangeSize-1))*refFac;
-            
-            exchangeRegionCurrentView[2*i]   = (edgeVector[i] == 1)?(currentMeshDimWithoutExchanges-0.5*refFac-boxWidthInIndexSpace):0.5*refFac;
-            
-            exchangeRegionSize[i] = neighborExchangeSize;
-            if (edgeVector[i] == 0)
-            {
-                exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
-            }
-            
-            //This indicates whether or not in this tangential direction, there are two candidate
-            //blocks matching this edgeVector, add half of the block width if that is the case
-            bool directionIsSplit = (edgeVector[i] == 0)&&(refineLevelDifference[i]!=0);
-            exchangeRegionCurrentView[2*i] += (directionIsSplit&&(neighborInfo.node->SharesEdgeWithHost(2*i+1)))?0.5*currentMeshDimWithoutExchanges:0.0;
-            
-            exchangeRegionCurrentView[2*i+1] = exchangeRegionCurrentView[2*i] + boxWidthInIndexSpace;
-            sumAbsEdgeVec += __d_abs(edgeVector[i]);
+            // double boxWidthInIndexSpace = ((edgeVector[i] == 0)?(currentMeshDimWithoutExchanges-1):((double)neighborExchangeSize-1))*refFac;
+            // 
+            // exchangeRegionCurrentView[2*i]   = (edgeVector[i] == 1)?(currentMeshDimWithoutExchanges-0.5*refFac-boxWidthInIndexSpace):0.5*refFac;
+            // 
+            // exchangeRegionSize[i] = neighborExchangeSize;
+            // if (edgeVector[i] == 0)
+            // {
+            //     exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
+            // }
+            // 
+            // //This indicates whether or not in this tangential direction, there are two candidate
+            // //blocks matching this edgeVector, add half of the block width if that is the case
+            // bool directionIsSplit = (edgeVector[i] == 0)&&(refineLevelDifference[i]!=0);
+            // exchangeRegionCurrentView[2*i] += (directionIsSplit&&(neighborInfo.node->SharesEdgeWithHost(2*i+1)))?0.5*currentMeshDimWithoutExchanges:0.0;
+            // 
+            // exchangeRegionCurrentView[2*i+1] = exchangeRegionCurrentView[2*i] + boxWidthInIndexSpace;
+            // sumAbsEdgeVec += __d_abs(edgeVector[i]);
         }
         
         //The data in the current block is re-in
         if (debug)
         {
-            print(exchangeRegionCurrentView, exchangeRegionSize);
+            print(exchangeRegionCurrentView, exchangeRegionSize, edgeVector);
         }
     }
     

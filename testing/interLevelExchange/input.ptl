@@ -17,7 +17,7 @@ Domain
 	blockBounds = [0, 2, 0, 2]
 	meshDataDim = [10, 10]
 	refinementConstraintType = factor2CompletelyConstrained
-	periodicRefinement = [false, false]
+	periodicRefinement = [true, true]
 	Exchanges
 	{
 		exchangeDim = [3, 3]

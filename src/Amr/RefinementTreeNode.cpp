@@ -113,7 +113,6 @@ namespace cmf
     void RefinementTreeNode::CreateNewNeighbor(RefinementTreeNode* target, int* deltaijk, char isDomainEdge)
     {
         NodeEdge edgeData;
-        this->RemoveNeighbor(target);
         edgeData.isDomainEdge = isDomainEdge;
         __dloop(edgeData.edgeVector[d] = deltaijk[d]);
         neighbors.push_back({target, edgeData});
@@ -321,10 +320,19 @@ namespace cmf
             rootBlock->RegisterNewChildNode(subNodes[i]);
         }
         rootBlock->RegisterNewParentNode(this);
+        
         //new child nodes need neighbor relationships
         GenerateNeighborsOfChildAllNodes();
+        
         //The current node's neghbors should no longer have a neighbor relationship with this node, but rather with its children
         UpdateNeighborsOfNeighborsToChildNodes(subNodeRefinementType);
+        
+        //Delete any duplicate neighbor relationships
+        for (int i = 0; i < numSubNodes; i++)
+        {
+            subNodes[i]->DeleteDuplicateNeighbors();
+        }
+        
         //Remove all neighbors of this node
         for (auto& it: neighbors)
         {
@@ -335,6 +343,11 @@ namespace cmf
         {
             subNodes[i]->ResolveNewRefinementWithNeighbors(recursiveLevel);
         }
+    }
+    
+    void RefinementTreeNode::DeleteDuplicateNeighbors(void)
+    {
+        
     }
     
     Vec3<int> RefinementTreeNode::GetDirectionLevels(void)
@@ -379,9 +392,20 @@ namespace cmf
             subNodes[i]->WriteToFile(file);
         }
     }
+    
+    void RefinementTreeNode::PrintNeighbors(void)
+    {
+        print("Node", this, "located at", this->GetBlockCenter(), "has", neighbors.size(), "neighbors, and here they are:");
+        for (auto& p:neighbors)
+        {
+            Vec<int, CMF_DIM> evec(&(p.second.edgeVector[0]));
+            print(p.first, "at", p.first->GetBlockCenter(), "in direction", evec);
+        }
+        print("Good luck.");
+    }
 
     void RefinementTreeNode::GenerateNeighborsOfChildAllNodes(void)
-    {
+    {        
         //All siblings share a neighboring relationship
         for (int i = 0; i < numSubNodes; i++)
         {

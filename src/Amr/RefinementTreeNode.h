@@ -113,6 +113,10 @@ namespace cmf
             /// @author WVN
             bool IsTerminal(void);
             
+            /// @brief Deletes any duplicate neighbor relationships
+            /// @author WVN
+            void DeleteDuplicateNeighbors(void);
+            
             /// @brief Returns a pointer to the current node if it is terminal and
             /// coords are contained within the bounds
             /// @param coords An array of size CMF_DIM containing Cartesian coordinates
@@ -229,6 +233,17 @@ namespace cmf
             /// @brief Returns a vector representing the coordinates of the center of the block
             /// @author WVN
             Vec3<double> GetBlockCenter(void);
+            
+            /// @brief used for debugging only, to be removed at a later date. Prints information about the neighbors of this block
+            /// @author WVN
+            void PrintNeighbors(void);
+            
+            /// @brief Returns the parent does if there is one, and NULL if there is no parent
+            /// @author WVN
+            RefinementTreeNode* GetParent(void)
+            {
+                return host;
+            }
             
         private:
             /// @brief Locks the current node from being modified by recursive calls.
