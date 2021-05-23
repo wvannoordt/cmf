@@ -33,7 +33,7 @@ namespace cmf
         	/// @author WVN
             void Unpack(char* buf) override;
             
-            /// @brief Constructor
+            /// @brief Destructor
             /// @author WVN
             ~SingleTransaction(void);
             

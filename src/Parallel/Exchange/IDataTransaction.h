@@ -18,6 +18,10 @@ namespace cmf
         	/// @author WVN
             IDataTransaction(int sender_in, int receiver_in);
             
+            /// @brief Destructor
+        	/// @author WVN
+            virtual ~IDataTransaction(void) {};
+            
             /// @brief Returns the size of the compacted data
         	/// @author WVN
             virtual size_t GetPackedSize(void)=0;

@@ -20,7 +20,7 @@ namespace cmf
             DataExchangePattern(ParallelGroup* group_in);
 
             /// @brief Destructor
-        	/// @author WVNHead
+        	/// @author WVN
             ~DataExchangePattern(void);
             
             /// @brief Performs data exchanges

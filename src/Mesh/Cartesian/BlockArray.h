@@ -212,6 +212,21 @@ namespace cmf
             }
         }
         
+        /// @brief Returns an MdArray of a different type, but the same rank. The the dimension corresponding to the provided index is reduced (or expanded) to accommodate
+        /// the new type.
+        /// @param index The index to change to accommodate the new type
+        /// @author WVN
+        template <typename arType2, const int arRank2 = 1> MdArray<arType2, arRank2> ReCast(int index)
+        {
+            //Expand this to reCast in rank as well?
+            static_assert(arRank2==arRank, "Incorrect rank when performing ReCast");
+            MdArray<arType2, arRank2> output;
+            for (int i = 0; i < arRank2; i++) output.dims[i] = dims[i];
+            output.dims[index] = (output.dims[index]*sizeof(arType))/sizeof(arType2);
+            output.data = (arType2*)data;
+            return output;
+        }
+        
         /// @brief Constructor helper function, allows for default constructor definition
         /// @author WVN
         /// @param lev Unused parameter

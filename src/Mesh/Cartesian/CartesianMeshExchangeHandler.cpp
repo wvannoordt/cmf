@@ -299,12 +299,13 @@ namespace cmf
         //                                                 this is an output                                                  vvvv
         MapExchangeRegionIntoNeighborIndexCoordinates(currentInfo, neighborInfo, edgeVector, exchangeRegionCurrentView, exchangeRegionNeighborView);
         
-        if (meshArray->GetElementType() == CmfArrayType::CmfDouble)
+        if (meshArray->GetElementType() != CmfArrayType::CmfDouble)
         {
             CmfError("Exchanges for non-double precision arrays not yet implemented");
         }
         
-        
+        MdArray<double, 4> currentArray = currentInfo.array.ReCast<double, 4>(0);
+        MdArray<double, 4> neighborArray = neighborInfo.array.ReCast<double, 4>(0);
     }
     
     void CartesianMeshExchangeHandler::MapExchangeRegionIntoNeighborIndexCoordinates
