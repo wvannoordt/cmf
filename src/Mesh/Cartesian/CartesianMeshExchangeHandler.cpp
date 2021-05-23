@@ -10,6 +10,7 @@
 #include "BlockArray.h"
 #include "StringUtils.h"
 #include "ExchangeContextBlockData.h"
+#include "DebugPointCloud.h"
 namespace cmf
 {
     CartesianMeshExchangeHandler::CartesianMeshExchangeHandler(CartesianMesh* mesh_in, CartesianMeshExchangeInfo& inputInfo)
@@ -298,14 +299,12 @@ namespace cmf
         //                                                 this is an output                                                  vvvv
         MapExchangeRegionIntoNeighborIndexCoordinates(currentInfo, neighborInfo, edgeVector, exchangeRegionCurrentView, exchangeRegionNeighborView);
         
-        bool debug = ((currentInfo.node->GetBlockCenter() - Vec3<double>(0.5, 1.5, 0.0)).Norm() < 1e-3) && (edgeVector[0] == 0) && (edgeVector[1]==-1);
-        if (debug)
+        if (meshArray->GetElementType() == CmfArrayType::CmfDouble)
         {
-            //continue here
-            print(currentInfo.node->GetBlockCenter(), neighborInfo.node->GetBlockCenter());
-            print(exchangeRegionCurrentView);
-            print(exchangeRegionNeighborView);
+            CmfError("Exchanges for non-double precision arrays not yet implemented");
         }
+        
+        
     }
     
     void CartesianMeshExchangeHandler::MapExchangeRegionIntoNeighborIndexCoordinates
