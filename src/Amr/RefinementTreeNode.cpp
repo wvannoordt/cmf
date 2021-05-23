@@ -15,6 +15,8 @@
 #include "StringUtils.h"
 #include "Vec.h"
 #include "CmfPrint.h"
+#include <map>
+#include <algorithm>
 
 namespace cmf
 {
@@ -337,6 +339,7 @@ namespace cmf
         for (auto& it: neighbors)
         {
             it.first->RemoveNeighbor(this);
+            it.first->DeleteDuplicateNeighbors();
         }
         //Recursively loop through neighboring nodes to check if the refinement constraint is violated
         for (int i = 0; i < numSubNodes; i++)
@@ -345,9 +348,47 @@ namespace cmf
         }
     }
     
+    int RefinementTreeNode::GetOrientationComponent(int component)
+    {
+        return (int)(CharBit(refineOrientation, component));
+    }
+    
     void RefinementTreeNode::DeleteDuplicateNeighbors(void)
     {
+        //Build a map of indices of each neighbor node in the neighbor array        
+        std::map<RefinementTreeNode*, std::vector<int>> neighborCounts;
+        int i = 0;
+        for (auto& p:neighbors)
+        {
+            auto node = p.first;
+            if (neighborCounts.find(node) == neighborCounts.end()) neighborCounts.insert({node, std::vector<int>()});
+            neighborCounts[node].push_back(i);
+            i++;
+        }
         
+        //create a list of indices to remove: a neighbor relationship is removed if the node pointer and the edge vector are the same
+        std::vector<int> toRemove;
+        for (auto& p:neighborCounts)
+        {
+            if (p.second.size() > 1)
+            {
+                std::map<NodeEdge, int> foundEdges;
+                for (auto idx:p.second)
+                {
+                    if (foundEdges.find(neighbors[idx].second) == foundEdges.end()) foundEdges.insert({neighbors[idx].second, 0});
+                    else { toRemove.push_back(idx); }
+                }
+            }
+        }
+        
+        //sort in descending order to ensure that indices are valid through removal
+        std::sort(toRemove.begin(), toRemove.end(), std::greater<int>());
+        
+        //remove at the appropriate indices
+        for (auto idx:toRemove)
+        {
+            neighbors.erase(neighbors.begin() + idx);
+        }
     }
     
     Vec3<int> RefinementTreeNode::GetDirectionLevels(void)

@@ -116,6 +116,31 @@ namespace cmf
                     NodeEdge& relationship
                 );
             
+            /// @brief Returns vectors describing an exchange region in the current block's index coordinate system
+            /// @param currentInfo Contains contextual information about the current node
+            /// @param neighborInfo Contains contextual information about the neighbor node
+            /// @param edgeVector The edge vector from the current node to the neighbor node
+            /// @param exchangeRegionOut (output) the bounding box (in index space) of the exchange region
+            /// @param exchangeSizeOut (output) The number of cells in the exchange region
+            /// @author WVN
+            void GetExchangeRegionInLocalIndexCoordinates(ExchangeContextBlockData& currentInfo, ExchangeContextBlockData& neighborInfo, Vec3<int> edgeVector, Vec<double, 6>& exchangeRegionOut, Vec3<int>& exchangeSizeOut);
+            
+            /// @brief Takes the provided region in the current node's index space and maps it into the neighbor node's index space
+            /// @param currentInfo Contains contextual information about the current node
+            /// @param neighborInfo Contains contextual information about the neighbor node
+            /// @param edgeVector The edge vector from the current node to the neighbor node
+            /// @param exchangeRegionCurrentView the bounding box (in index space) of the exchange region as seen by the current node
+            /// @param exchangeRegionNeighborView (output) the bounding box (in index space) of the exchange region as seen by the neighbor node
+            /// @author WVN
+            void MapExchangeRegionIntoNeighborIndexCoordinates
+                (
+                    ExchangeContextBlockData& currentInfo,
+                    ExchangeContextBlockData& neighborInfo,
+                    Vec3<int> edgeVector,
+                    Vec<double, 6>& exchangeRegionCurrentView,
+                    Vec<double, 6>& exchangeRegionNeighborView
+                );
+            
             /// @brief mesh The mesh over which the exchanges are defined
             CartesianMesh* mesh;
             

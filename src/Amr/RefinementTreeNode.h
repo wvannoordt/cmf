@@ -29,6 +29,30 @@ namespace cmf
         /// @brief A normal vector in index space describing the topological relationship between two nodes. E.g. if two nodes share a face in x, then one will have edgeVector = (1, 0, [0]) and the
         /// other will have edgeVector = (-1, 0, [0])
         int edgeVector[CMF_DIM];
+        
+        /// @brief Determines equality between two NodeEdge Objects
+        /// @param n1 the first one
+        /// @param n2 the second one
+        friend bool operator== ( const NodeEdge &n1, const NodeEdge &n2)
+        {
+            bool output = true;
+            for (int i = 0; i < CMF_DIM; i++) output = (output && (n1.edgeVector[i] == n2.edgeVector[i]));
+            return (output && (n1.isDomainEdge == n2.isDomainEdge));
+        }
+        
+        /// @brief Returns a dummy value for the sake of comparison
+        /// @param rhs the object to compare to
+        inline int BadHash(void) const
+        {
+            return (1+edgeVector[0]) + 3*(1+edgeVector[1]) + 9*CMF_IS3D*(1+edgeVector[CMF_DIM-1])+27*isDomainEdge;
+        }
+        
+        /// @brief Comparison operator for map insertion
+        /// @param rhs the object to compare to
+        bool operator <(const NodeEdge& rhs) const
+        {
+            return BadHash() < rhs.BadHash();
+        }
     };
 
     class RefinementBlock;
@@ -116,6 +140,19 @@ namespace cmf
             /// @brief Deletes any duplicate neighbor relationships
             /// @author WVN
             void DeleteDuplicateNeighbors(void);
+            
+            
+            /// @brief Returns 1 if this block is in the positive direction along the axis specified by component with respect to the parent,
+            /// and 0 otherwise
+            /// @author WVN
+            int GetOrientationComponent(int component);
+            
+            /// @brief Returns the refinement orientation
+            /// @author WVN
+            int GetOrientation(void)
+            {
+                return refineOrientation;
+            }
             
             /// @brief Returns a pointer to the current node if it is terminal and
             /// coords are contained within the bounds

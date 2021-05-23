@@ -280,11 +280,6 @@ namespace cmf
     {
         Vec3<int> edgeVector(relationship.edgeVector[0], relationship.edgeVector[1], CMF_IS3D*(relationship.edgeVector[CMF_DIM-1]));
         
-        //refinement level of neighbor - refinement level of current
-        Vec3<int> neighborLevels = neighborInfo.node->GetDirectionLevels();
-        Vec3<int> currentLevels  = currentInfo.node->GetDirectionLevels();
-        Vec3<int> refineLevelDifference = neighborLevels - currentLevels;
-        
         //the intersection of the ghost cells of the neighbor with the interior cells of the current form a rectangular prism
         //Interpreted in index-space coordinates of the current block
         Vec<double, 6> exchangeRegionCurrentView = 0;
@@ -295,29 +290,101 @@ namespace cmf
         //ths dimensions of rhte exchange region in cells
         Vec3<int> exchangeRegionSize = 0;
         
-        auto refineFactor = [&](int i){ double vals[3] = {2.0, 1.0, 0.5}; return vals[i+1]; };
+        //Current node projects neighbor's exchange cells into its own domain and figures out what cells to use to send data
+        //                                                 these are outputs                  vvvv                       vvvv
+        GetExchangeRegionInLocalIndexCoordinates(currentInfo, neighborInfo, edgeVector, exchangeRegionCurrentView, exchangeRegionSize);
         
-        int sumAbsEdgeVec = 0;
+        //Now, the index space coordinates for the exchange region are mapped into the neighbors index coordinate system
+        //                                                 this is an output                                                  vvvv
+        MapExchangeRegionIntoNeighborIndexCoordinates(currentInfo, neighborInfo, edgeVector, exchangeRegionCurrentView, exchangeRegionNeighborView);
         
-        //temporary
-        bool debug = true;
-        auto c = currentInfo.node->GetBlockCenter();
-        debug = debug && (c-Vec3<double>(1.5, 0.25, 0.0)).Norm() < 1e-1;
+        bool debug = ((currentInfo.node->GetBlockCenter() - Vec3<double>(0.5, 1.5, 0.0)).Norm() < 1e-3) && (edgeVector[0] == 0) && (edgeVector[1]==-1);
         if (debug)
         {
-            // currentInfo.node->PrintNeighbors();
-            // print(edgeVector);
+            //continue here
+            print(currentInfo.node->GetBlockCenter(), neighborInfo.node->GetBlockCenter());
+            print(exchangeRegionCurrentView);
+            print(exchangeRegionNeighborView);
         }
-        // debug = debug && (edgeVector[0] == 0);
-        // debug = debug && (edgeVector[1] == -1);
+    }
+    
+    void CartesianMeshExchangeHandler::MapExchangeRegionIntoNeighborIndexCoordinates
+        (
+            ExchangeContextBlockData& currentInfo,
+            ExchangeContextBlockData& neighborInfo,
+            Vec3<int> edgeVector,
+            Vec<double, 6>& exchangeRegionCurrentView,
+            Vec<double, 6>& exchangeRegionNeighborView
+        )
+    {
+        //refinement level of neighbor - refinement level of current
+        Vec3<int> neighborLevels = neighborInfo.node->GetDirectionLevels();
+        Vec3<int> currentLevels  = currentInfo.node->GetDirectionLevels();
+        Vec3<int> refineLevelDifference = neighborLevels - currentLevels;
         
-        //Current node projects neighbor's exchange cells into its own domain and figures out what cells to use to send data
+        double refFacs[3] = {0.5, 1.0, 2.0};
         for (int i = 0; i < CMF_DIM; i++)
         {
             int currentExchangeSize = currentInfo.exchangeSize[i];
             int neighborExchangeSize = neighborInfo.exchangeSize[i];
-            int currentMeshDimWithoutExchanges = (double)(currentInfo.meshSize[i]-2*currentInfo.exchangeSize[i]);
-            int neighborMeshDimWithoutExchanges = (double)(neighborInfo.meshSize[i]-2*neighborInfo.exchangeSize[i]);
+            int currentMeshDimWithoutExchanges = currentInfo.meshSize[i]-2*currentInfo.exchangeSize[i];
+            int neighborMeshDimWithoutExchanges = neighborInfo.meshSize[i]-2*neighborInfo.exchangeSize[i];
+            
+            int levelDifference = refineLevelDifference[i];
+            bool currentFinerThanNeighbor = (levelDifference<0);
+            bool currentSameLevelAsNeighbor = (levelDifference==0);
+            bool currentCoarserThanNeighbor = (levelDifference>0);
+            double refFac = refFacs[levelDifference+1];
+
+            double distToNeighborOrigin = 0.0;
+            switch (edgeVector[i])
+            {
+                case -1:
+                {
+                    if (currentFinerThanNeighbor)   distToNeighborOrigin = -2*currentMeshDimWithoutExchanges;
+                    if (currentCoarserThanNeighbor) distToNeighborOrigin = -0.5*currentMeshDimWithoutExchanges;
+                    if (currentSameLevelAsNeighbor) distToNeighborOrigin = -1.0*currentMeshDimWithoutExchanges;
+                    break;
+                }
+                case 0:
+                {
+                    if (currentFinerThanNeighbor)   distToNeighborOrigin = -currentInfo.node->GetOrientationComponent(i)*currentMeshDimWithoutExchanges;
+                    if (currentCoarserThanNeighbor) distToNeighborOrigin = 0.5*neighborInfo.node->GetOrientationComponent(i)*currentMeshDimWithoutExchanges;
+                    if (currentSameLevelAsNeighbor) distToNeighborOrigin = 0.0;
+                    break;
+                }
+                case 1:
+                {
+                    distToNeighborOrigin = currentMeshDimWithoutExchanges;
+                    break;
+                }
+            }
+            double neighborOriginCoord = distToNeighborOrigin;
+            exchangeRegionNeighborView[2*i] = refFac*(exchangeRegionCurrentView[2*i] - distToNeighborOrigin);
+            exchangeRegionNeighborView[2*i+1] = refFac*(exchangeRegionCurrentView[2*i+1] - distToNeighborOrigin);
+        }
+    }
+    
+    void CartesianMeshExchangeHandler::GetExchangeRegionInLocalIndexCoordinates
+        (
+            ExchangeContextBlockData& currentInfo,
+            ExchangeContextBlockData& neighborInfo,
+            Vec3<int> edgeVector,
+            Vec<double, 6>& exchangeRegionOut,
+            Vec3<int>& exchangeSizeOut
+        )
+    {
+        //refinement level of neighbor - refinement level of current
+        Vec3<int> neighborLevels = neighborInfo.node->GetDirectionLevels();
+        Vec3<int> currentLevels  = currentInfo.node->GetDirectionLevels();
+        Vec3<int> refineLevelDifference = neighborLevels - currentLevels;
+        
+        for (int i = 0; i < CMF_DIM; i++)
+        {
+            int currentExchangeSize = currentInfo.exchangeSize[i];
+            int neighborExchangeSize = neighborInfo.exchangeSize[i];
+            int currentMeshDimWithoutExchanges = currentInfo.meshSize[i]-2*currentInfo.exchangeSize[i];
+            int neighborMeshDimWithoutExchanges = neighborInfo.meshSize[i]-2*neighborInfo.exchangeSize[i];
             int levelDifference = refineLevelDifference[i];
             bool currentFinerThanNeighbor = (levelDifference<0);
             bool currentSameLevelAsNeighbor = (levelDifference==0);
@@ -332,25 +399,26 @@ namespace cmf
                 {
                     case -1:
                     {
-                        
-                        exchangeRegionCurrentView[2*i] = 0.25;
-                        exchangeRegionCurrentView[2*i+1] = 0.5*neighborExchangeSize - 0.25;
-                        exchangeRegionSize[i] = neighborExchangeSize;
+                        //done
+                        exchangeRegionOut[2*i] = 1.0;
+                        exchangeRegionOut[2*i+1] = 2*neighborExchangeSize - 1;
+                        exchangeSizeOut[i] = neighborExchangeSize;
                         break;
                     }
                     case  0:
                     {
-                        exchangeRegionCurrentView[2*i] = 0.5;
-                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
-                        exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
+                        //done
+                        exchangeRegionOut[2*i] = 1.0;
+                        exchangeRegionOut[2*i+1] = currentMeshDimWithoutExchanges - 1.0;
+                        exchangeSizeOut[i] = neighborMeshDimWithoutExchanges/2;
                         break;
                     }
                     case  1:
                     {
                         //done
-                        exchangeRegionCurrentView[2*i] = currentMeshDimWithoutExchanges - 2*neighborExchangeSize + 1;
-                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges - 1.0;
-                        exchangeRegionSize[i] = neighborExchangeSize;
+                        exchangeRegionOut[2*i] = currentMeshDimWithoutExchanges - 2*neighborExchangeSize + 1;
+                        exchangeRegionOut[2*i+1] = currentMeshDimWithoutExchanges - 1.0;
+                        exchangeSizeOut[i] = neighborExchangeSize;
                         break;
                     }
                 }
@@ -362,23 +430,27 @@ namespace cmf
                     case -1:
                     {
                         //done
-                        exchangeRegionCurrentView[2*i] = 0.25;
-                        exchangeRegionCurrentView[2*i+1] = 0.5*neighborExchangeSize - 0.25;
-                        exchangeRegionSize[i] = neighborExchangeSize;
+                        exchangeRegionOut[2*i] = 0.25;
+                        exchangeRegionOut[2*i+1] = 0.5*neighborExchangeSize - 0.25;
+                        exchangeSizeOut[i] = neighborExchangeSize;
                         break;
                     }
                     case  0:
                     {
-                        exchangeRegionCurrentView[2*i] = 0.5;
-                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
-                        exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
+                        //done
+                        bool topOrientation = (neighborInfo.node->GetOrientationComponent(i)==1);
+                        double delta = topOrientation?0.5*currentMeshDimWithoutExchanges:0.0;
+                        exchangeRegionOut[2*i] = 0.25 + delta;
+                        exchangeRegionOut[2*i+1] = 0.5*currentMeshDimWithoutExchanges-0.25 + delta;
+                        exchangeSizeOut[i] = neighborMeshDimWithoutExchanges;
                         break;
                     }
                     case  1:
                     {
-                        exchangeRegionCurrentView[2*i] = currentMeshDimWithoutExchanges + 0.5 - neighborExchangeSize;
-                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
-                        exchangeRegionSize[i] = neighborExchangeSize;
+                        //done
+                        exchangeRegionOut[2*i] = currentMeshDimWithoutExchanges - 0.25 - 0.5*(neighborExchangeSize - 1);
+                        exchangeRegionOut[2*i+1] = currentMeshDimWithoutExchanges - 0.25;
+                        exchangeSizeOut[i] = neighborExchangeSize;
                         break;
                     }
                 }
@@ -390,52 +462,29 @@ namespace cmf
                     case -1:
                     {
                         //done
-                        exchangeRegionCurrentView[2*i] = 0.5;
-                        exchangeRegionCurrentView[2*i+1] = neighborExchangeSize-0.5;
-                        exchangeRegionSize[i] = neighborExchangeSize;
+                        exchangeRegionOut[2*i] = 0.5;
+                        exchangeRegionOut[2*i+1] = neighborExchangeSize-0.5;
+                        exchangeSizeOut[i] = neighborExchangeSize;
                         break;
                     }
                     case  0:
                     {
                         //done
-                        exchangeRegionCurrentView[2*i] = 0.5;
-                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges-0.5;
-                        exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
+                        exchangeRegionOut[2*i] = 0.5;
+                        exchangeRegionOut[2*i+1] = currentMeshDimWithoutExchanges-0.5;
+                        exchangeSizeOut[i] = neighborMeshDimWithoutExchanges;
                         break;
                     }
                     case  1:
                     {
                         //done
-                        exchangeRegionCurrentView[2*i] = currentMeshDimWithoutExchanges + 0.5 - neighborExchangeSize;
-                        exchangeRegionCurrentView[2*i+1] = currentMeshDimWithoutExchanges - 0.5;
-                        exchangeRegionSize[i] = neighborExchangeSize;
+                        exchangeRegionOut[2*i] = currentMeshDimWithoutExchanges + 0.5 - neighborExchangeSize;
+                        exchangeRegionOut[2*i+1] = currentMeshDimWithoutExchanges - 0.5;
+                        exchangeSizeOut[i] = neighborExchangeSize;
                         break;
                     }
                 }
             }
-            // double boxWidthInIndexSpace = ((edgeVector[i] == 0)?(currentMeshDimWithoutExchanges-1):((double)neighborExchangeSize-1))*refFac;
-            // 
-            // exchangeRegionCurrentView[2*i]   = (edgeVector[i] == 1)?(currentMeshDimWithoutExchanges-0.5*refFac-boxWidthInIndexSpace):0.5*refFac;
-            // 
-            // exchangeRegionSize[i] = neighborExchangeSize;
-            // if (edgeVector[i] == 0)
-            // {
-            //     exchangeRegionSize[i] = neighborMeshDimWithoutExchanges;
-            // }
-            // 
-            // //This indicates whether or not in this tangential direction, there are two candidate
-            // //blocks matching this edgeVector, add half of the block width if that is the case
-            // bool directionIsSplit = (edgeVector[i] == 0)&&(refineLevelDifference[i]!=0);
-            // exchangeRegionCurrentView[2*i] += (directionIsSplit&&(neighborInfo.node->SharesEdgeWithHost(2*i+1)))?0.5*currentMeshDimWithoutExchanges:0.0;
-            // 
-            // exchangeRegionCurrentView[2*i+1] = exchangeRegionCurrentView[2*i] + boxWidthInIndexSpace;
-            // sumAbsEdgeVec += __d_abs(edgeVector[i]);
-        }
-        
-        //The data in the current block is re-in
-        if (debug)
-        {
-            print(exchangeRegionCurrentView, exchangeRegionSize, edgeVector);
         }
     }
     
