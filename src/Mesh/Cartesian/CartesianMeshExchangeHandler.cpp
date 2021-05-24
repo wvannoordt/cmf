@@ -85,6 +85,9 @@ namespace cmf
         current.blockInfo      = mesh->GetBlockInfo(currentNode);
         neighbor.blockInfo     = mesh->GetBlockInfo(neighborNode);
         
+        int myrank = meshArray->Mesh()->GetGroup()->Rank();
+        if ((current.partitionInfo.rank != myrank) && (neighbor.partitionInfo.rank != myrank)) return;
+        
         current.node = currentNode;
         neighbor.node = neighborNode;
         
@@ -283,13 +286,15 @@ namespace cmf
         
         //the intersection of the ghost cells of the neighbor with the interior cells of the current form a rectangular prism
         //Interpreted in index-space coordinates of the current block
-        Vec<double, 6> exchangeRegionCurrentView = 0;
+        Vec<double, 6> exchangeRegionCurrentView = 0.5;
         
         //The same thing, but from the perspective of the neighbor block
-        Vec<double, 6> exchangeRegionNeighborView = 0;
+        Vec<double, 6> exchangeRegionNeighborView = 0.5;
         
         //ths dimensions of rhte exchange region in cells
-        Vec3<int> exchangeRegionSize = 0;
+        Vec3<int> exchangeRegionSize = 1;
+        
+        Vec3<int> exchangeDims = currentInfo.exchangeSize;
         
         //Current node projects neighbor's exchange cells into its own domain and figures out what cells to use to send data
         //                                                 these are outputs                  vvvv                       vvvv
@@ -299,6 +304,10 @@ namespace cmf
         //                                                 this is an output                                                  vvvv
         MapExchangeRegionIntoNeighborIndexCoordinates(currentInfo, neighborInfo, edgeVector, exchangeRegionCurrentView, exchangeRegionNeighborView);
         
+        int currentRank = currentInfo.partitionInfo.rank;
+        int neighborRank = neighborInfo.partitionInfo.rank;
+        int priority = 100;
+        
         if (meshArray->GetElementType() != CmfArrayType::CmfDouble)
         {
             CmfError("Exchanges for non-double precision arrays not yet implemented");
@@ -306,6 +315,8 @@ namespace cmf
         
         MdArray<double, 4> currentArray = currentInfo.array.ReCast<double, 4>(0);
         MdArray<double, 4> neighborArray = neighborInfo.array.ReCast<double, 4>(0);
+        
+        pattern->Add(new CartesianInterLevelBlockTransaction<double>(currentArray, neighborArray, currentRank, neighborRank, exchangeRegionCurrentView, exchangeRegionNeighborView, exchangeRegionSize, exchangeDims), priority);
     }
     
     void CartesianMeshExchangeHandler::MapExchangeRegionIntoNeighborIndexCoordinates

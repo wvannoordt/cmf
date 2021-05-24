@@ -150,7 +150,7 @@ int main(int argc, char** argv)
     
     SillyRefine(var);
     
-    var.ComponentName({}) = "fxyz";
+    var.ComponentName() = "fxyz";
     
     FillArGhost(var, -10.0);
     FillAr(var);

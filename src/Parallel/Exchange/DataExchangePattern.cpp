@@ -73,6 +73,7 @@ namespace cmf
         }
         else
         {
+            CmfError("This is a temporary error: a data exchange pattern has been added where neither the sender nor the receiver are the current rank");
             // This might not be the best way to do this.
             // Delete if the transaction does not pertain to the current rank
             delete transaction;
@@ -81,7 +82,7 @@ namespace cmf
     
     void DataExchangePattern::Pack(void)
     {
-        pointerIndices = sendBuffer; //Vector deep-copy.
+        pointerIndices = sendBuffer;
         for (const auto tr:transactions)
         {
             int currentRank = group->Rank();
