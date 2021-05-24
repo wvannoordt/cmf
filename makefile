@@ -67,7 +67,7 @@ CURRENT_HDRHX_DIR := ${CURRENT_BASEIDIR}/includex
 
 #this path will need to be changed.
 CURRENT_SUB_DIR   := ${CURRENT_BASEIDIR}/..
-CURRENT_PTL_DIR   := ${CURRENT_SUB_DIR}/PTL
+CURRENT_PTL_DIR   := ${PTL}
 
 
 IFLAGS_DEPENDENCIES :=
