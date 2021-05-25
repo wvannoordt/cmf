@@ -72,10 +72,10 @@ void SillyRefine(cmf::CartesianMeshArray& ar)
     std::vector<char> refs;
     double coords[CMF_DIM]={0.1};
     nodes.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
-    refs.push_back(3);
+    refs.push_back(2);
     coords[0] = 1.8;
     nodes.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
-    refs.push_back(2);
+    refs.push_back(1);
     ar.Mesh()->Blocks()->RefineNodes(nodes, refs);
     
     std::vector<cmf::RefinementTreeNode*> nodes2;
