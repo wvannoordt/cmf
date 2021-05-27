@@ -150,10 +150,10 @@ int main(int argc, char** argv)
     
     SillyRefine(var);
     
-    cmf::Vec3<double> nn(0.5, 1.5, 0.0);
+    cmf::Vec3<double> nn(1.25, 0.5, 0.0);
     auto n1 = domain.Blocks()->GetNodeAt(nn);
     
-    cmf::Vec3<double> mm(1.25, 1.25, 0.0);
+    cmf::Vec3<double> mm(1.75, 0.5, 0.0);
     auto n2 = domain.Blocks()->GetNodeAt(mm);
     
     print(n1->GetBlockCenter());

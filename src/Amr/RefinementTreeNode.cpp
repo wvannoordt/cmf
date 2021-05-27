@@ -121,8 +121,15 @@ namespace cmf
                 int bitToSet = ((this->SharesEdgeWithHost(2*d))?0:1);
                 int offset = this->directionLevels[d];
                 exactBounds[2*d].SetBit(offset - 1, bitToSet);
-                exactBounds[2*d+1] = exactBounds[2*d];
-                exactBounds[2*d+1].bits += exactBounds[2*d+1].GetIntervalSize(offset);
+                if (bitToSet==1)
+                {
+                    exactBounds[2*d+1] = hostUpper;
+                }
+                else
+                {
+                    exactBounds[2*d+1] = exactBounds[2*d];
+                    exactBounds[2*d+1].bits += exactBounds[2*d+1].GetIntervalSize(offset);
+                }
             }
         }
     }
