@@ -333,6 +333,8 @@ namespace cmf
         for (int i = 0; i < numSubNodes; i++)
         {
             subNodes[i]->DeleteDuplicateNeighbors();
+            subNodes[i]->GenerateNeighborsFromRefinementBifurcations();
+            
         }
         
         //Remove all neighbors of this node
@@ -345,6 +347,24 @@ namespace cmf
         for (int i = 0; i < numSubNodes; i++)
         {
             subNodes[i]->ResolveNewRefinementWithNeighbors(recursiveLevel);
+        }
+    }
+    
+    void RefinementTreeNode::GenerateNeighborsFromRefinementBifurcations(void)
+    {
+        bool debug = (((this->GetBlockCenter() - Vec3<double>(1.25, 0.5, 0.0)).Norm())<1e-4);
+        if (debug)
+        {
+            this->PrintNeighbors();
+        }
+        
+        for (auto& p:neighbors)
+        {
+            Vec3<int> edgeVec(p.second.edgeVector[0], p.second.edgeVector[1], CMF_IS3D*p.second.edgeVector[CMF_DIM-1]);
+            for (int d = 0; d < CMF_DIM; d++)
+            {
+                
+            }
         }
     }
     
@@ -528,7 +548,6 @@ namespace cmf
                 bool relationshipIsAnnihilated = false;
                 for (int d = 0; d < CMF_DIM; d++)
                 {
-                    
                     bool isUpperOrientationInDirection = subNodes[idx]->SharesEdgeWithHost(2*d+1);
                     bool relationshipStableFromOrientation = (relationship.edgeVector[d]==(isUpperOrientationInDirection?1:-1));
                     bool edgeVectorMightBeReduced = (CharBit(newRefinementType, d)==1);
@@ -542,6 +561,8 @@ namespace cmf
                 }
                 if (!relationshipIsAnnihilated)
                 {
+                    //This relationship is the mutual relationship shared by these two blocks, but in many cases,
+                    //the finer neighbor needs additional neighbor relationships
                     neighbor->CreateNewNeighbor(subNodes[idx], newEdgeVec, relationship.isDomainEdge);
                     __dloop(newEdgeVec[d]*=-1);
                     subNodes[idx]->CreateNewNeighbor(neighbor, newEdgeVec, relationship.isDomainEdge);

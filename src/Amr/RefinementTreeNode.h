@@ -338,6 +338,27 @@ namespace cmf
             /// @author WVN
             void UpdateNeighborsOfNeighborsToChildNodes(char newRefinementType);
             
+            //    -----------------------------              -----------------------------
+            //    |             |             |              |             |             |
+            //    |             |             |              |             |             |
+            //    |     2       |     3       |              |     2       |      3      |
+            //    |             |             |              |             |             |
+            //    |             |             |              |             |             |
+            //    -----------------------------         -->  -----------------------------
+            //    |             |             |              |             |      |      |
+            //    |             |             |              |             |      |      |
+            //    |     0       |     1       |              |     0       |   4  |  5   |
+            //    |             |             |              |             |      |      |
+            //    |             |             |              |             |      |      |
+            //    -----------------------------              -----------------------------
+            
+            //Note that 3's edge to 4 is [0 -1] and that 4's edge to 3 is [0 1], but 4 also requires an additional edge to 3, namely [1, 1]. The
+            //function GenerateNeighborsFromRefinementBifurcations detects these and adds the appropriate neighbor relationships
+            
+            /// @brief Called on new child nodes after the parent has just been refined. For an explanation, see the illustration in the source file.
+            /// @author WVN
+            void GenerateNeighborsFromRefinementBifurcations(void);
+            
             /// @brief Populate isOnBoundary based on host node information
             /// @author WVN
             void InheritDomainBoundaryInfo(void);

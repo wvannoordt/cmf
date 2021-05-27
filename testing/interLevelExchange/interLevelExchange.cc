@@ -81,11 +81,11 @@ void SillyRefine(cmf::CartesianMeshArray& ar)
     std::vector<cmf::RefinementTreeNode*> nodes2;
     std::vector<char> refs2;
     coords[0] = 1.5;
-    coords[1] = 0.75;
+    coords[1] = 1.5;
     coords[2] = 0.0;
     
     nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
-    refs2.push_back(2);
+    refs2.push_back(3);
     // ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
 }
 
