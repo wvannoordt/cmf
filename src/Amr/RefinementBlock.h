@@ -11,6 +11,7 @@
 #include "IBlockIterable.h"
 #include "ICmfHashable.h"
 #include "ParallelFile.h"
+#include "Vec.h"
 
 namespace cmf
 {
@@ -82,6 +83,11 @@ namespace cmf
             /// @param coords The coordinates to retrieve at
             /// @author WVN
             RefinementTreeNode* GetNodeAt(double coords[CMF_DIM]);
+            
+            /// @brief Returns the node that contains the provided coordinates, or NULL if none are found
+            /// @param coords The coordinates to retrieve at
+            /// @author WVN
+            RefinementTreeNode* GetNodeAt(Vec3<double>& coords);
             
             /// @brief Returns true if the given coordinates lie within the domain boundaries.
             /// @param coords The coordinates to test

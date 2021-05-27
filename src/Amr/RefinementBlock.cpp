@@ -112,10 +112,19 @@ namespace cmf
             trunks[i] = new RefinementTreeNode(localBounds, 0, 0, 0, NULL, refinementConstraintType, this);
             RegisterNewChildNode(trunks[i]);
             trunks[i]->SetRefineLimiter(&refineLimiter);
+            for (int d = 0; d < CMF_DIM; d++)
+            {
+                trunks[i]->GetAmrPosition(2*d).partition = idx[d];
+                trunks[i]->GetAmrPosition(2*d).bits = 0;
+                trunks[i]->GetAmrPosition(2*d+1).partition = idx[d]+1;
+                trunks[i]->GetAmrPosition(2*d+1).bits = 0;
+            }
         }
         //This is added because it is assumed that any post-refinemet callback object is registered afterwards
         newChildNodes.clear();
         newParentNodes.clear();
+        
+        //Create the neighbor relationships for the trunk nodes
         for (int i = 0; i < totalNumTrunks; i++)
         {
             int blockIndex[CMF_DIM];
@@ -210,7 +219,14 @@ namespace cmf
             target->Refine(refinementType);
         }
     }
-
+    
+    RefinementTreeNode* RefinementBlock::GetNodeAt(Vec3<double>& coords)
+    {
+        double c[CMF_DIM];
+        for (int i = 0; i < CMF_DIM; i++) c[i] = coords.v[i];
+        return this->GetNodeAt(c);
+    }
+    
     RefinementTreeNode* RefinementBlock::GetNodeAt(double coords[CMF_DIM])
     {
         int idx[CMF_DIM];

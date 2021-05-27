@@ -15,10 +15,12 @@
 #include <algorithm>
 #include "Vec.h"
 #include "CmfPrint.h"
+#include "ExactAmrPosition.h"
 
 namespace cmf
 {
     
+    typedef uint64_t amrBitType;
     /// @brief Struct that represents the information corresponding to the relationship between two neighboring nodes.
 	/// @author WVN
     struct NodeEdge
@@ -152,6 +154,15 @@ namespace cmf
             int GetOrientation(void)
             {
                 return refineOrientation;
+            }
+            
+            /// @brief Returns the exact AMR position at the spcified index (xmin, xmax, ymin, ymax, [zmin, zmax])
+            /// coords are contained within the bounds
+            /// @param idx the index of the desired element
+            /// @author WVN
+            ExactAmrPosition<amrBitType>& GetAmrPosition(int idx)
+            {
+                return exactBounds[idx];
             }
             
             /// @brief Returns a pointer to the current node if it is terminal and
@@ -399,6 +410,10 @@ namespace cmf
             /// @author WVN
             void DefineBounds(double* hostBounds, char refineType_in, char refineOrientation_in);
             
+            /// @brief Computes the bounding box of the current node using the exact number system based on the refinement levels and whether or not the current node shares 
+            /// @author WVN
+            void DefineExactPositions(void);
+            
             /// @brief Checks for updates to a neighbor relationship (specifically the edgeVector), e.g. a shared face becomes
             /// a shared edge, then a shared corner, then no relationship.
             /// @param neighbor the neighbor of the current node
@@ -440,6 +455,9 @@ namespace cmf
             
             /// @brief A pointer to the host or parent node of this node
             RefinementTreeNode* host;
+            
+            /// @brief Exact bounds of this node (can be compared without worrying about floating-point precision)
+            ExactAmrPosition<amrBitType> exactBounds [2*CMF_DIM];
             
             /// @brief The number of children this node has
             int numSubNodes;

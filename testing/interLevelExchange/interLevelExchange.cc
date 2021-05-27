@@ -81,7 +81,7 @@ void SillyRefine(cmf::CartesianMeshArray& ar)
     std::vector<cmf::RefinementTreeNode*> nodes2;
     std::vector<char> refs2;
     coords[0] = 1.5;
-    coords[1] = 1.5;
+    coords[1] = 0.5;
     coords[2] = 0.0;
     
     nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
@@ -149,6 +149,28 @@ int main(int argc, char** argv)
     auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble);
     
     SillyRefine(var);
+    
+    cmf::Vec3<double> nn(0.5, 1.5, 0.0);
+    auto n1 = domain.Blocks()->GetNodeAt(nn);
+    
+    cmf::Vec3<double> mm(1.25, 1.25, 0.0);
+    auto n2 = domain.Blocks()->GetNodeAt(mm);
+    
+    print(n1->GetBlockCenter());
+    for (int i = 0; i < CMF_DIM; i++)
+    {
+        print(n1->GetAmrPosition(2*i));
+        print(n1->GetAmrPosition(2*i+1));
+    }
+    
+    print(n2->GetBlockCenter());
+    for (int i = 0; i < CMF_DIM; i++)
+    {
+        print(n2->GetAmrPosition(2*i));
+        print(n2->GetAmrPosition(2*i+1));
+    }
+    
+    print(n1->GetAmrPosition(0) == n2->GetAmrPosition(0));
     
     var.ComponentName() = "fxyz";
     

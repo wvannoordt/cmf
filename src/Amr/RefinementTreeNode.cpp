@@ -37,7 +37,6 @@ namespace cmf
         isTerminal = true;
         refineType = refineType_in;
         refineOrientation = refineOrientation_in;
-        DefineBounds(hostBounds, refineType_in, refineOrientation_in);
         numSubNodes = 0;
         deallocSubTrees = false;
         level = level_in;
@@ -45,8 +44,10 @@ namespace cmf
         subNodeRefinementType = 0;
         for (int d = 0; d < 2*CMF_DIM; d++) isOnBoundary[d] = false;
         DefineDirectionLevels();
+        DefineBounds(hostBounds, refineType_in, refineOrientation_in);
         InheritDomainBoundaryInfo();
-        if (host)
+        DefineExactPositions();
+        if (host != NULL)
         {
             refineLimiter = host->refineLimiter;
         }
@@ -97,6 +98,32 @@ namespace cmf
             char iShift   = (refineOrientation_in>>d)&1;
             blockBounds[2*d]   = hostBounds[2*d]   * (1-(iRefined&iShift))  + (iRefined&iShift) *(0.5*(hostBounds[2*d]+hostBounds[2*d+1]));
             blockBounds[2*d+1] = hostBounds[2*d+1] * (1-(iRefined&~iShift)) + (iRefined&~iShift)*(0.5*(hostBounds[2*d]+hostBounds[2*d+1]));
+        }
+    }
+    
+    void RefinementTreeNode::DefineExactPositions(void)
+    {
+        //In this case, the exact positions have already been set externally
+        if (host == NULL) return;
+        for (int d = 0; d < CMF_DIM; d++)
+        {
+            auto& hostLower = host->exactBounds[2*d];
+            auto& hostUpper = host->exactBounds[2*d+1];
+            this->GetAmrPosition(2*d)   = hostLower;
+            this->GetAmrPosition(2*d+1) = hostUpper;
+        }
+        for (int d = 0; d < CMF_DIM; d++)
+        {
+            if (CharBit(refineType, d))
+            {
+                auto& hostLower = host->exactBounds[2*d];
+                auto& hostUpper = host->exactBounds[2*d+1];
+                int bitToSet = ((this->SharesEdgeWithHost(2*d))?0:1);
+                int offset = this->directionLevels[d];
+                exactBounds[2*d].SetBit(offset - 1, bitToSet);
+                exactBounds[2*d+1] = exactBounds[2*d];
+                exactBounds[2*d+1].bits += exactBounds[2*d+1].GetIntervalSize(offset);
+            }
         }
     }
     
@@ -334,10 +361,9 @@ namespace cmf
         {
             subNodes[i]->DeleteDuplicateNeighbors();
             subNodes[i]->GenerateNeighborsFromRefinementBifurcations();
-            
         }
         
-        //Remove all neighbors of this node
+        //Remove this node as a neighbor of all neighbors
         for (auto& it: neighbors)
         {
             it.first->RemoveNeighbor(this);
@@ -358,12 +384,53 @@ namespace cmf
             this->PrintNeighbors();
         }
         
+        //Strategy: loop through the neighbors of the current node and check if any of the components of the edge vector
+        //are zero. If so, change those components of the edge vector and check if the neighbor is also a neighbor with that edge vector
+        //This might be a performance probelm in the future, but let the profiler say so.
         for (auto& p:neighbors)
         {
             Vec3<int> edgeVec(p.second.edgeVector[0], p.second.edgeVector[1], CMF_IS3D*p.second.edgeVector[CMF_DIM-1]);
+            //Stores the dimensions of the zero indices
+            Vec3<int> zeroComponents(-1);
+            int zeroComponentCount = 0;
             for (int d = 0; d < CMF_DIM; d++)
             {
-                
+                if (edgeVec[d] == 0)
+                {
+                    zeroComponents[zeroComponentCount] = d;
+                    zeroComponentCount++;
+                }
+            }
+            
+            //Skip to next neighbor if this neighbor is a corner
+            if (zeroComponentCount == 0) continue;
+            if (zeroComponentCount == CMF_DIM) CmfError("A node has been detected with a neighbor at [0, 0, 0], meaning there is a bug in the neighbor tracking algorithm :(");
+            
+            //How many corner cases to we need to check?
+            int numCasesToCheck = 1;
+            int ctr = zeroComponentCount;
+            while (ctr-- > 0) numCasesToCheck *= 3;
+            
+            auto candidateEdgeFromIndex = [&](int idx) -> Vec3<int>
+            {
+                int ord[3] = {0, -1, 1};
+                Vec3<int> output = edgeVec;
+                int cidx[2];
+                cidx[0] = idx%3;
+                cidx[1] = (idx-cidx[0])/3;
+                for (int i = 0; i < zeroComponentCount; i++) output[zeroComponents[i]] = ord[cidx[i]];
+                return output;
+            };
+            
+            auto node = p.first;
+            //Note that i starts at 1 to skip the edge vector that already exists!
+            for (int i = 1; i < numCasesToCheck; i++)
+            {
+                Vec3<int> candidateEdge = candidateEdgeFromIndex(i);
+                if (debug)
+                {
+                    print("Ask yourself, I at", this->GetBlockCenter(), "have a neighbor at", node->GetBlockCenter(), "in the direction", edgeVec, "but is it also in the direction", candidateEdge);
+                }
             }
         }
     }
