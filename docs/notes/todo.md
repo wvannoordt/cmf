@@ -27,4 +27,8 @@ This is a place where items for development can be listed. It feels great to che
  - [ ] Modify fixed-size arrays to be always 3D with 2-D default values
  - [x] Vtk blocks in bespoke directories
  - [ ] Implement Error code handling for CreateDirectory, best bet is probably try-catch
- - [ ] Fix the issue with multiple neighbor relationship bifurcation
+ - [x] Fix the issue with multiple neighbor relationship bifurcation
+ - [x] Rewrite neighbor tracking to prevent searches using exact global positioning
+ - [ ] Adjust new neighbor tracking to handle domain boundaries
+ - [ ] Clean up old neighbor tracking code after validation
+ - [ ] Change inter-level exchange model from 'Current gives to neighbor' to 'Current asks from neighbor'

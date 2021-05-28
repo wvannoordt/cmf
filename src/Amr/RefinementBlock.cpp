@@ -116,6 +116,7 @@ namespace cmf
             {
                 trunks[i]->GetAmrPosition(2*d).partition = idx[d];
                 trunks[i]->GetAmrPosition(2*d).bits = 0;
+                // trunks[i]->GetAmrPosition(2*d+1).partition = ((idx[d]+1) % blockDim[d]);
                 trunks[i]->GetAmrPosition(2*d+1).partition = (idx[d]+1);
                 trunks[i]->GetAmrPosition(2*d+1).bits = 0;
             }

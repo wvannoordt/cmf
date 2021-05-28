@@ -429,23 +429,34 @@ namespace cmf
     void RefinementTreeNode::CreateNeighborRelatioships(RefinementTreeNode* candidate)
     {
         bool debug = (((this->GetBlockCenter() - Vec3<double>(1.1, 1.1, 0.0)).Norm())<1e-4);
-        debug = debug && (((candidate->GetBlockCenter() - Vec3<double>(1.4, 1.0, 0.0)).Norm())<1e-4);
-        
-        std::vector<std::vector<int>> constraints;
+        debug = debug && (((candidate->GetBlockCenter() - Vec3<double>(0.9, 0.9, 0.0)).Norm())<1e-4);
+        std::vector<std::vector<int>> possibleEdges;
+        possibleEdges.resize(3);
         for (int d = 0; d < CMF_DIM; d++)
         {
-            constraints.push_back(std::vector<int>());
-            auto& myUpper = this->GetAmrPosition(2*d);
-            auto& myLower = this->GetAmrPosition(2*d+1);
+            auto& myLower = this->GetAmrPosition(2*d);
+            auto& myUpper = this->GetAmrPosition(2*d+1);
             
-            auto& theirUpper = candidate->GetAmrPosition(2*d);
-            auto& theirLower = candidate->GetAmrPosition(2*d+1);
+            auto& theirLower = candidate->GetAmrPosition(2*d);
+            auto& theirUpper = candidate->GetAmrPosition(2*d+1);
             
-            if (myUpper==theirLower) constraints[d].push_back(1);
-            if (myLower==theirUpper) constraints[d].push_back(-1);
-            if (debug)
+            bool lowerComponent = (theirLower<myLower) && (theirUpper>=myLower);
+            bool zeroComponent  = (theirUpper > myLower) && (theirLower < myUpper);
+            bool upperComponent = (theirUpper>myUpper) && (theirLower<=myUpper);
+            if (lowerComponent) possibleEdges[d].push_back(-1);
+            if (zeroComponent) possibleEdges[d].push_back(0);
+            if (upperComponent) possibleEdges[d].push_back(1);
+        }
+        if (!CMF_IS3D) possibleEdges[2].push_back(0);
+        for (auto e1:possibleEdges[0])
+        {
+            for (auto e2:possibleEdges[1])
             {
-                print(d, myUpper==theirLower, myLower==theirUpper);
+                for (auto e3:possibleEdges[2])
+                {
+                    Vec3<int> newEdgeVec(e1, e2, e3);
+                    this->CreateNewNeighbor(candidate, &newEdgeVec[0], 0);
+                }
             }
         }
     }

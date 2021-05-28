@@ -316,6 +316,16 @@ namespace cmf
         MdArray<double, 4> currentArray = currentInfo.array.ReCast<double, 4>(0);
         MdArray<double, 4> neighborArray = neighborInfo.array.ReCast<double, 4>(0);
         
+        bool debug = ((currentInfo.node->GetBlockCenter() - Vec3<double>(1.1, 1.1, 0)).Norm()<1e-4);
+        debug = debug && ((neighborInfo.node->GetBlockCenter() - Vec3<double>(1, 1.4, 0)).Norm()<1e-4);
+        if (debug)
+        {
+            print("HELLO from", __FILE__, "line", __LINE__);
+            print("Edge", edgeVector);
+            print(exchangeRegionCurrentView);
+            print(exchangeRegionNeighborView);
+        }
+        
         pattern->Add(new CartesianInterLevelBlockTransaction<double>(currentArray, neighborArray, currentRank, neighborRank, exchangeRegionCurrentView, exchangeRegionNeighborView, exchangeRegionSize, exchangeDims), priority);
     }
     

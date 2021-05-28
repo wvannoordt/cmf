@@ -1,2 +1,2 @@
-cmd: 'DIM=2 DOLATEXOUTPUT=0 OPTLEVEL=3 PARALLEL=1 CUDA_ENABLE=1 TESTS=interLevelExchange make test'
+cmd: 'touch DIM=2 DOLATEXOUTPUT=0 OPTLEVEL=3 PARALLEL=1 CUDA_ENABLE=1 TESTS=interLevelExchange make test'
 # cmd: './config'

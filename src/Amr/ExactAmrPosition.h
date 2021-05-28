@@ -110,7 +110,9 @@ namespace cmf
         /// @author WVN
         bool operator < (const ExactAmrPosition<bitRepr> & rhs) const
         {
-            return ((partition<rhs.partition)?true:(bits<rhs.bits));
+            if (partition<rhs.partition) return true;
+            if (partition>rhs.partition) return false;
+            return bits<rhs.bits;
         }
         
         /// @brief Inquality operator
@@ -118,7 +120,9 @@ namespace cmf
         /// @author WVN
         bool operator > (const ExactAmrPosition<bitRepr> & rhs) const
         {
-            return ((partition>rhs.partition)?true:(bits>rhs.bits));
+            if (partition<rhs.partition) return false;
+            if (partition>rhs.partition) return true;
+            return bits>rhs.bits;
         }
         
         /// @brief Inquality operator
@@ -126,7 +130,9 @@ namespace cmf
         /// @author WVN
         bool operator <= (const ExactAmrPosition<bitRepr> & rhs) const
         {
-            return ((partition<=rhs.partition)?true:(bits<=rhs.bits));
+            if (partition<rhs.partition) return true;
+            if (partition>rhs.partition) return false;
+            return bits<=rhs.bits;
         }
         
         /// @brief Inquality operator
@@ -134,7 +140,9 @@ namespace cmf
         /// @author WVN
         bool operator >= (const ExactAmrPosition<bitRepr> & rhs) const
         {
-            return ((partition>=rhs.partition)?true:(bits>=rhs.bits));
+            if (partition<rhs.partition) return false;
+            if (partition>rhs.partition) return true;
+            return bits>=rhs.bits;
         }
     };
     
