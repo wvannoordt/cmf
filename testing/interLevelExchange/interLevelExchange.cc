@@ -71,22 +71,16 @@ void SillyRefine(cmf::CartesianMeshArray& ar)
     std::vector<cmf::RefinementTreeNode*> nodes;
     std::vector<char> refs;
     double coords[CMF_DIM]={0.1};
-    nodes.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
-    refs.push_back(2);
-    coords[0] = 1.8;
-    nodes.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
-    refs.push_back(1);
-    ar.Mesh()->Blocks()->RefineNodes(nodes, refs);
     
     std::vector<cmf::RefinementTreeNode*> nodes2;
     std::vector<char> refs2;
-    coords[0] = 1.5;
-    coords[1] = 0.5;
+    coords[0] = 1.0;
+    coords[1] = 1.0;
     coords[2] = 0.0;
     
     nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
     refs2.push_back(3);
-    // ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
+    ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
 }
 
 void EvalErr(cmf::CartesianMeshArray& ar, double& l2Err, double& linfErr)
@@ -150,27 +144,26 @@ int main(int argc, char** argv)
     
     SillyRefine(var);
     
-    cmf::Vec3<double> nn(1.25, 0.5, 0.0);
-    auto n1 = domain.Blocks()->GetNodeAt(nn);
-    
-    cmf::Vec3<double> mm(1.75, 0.5, 0.0);
+    cmf::Vec3<double> mm(1.01, 1.01, 0.0);
     auto n2 = domain.Blocks()->GetNodeAt(mm);
     
-    print(n1->GetBlockCenter());
-    for (int i = 0; i < CMF_DIM; i++)
-    {
-        print(n1->GetAmrPosition(2*i));
-        print(n1->GetAmrPosition(2*i+1));
-    }
+    // print(n1->GetBlockCenter());
+    // for (int i = 0; i < CMF_DIM; i++)
+    // {
+    //     print(n1->GetAmrPosition(2*i));
+    //     print(n1->GetAmrPosition(2*i+1));
+    // }
+    n2->PrintNeighbors();
     
-    print(n2->GetBlockCenter());
-    for (int i = 0; i < CMF_DIM; i++)
-    {
-        print(n2->GetAmrPosition(2*i));
-        print(n2->GetAmrPosition(2*i+1));
-    }
+    // print(n2->GetBlockCenter());
+    // for (int i = 0; i < CMF_DIM; i++)
+    // {
+    //     print(n2->GetAmrPosition(2*i));
+    //     print(n2->GetAmrPosition(2*i+1));
+    // }
+    // n2->PrintNeighbors();
     
-    print(n1->GetAmrPosition(0) == n2->GetAmrPosition(0));
+    // print(n1->GetAmrPosition(0) == n2->GetAmrPosition(0));
     
     var.ComponentName() = "fxyz";
     

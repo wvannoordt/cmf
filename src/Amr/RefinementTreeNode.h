@@ -426,6 +426,15 @@ namespace cmf
             /// @author WVN
             void DetermineNeighborClassificationUpdate(RefinementTreeNode* neighbor, RefinementTreeNode* child, int d, bool tangentUpperOrientation, int* newEdgeVec, bool* relationshipIsAnnihilated);
             
+            /// @brief Updates the neighbors of the current node's neighbors and the current node's children after a refinement
+            /// @author WVN
+            void UpdateNeighborsAfterRefinement(void);
+            
+            /// @brief Updates the neighbors of the current node's neighbors and the current node's children after a refinement
+            /// @param the node to check for neighbor relationships
+            /// @author WVN
+            void CreateNeighborRelatioships(RefinementTreeNode* node);
+            
             /// @brief The refinement type that produced this node (see RefinementTreeNode constructor for interpretation)
             char refineType;
             

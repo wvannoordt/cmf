@@ -330,21 +330,25 @@ namespace cmf
     {
         //do nothing if the node is not a terminal node
         if (!this->IsTerminal()) return;
+        
         //do nothing if the refinement limiter is hit
         if ((refineLimiter!=NULL) && (*refineLimiter!=NULL))
         {
             NodeFilter_t isLimited = *refineLimiter;
             if (isLimited(this)) return;
         }
+        
         char effective = newRefinementType;
         //reduce dimension if needed
         if (!CMF_IS3D) effective = newRefinementType&3;
         subNodeRefinementType = effective;
+        
         //This is no longer a terminal node
         isTerminal = false;
         deallocSubTrees = true;
         numSubNodes = NumberOfNewSubNodes(effective);
         subNodes = new RefinementTreeNode*[numSubNodes];
+        
         char newRefinementOrientation = 0;
         //Get the basis for the child numbering
         int basis = GetCoordBasis(effective);
@@ -357,6 +361,7 @@ namespace cmf
         }
         rootBlock->RegisterNewParentNode(this);
         
+#if(0)
         //new child nodes need neighbor relationships
         GenerateNeighborsOfChildAllNodes();
         
@@ -376,6 +381,11 @@ namespace cmf
             it.first->RemoveNeighbor(this);
             it.first->DeleteDuplicateNeighbors();
         }
+#else
+        this->UpdateNeighborsAfterRefinement();
+#endif
+        
+        
         //Recursively loop through neighboring nodes to check if the refinement constraint is violated
         for (int i = 0; i < numSubNodes; i++)
         {
@@ -383,13 +393,65 @@ namespace cmf
         }
     }
     
+    void RefinementTreeNode::UpdateNeighborsAfterRefinement(void)
+    {
+        //Begin with the child nodes, they need neighbor relationships with their siblings
+        for (int i = 0; i < numSubNodes; i++)
+        {
+            for (int j = 0; j < numSubNodes; j++)
+            {
+                if (i!=j)
+                {
+                    subNodes[i]->CreateNeighborRelatioships(subNodes[j]);
+                }
+            }
+        }
+        
+        for (auto& it: neighbors)
+        {
+            auto neighborNode = it.first;
+            for (int i = 0; i < numSubNodes; i++)
+            {
+                auto childNode = subNodes[i];
+                neighborNode->CreateNeighborRelatioships(childNode);
+                childNode->CreateNeighborRelatioships(neighborNode);
+            }
+        }
+        
+        //Remove this node as a neighbor of all neighbors
+        for (auto& it: neighbors)
+        {
+            it.first->RemoveNeighbor(this);
+            it.first->DeleteDuplicateNeighbors();
+        }
+    }
+    
+    void RefinementTreeNode::CreateNeighborRelatioships(RefinementTreeNode* candidate)
+    {
+        bool debug = (((this->GetBlockCenter() - Vec3<double>(1.1, 1.1, 0.0)).Norm())<1e-4);
+        debug = debug && (((candidate->GetBlockCenter() - Vec3<double>(1.4, 1.0, 0.0)).Norm())<1e-4);
+        
+        std::vector<std::vector<int>> constraints;
+        for (int d = 0; d < CMF_DIM; d++)
+        {
+            constraints.push_back(std::vector<int>());
+            auto& myUpper = this->GetAmrPosition(2*d);
+            auto& myLower = this->GetAmrPosition(2*d+1);
+            
+            auto& theirUpper = candidate->GetAmrPosition(2*d);
+            auto& theirLower = candidate->GetAmrPosition(2*d+1);
+            
+            if (myUpper==theirLower) constraints[d].push_back(1);
+            if (myLower==theirUpper) constraints[d].push_back(-1);
+            if (debug)
+            {
+                print(d, myUpper==theirLower, myLower==theirUpper);
+            }
+        }
+    }
+    
     void RefinementTreeNode::GenerateNeighborsFromRefinementBifurcations(void)
     {
-        bool debug = (((this->GetBlockCenter() - Vec3<double>(1.25, 0.5, 0.0)).Norm())<1e-4);
-        if (debug)
-        {
-            this->PrintNeighbors();
-        }
         
         //Strategy: loop through the neighbors of the current node and check if any of the components of the edge vector
         //are zero. If so, change those components of the edge vector and check if the neighbor is also a neighbor with that edge vector
@@ -434,10 +496,6 @@ namespace cmf
             for (int i = 1; i < numCasesToCheck; i++)
             {
                 Vec3<int> candidateEdge = candidateEdgeFromIndex(i);
-                if (debug)
-                {
-                    print("Ask yourself, I at", this->GetBlockCenter(), "have a neighbor at", node->GetBlockCenter(), "in the direction", edgeVec, "but is it also in the direction", candidateEdge);
-                }
             }
         }
     }
