@@ -228,6 +228,18 @@ namespace cmf
         return this->GetNodeAt(c);
     }
     
+    RefinementTreeNode* RefinementBlock::GetNodeAt(double x, double y, double z)
+    {
+        Vec3<double> c(x, y, z);
+        return this->GetNodeAt(c);
+    }
+    
+    RefinementTreeNode* RefinementBlock::GetNodeAt(double x, double y)
+    {
+        Vec3<double> c(x, y, 0.0);
+        return this->GetNodeAt(c);
+    }
+    
     RefinementTreeNode* RefinementBlock::GetNodeAt(double coords[CMF_DIM])
     {
         int idx[CMF_DIM];

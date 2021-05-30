@@ -360,31 +360,8 @@ namespace cmf
             rootBlock->RegisterNewChildNode(subNodes[i]);
         }
         rootBlock->RegisterNewParentNode(this);
-        
-#if(0)
-        //new child nodes need neighbor relationships
-        GenerateNeighborsOfChildAllNodes();
-        
-        //The current node's neghbors should no longer have a neighbor relationship with this node, but rather with its children
-        UpdateNeighborsOfNeighborsToChildNodes(subNodeRefinementType);
-        
-        //Delete any duplicate neighbor relationships
-        for (int i = 0; i < numSubNodes; i++)
-        {
-            subNodes[i]->DeleteDuplicateNeighbors();
-            subNodes[i]->GenerateNeighborsFromRefinementBifurcations();
-        }
-        
-        //Remove this node as a neighbor of all neighbors
-        for (auto& it: neighbors)
-        {
-            it.first->RemoveNeighbor(this);
-            it.first->DeleteDuplicateNeighbors();
-        }
-#else
+
         this->UpdateNeighborsAfterRefinement();
-#endif
-        
         
         //Recursively loop through neighboring nodes to check if the refinement constraint is violated
         for (int i = 0; i < numSubNodes; i++)
@@ -400,10 +377,7 @@ namespace cmf
         {
             for (int j = 0; j < numSubNodes; j++)
             {
-                if (i!=j)
-                {
-                    subNodes[i]->CreateNeighborRelatioships(subNodes[j]);
-                }
+                subNodes[i]->CreateNeighborRelatioships(subNodes[j]);
             }
         }
         
@@ -428,21 +402,40 @@ namespace cmf
     
     void RefinementTreeNode::CreateNeighborRelatioships(RefinementTreeNode* candidate)
     {
-        bool debug = (((this->GetBlockCenter() - Vec3<double>(1.1, 1.1, 0.0)).Norm())<1e-4);
-        debug = debug && (((candidate->GetBlockCenter() - Vec3<double>(0.9, 0.9, 0.0)).Norm())<1e-4);
         std::vector<std::vector<int>> possibleEdges;
         possibleEdges.resize(3);
         for (int d = 0; d < CMF_DIM; d++)
         {
-            auto& myLower = this->GetAmrPosition(2*d);
-            auto& myUpper = this->GetAmrPosition(2*d+1);
             
-            auto& theirLower = candidate->GetAmrPosition(2*d);
-            auto& theirUpper = candidate->GetAmrPosition(2*d+1);
+            bool iAmLowerDomainBoundary = this->isOnBoundary[2*d];
+            bool iAmUpperDomainBoundary = this->isOnBoundary[2*d+1];
             
-            bool lowerComponent = (theirLower<myLower) && (theirUpper>=myLower);
+            auto myLower = this->GetAmrPosition(2*d);
+            auto myUpper = this->GetAmrPosition(2*d+1);
+            
+            auto theirLower = candidate->GetAmrPosition(2*d);
+            auto theirUpper = candidate->GetAmrPosition(2*d+1);
+            
+            bool lowerComponent = (theirLower < myLower) && (theirUpper >= myLower);
             bool zeroComponent  = (theirUpper > myLower) && (theirLower < myUpper);
-            bool upperComponent = (theirUpper>myUpper) && (theirLower<=myUpper);
+            bool upperComponent = (theirUpper > myUpper) && (theirLower <= myUpper);
+            
+            if (iAmUpperDomainBoundary)
+            {
+                myUpper.partition = 0;
+                lowerComponent = lowerComponent || ((theirLower < myLower) && (theirUpper >= myLower));
+                zeroComponent  = zeroComponent  || ((theirUpper > myLower) && (theirLower < myUpper));
+                upperComponent = upperComponent || ((theirUpper > myUpper) && (theirLower <= myUpper));
+            }
+            
+            if (iAmLowerDomainBoundary)
+            {
+                myLower.partition = rootBlock->blockDim[d];
+                lowerComponent = lowerComponent || ((theirLower < myLower) && (theirUpper >= myLower));
+                zeroComponent  = zeroComponent  || ((theirUpper > myLower) && (theirLower < myUpper));
+                upperComponent = upperComponent || ((theirUpper > myUpper) && (theirLower <= myUpper));
+            }
+            
             if (lowerComponent) possibleEdges[d].push_back(-1);
             if (zeroComponent) possibleEdges[d].push_back(0);
             if (upperComponent) possibleEdges[d].push_back(1);
@@ -455,58 +448,8 @@ namespace cmf
                 for (auto e3:possibleEdges[2])
                 {
                     Vec3<int> newEdgeVec(e1, e2, e3);
-                    this->CreateNewNeighbor(candidate, &newEdgeVec[0], 0);
+                    if ((e1!=0) || (e2!=0) || (e3!=0)) this->CreateNewNeighbor(candidate, &newEdgeVec[0], 0);
                 }
-            }
-        }
-    }
-    
-    void RefinementTreeNode::GenerateNeighborsFromRefinementBifurcations(void)
-    {
-        
-        //Strategy: loop through the neighbors of the current node and check if any of the components of the edge vector
-        //are zero. If so, change those components of the edge vector and check if the neighbor is also a neighbor with that edge vector
-        //This might be a performance probelm in the future, but let the profiler say so.
-        for (auto& p:neighbors)
-        {
-            Vec3<int> edgeVec(p.second.edgeVector[0], p.second.edgeVector[1], CMF_IS3D*p.second.edgeVector[CMF_DIM-1]);
-            //Stores the dimensions of the zero indices
-            Vec3<int> zeroComponents(-1);
-            int zeroComponentCount = 0;
-            for (int d = 0; d < CMF_DIM; d++)
-            {
-                if (edgeVec[d] == 0)
-                {
-                    zeroComponents[zeroComponentCount] = d;
-                    zeroComponentCount++;
-                }
-            }
-            
-            //Skip to next neighbor if this neighbor is a corner
-            if (zeroComponentCount == 0) continue;
-            if (zeroComponentCount == CMF_DIM) CmfError("A node has been detected with a neighbor at [0, 0, 0], meaning there is a bug in the neighbor tracking algorithm :(");
-            
-            //How many corner cases to we need to check?
-            int numCasesToCheck = 1;
-            int ctr = zeroComponentCount;
-            while (ctr-- > 0) numCasesToCheck *= 3;
-            
-            auto candidateEdgeFromIndex = [&](int idx) -> Vec3<int>
-            {
-                int ord[3] = {0, -1, 1};
-                Vec3<int> output = edgeVec;
-                int cidx[2];
-                cidx[0] = idx%3;
-                cidx[1] = (idx-cidx[0])/3;
-                for (int i = 0; i < zeroComponentCount; i++) output[zeroComponents[i]] = ord[cidx[i]];
-                return output;
-            };
-            
-            auto node = p.first;
-            //Note that i starts at 1 to skip the edge vector that already exists!
-            for (int i = 1; i < numCasesToCheck; i++)
-            {
-                Vec3<int> candidateEdge = candidateEdgeFromIndex(i);
             }
         }
     }
@@ -607,28 +550,6 @@ namespace cmf
         }
         print("Good luck.");
     }
-
-    void RefinementTreeNode::GenerateNeighborsOfChildAllNodes(void)
-    {        
-        //All siblings share a neighboring relationship
-        for (int i = 0; i < numSubNodes; i++)
-        {
-            RefinementTreeNode* newChildNode = subNodes[i];
-            for (int j = 0; j < numSubNodes; j++)
-            {
-                if (i!=j)
-                {
-                    RefinementTreeNode* newSiblingNode = subNodes[j];
-                    char childOrientation = newChildNode->refineOrientation;
-                    char siblingOrientation = newSiblingNode->refineOrientation;
-                    char newRefinementType = subNodeRefinementType;
-                    int deltaijk[CMF_DIM];
-                    GenerateEdgeRelationshipFromOrientations(childOrientation, siblingOrientation, newRefinementType, deltaijk);
-                    newChildNode->CreateNewNeighbor(newSiblingNode, deltaijk, 0);
-                }
-            }
-        }
-    }
     
     int RefinementTreeNode::GetHashableValue(void)
     {
@@ -639,79 +560,9 @@ namespace cmf
         return output;
     }
 
-    void RefinementTreeNode::GenerateEdgeRelationshipFromOrientations(char refFrom, char refTo, char refineType, int* dispVector)
-    {
-        int shuffledIndices[CMF_DIM];
-        __dloop(dispVector[d] = 0);
-        __dloop(shuffledIndices[d] = (int)CharBit(refTo, d) - (int)CharBit(refFrom, d));
-        __dloop(dispVector[d] = shuffledIndices[d]);
-    }
-
     int RefinementTreeNode::NumberOfNeighbors(void)
     {
         return neighbors.size();
-    }
-
-    void RefinementTreeNode::UpdateNeighborsOfNeighborsToChildNodes(char newRefinementType)
-    {
-        for (auto& it: neighbors)
-        {
-            //do stuff with it->first based on it->second
-            RefinementTreeNode* neighbor = it.first;
-            NodeEdge relationship = it.second;
-            int newEdgeVec[CMF_DIM];
-
-            //0 -> any bit value allowed
-            //1 -> bit value must have the value represented in orientationConstraintValues
-            char orientationConstraintMask = 0;
-            char orientationConstraintValues = 0;
-            __dloop(SetCharBit(orientationConstraintMask, d, relationship.edgeVector[d]!=0));
-            __dloop(SetCharBit(orientationConstraintValues, d, relationship.edgeVector[d]>0));
-            int numCandidateChildren = 1;
-            __dloop(numCandidateChildren = numCandidateChildren << CharBit(~orientationConstraintMask, d));
-            int indexingBasis = 0;
-            int currentBasisIndex = 0;
-            for (int d = 0; d < CMF_DIM; d++)
-            {
-                int currentBasisVector = 1<<d;
-                if (CharBit(~orientationConstraintMask, d))
-                {
-                    indexingBasis = indexingBasis | (currentBasisVector<<(8*currentBasisIndex));
-                    currentBasisIndex++;
-                }
-            }
-            for (int i = 0; i < numCandidateChildren; i++)
-            {
-                //There will need to be changes here.
-                __dloop(newEdgeVec[d] = -relationship.edgeVector[d]);
-                char orientationFromBasis = BasisEval(indexingBasis, (char)i);
-                char orientation = (orientationFromBasis&~orientationConstraintMask)|(orientationConstraintValues&orientationConstraintMask);
-                int orientationToIdxBasis = GetInvCoordBasis(newRefinementType);
-                int idx = GetIndexFromOctantAndRefineType(orientation, newRefinementType);
-                bool relationshipIsAnnihilated = false;
-                for (int d = 0; d < CMF_DIM; d++)
-                {
-                    bool isUpperOrientationInDirection = subNodes[idx]->SharesEdgeWithHost(2*d+1);
-                    bool relationshipStableFromOrientation = (relationship.edgeVector[d]==(isUpperOrientationInDirection?1:-1));
-                    bool edgeVectorMightBeReduced = (CharBit(newRefinementType, d)==1);
-                    edgeVectorMightBeReduced = edgeVectorMightBeReduced && (subNodes[idx]->directionLevels[d]<=neighbor->directionLevels[d]);
-                    edgeVectorMightBeReduced = edgeVectorMightBeReduced && (!relationshipStableFromOrientation);
-                    if (edgeVectorMightBeReduced)
-                    {
-                        relationshipIsAnnihilated = false;                        
-                        DetermineNeighborClassificationUpdate(neighbor, subNodes[idx], d, isUpperOrientationInDirection, newEdgeVec, &relationshipIsAnnihilated);
-                    }
-                }
-                if (!relationshipIsAnnihilated)
-                {
-                    //This relationship is the mutual relationship shared by these two blocks, but in many cases,
-                    //the finer neighbor needs additional neighbor relationships
-                    neighbor->CreateNewNeighbor(subNodes[idx], newEdgeVec, relationship.isDomainEdge);
-                    __dloop(newEdgeVec[d]*=-1);
-                    subNodes[idx]->CreateNewNeighbor(neighbor, newEdgeVec, relationship.isDomainEdge);
-                }
-            }
-        }
     }
 
     void RefinementTreeNode::RecursiveWritePointsToVtk(VtkBuffer& points, VtkBuffer& edges, VtkBuffer& cellTypes, int* num)
@@ -787,42 +638,6 @@ namespace cmf
             for (int i = 0; i < numSubNodes; i++)
             {
                 subNodes[i]->RecursiveCountTerminal(totalNumBlocks, filter);
-            }
-        }
-    }
-
-    void RefinementTreeNode::DetermineNeighborClassificationUpdate(RefinementTreeNode* neighbor, RefinementTreeNode* child, int d, bool tangentUpperOrientation, int* newEdgeVec, bool* relationshipIsAnnihilated)
-    {
-        int edgeIndex = 2*d + (tangentUpperOrientation?1:0);
-        int directionComponentChange = tangentUpperOrientation?1:-1;
-        bool allEdgeConditionsSatisfied = true;
-        RefinementTreeNode* sameLevelNode;
-
-        for (RefinementTreeNode* currentNode = neighbor; (currentNode->directionLevels[d])>=(child->directionLevels[d]); currentNode = currentNode->host)
-        {
-            if (!(currentNode->host)) CmfError("Error: neighbor classification referenced null host.");
-            if (currentNode->directionLevels[d]!=child->directionLevels[d])
-            {
-                allEdgeConditionsSatisfied = allEdgeConditionsSatisfied && currentNode->SharesEdgeWithHost(edgeIndex);
-            }
-            sameLevelNode = currentNode;
-        }
-        bool matchedOnFinalLevel = sameLevelNode->SharesEdgeWithHost(edgeIndex);
-        if (matchedOnFinalLevel)
-        {
-            *relationshipIsAnnihilated = false;
-            return;
-        }
-        else
-        {
-            if (allEdgeConditionsSatisfied)
-            {
-                newEdgeVec[d] += directionComponentChange;
-            }
-            else
-            {
-                *relationshipIsAnnihilated = !matchedOnFinalLevel;
-                return;
             }
         }
     }

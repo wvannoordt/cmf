@@ -89,6 +89,19 @@ namespace cmf
             /// @author WVN
             RefinementTreeNode* GetNodeAt(Vec3<double>& coords);
             
+            /// @brief Returns the node that contains the provided coordinates, or NULL if none are found
+            /// @param x x-Coordinate
+            /// @param y y-Coordinate
+            /// @param z z-Coordinate
+            /// @author WVN
+            RefinementTreeNode* GetNodeAt(double x, double y, double z);
+            
+            /// @brief Returns the node that contains the provided coordinates, or NULL if none are found
+            /// @param x x-Coordinate
+            /// @param y y-Coordinate
+            /// @author WVN
+            RefinementTreeNode* GetNodeAt(double x, double y);
+            
             /// @brief Returns true if the given coordinates lie within the domain boundaries.
             /// @param coords The coordinates to test
             /// @param idx The 2-D or 3-D indices of the resulting node

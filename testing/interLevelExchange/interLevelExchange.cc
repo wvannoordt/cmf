@@ -14,9 +14,12 @@ using cmf::cell_t;
 
 #define PI 3.141592655359
 
+const double ghostJunkValue = -10.0;
+
 double fxyz(double x, double y, double z)
 {
-    return cos(4*PI*y)*sin(PI*z) + sin(2*PI*y)*cos(3*PI*x) + cos(2*PI*z)*cos(2*PI*x);
+    double alpha = 2.0;
+    return cos(4*PI*alpha*y)*sin(PI*alpha*z) + sin(2*PI*alpha*y)*cos(3*PI*alpha*x) + cos(2*PI*alpha*z)*cos(2*PI*alpha*x);
 }
 
 void FillArGhost(cmf::CartesianMeshArray& ar, double val)
@@ -67,19 +70,11 @@ void FillAr(cmf::CartesianMeshArray& ar)
 }
 
 void SillyRefine(cmf::CartesianMeshArray& ar)
-{
-    std::vector<cmf::RefinementTreeNode*> nodes;
-    std::vector<char> refs;
-    double coords[CMF_DIM]={0.1};
-    
+{    
     std::vector<cmf::RefinementTreeNode*> nodes2;
-    std::vector<char> refs2;
-    coords[0] = 1.0;
-    coords[1] = 1.0;
-    coords[2] = 0.0;
-    
-    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(coords));
-    refs2.push_back(3);
+    std::vector<char> refs2;    
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
+    refs2.push_back(1);
     ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
 }
 
@@ -119,6 +114,12 @@ void EvalErr(cmf::CartesianMeshArray& ar, double& l2Err, double& linfErr)
                         double errLoc = (arLb(i, j, k) - fxyz(xyz[0], xyz[1], xyz[2]));
                         l2ErrLocal += errLoc*errLoc;
                         linfErrLocal = DMAX(linfErrLocal, DABS(errLoc));
+                        
+                        // if (DABS(arLb(i, j, k) - ghostJunkValue) < 1e-8)
+                        // {
+                        //     print("BAD GHOST CELL VALUE");
+                        //     abort();
+                        // }
                     }
                 }
             }
@@ -144,7 +145,7 @@ int main(int argc, char** argv)
     
     SillyRefine(var);
     
-    cmf::Vec3<double> mm(1.01, 1.01, 0.0);
+    cmf::Vec3<double> mm(0.1, 0.6, 0.0);
     auto n2 = domain.Blocks()->GetNodeAt(mm);
     
     // print(n1->GetBlockCenter());
@@ -167,7 +168,7 @@ int main(int argc, char** argv)
     
     var.ComponentName() = "fxyz";
     
-    FillArGhost(var, -10.0);
+    FillArGhost(var, ghostJunkValue);
     FillAr(var);
     
     var.Exchange();

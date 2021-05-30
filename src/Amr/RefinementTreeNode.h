@@ -329,47 +329,6 @@ namespace cmf
             /// @author WVN
             static bool RefineRequiredFromRelationship(RefinementTreeNode* newChildNode, RefinementTreeNode* toBeRefined, NodeEdge relationship, char* newRefTypeOut);
             
-            /// @brief Generates information to create a NodeEdge between to child nodes of a newly refined node.
-            /// @param refFrom The refinement orientation, interpreted as in the RefinementTreeNode constructor, of the node
-            /// having the NodeEdge generated from
-            /// @param refFrom The refinement orientation, interpreted as in the RefinementTreeNode constructor, of the node
-            /// having the NodeEdge generated to
-            /// @param refineType The refinement type, interpreted as in the RefinementTreeNode constructor, of the host block
-            /// of the current node
-            /// @param dispVector Populates the edgeVector of the NodeEdge between newChildNode and toBeRefined, and has size CMF_DIM
-            /// @author WVN
-            void GenerateEdgeRelationshipFromOrientations(char refFrom, char refTo, char refineType, int* dispVector);
-            
-            /// @brief Upon refinement, generates neighbor relationships for all new child nodes
-            /// @author WVN
-            void GenerateNeighborsOfChildAllNodes(void);
-            
-            /// @brief Upon refinement, loops through neighbors of current node and updates their neighbors from itself to its children
-            /// @param newRefinementType The refinement type, interpreted as in the RefinementTreeNode constructor, of the new children
-            /// @author WVN
-            void UpdateNeighborsOfNeighborsToChildNodes(char newRefinementType);
-            
-            //    -----------------------------              -----------------------------
-            //    |             |             |              |             |             |
-            //    |             |             |              |             |             |
-            //    |     2       |     3       |              |     2       |      3      |
-            //    |             |             |              |             |             |
-            //    |             |             |              |             |             |
-            //    -----------------------------         -->  -----------------------------
-            //    |             |             |              |             |      |      |
-            //    |             |             |              |             |      |      |
-            //    |     0       |     1       |              |     0       |   4  |  5   |
-            //    |             |             |              |             |      |      |
-            //    |             |             |              |             |      |      |
-            //    -----------------------------              -----------------------------
-            
-            //Note that 3's edge to 4 is [0 -1] and that 4's edge to 3 is [0 1], but 4 also requires an additional edge to 3, namely [1, 1]. The
-            //function GenerateNeighborsFromRefinementBifurcations detects these and adds the appropriate neighbor relationships
-            
-            /// @brief Called on new child nodes after the parent has just been refined. For an explanation, see the illustration in the source file.
-            /// @author WVN
-            void GenerateNeighborsFromRefinementBifurcations(void);
-            
             /// @brief Populate isOnBoundary based on host node information
             /// @author WVN
             void InheritDomainBoundaryInfo(void);
@@ -413,18 +372,6 @@ namespace cmf
             /// @brief Computes the bounding box of the current node using the exact number system based on the refinement levels and whether or not the current node shares 
             /// @author WVN
             void DefineExactPositions(void);
-            
-            /// @brief Checks for updates to a neighbor relationship (specifically the edgeVector), e.g. a shared face becomes
-            /// a shared edge, then a shared corner, then no relationship.
-            /// @param neighbor the neighbor of the current node
-            /// @param child The child node in question
-            /// @param d The coordinate direction of the component of the edgeVector being computed
-            /// @param tangentUpperOrientation true if child has a 1 in the refinement orientation in direction d
-            /// @param newEdgeVec An array that is populated with the edgeVector values of the new edge relationship
-            /// @param relationshipIsAnnihilated Set to true if the neighbor relationship is downgraded to a degenerate state, when no edge relationship is had between
-            /// neighbor and child
-            /// @author WVN
-            void DetermineNeighborClassificationUpdate(RefinementTreeNode* neighbor, RefinementTreeNode* child, int d, bool tangentUpperOrientation, int* newEdgeVec, bool* relationshipIsAnnihilated);
             
             /// @brief Updates the neighbors of the current node's neighbors and the current node's children after a refinement
             /// @author WVN
