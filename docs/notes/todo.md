@@ -18,7 +18,6 @@ This is a place where items for development can be listed. It feels great to che
  - [ ] Inter-level operators for block-data exchanges
  - [ ] Restriction and prolongation operators: implement as event subscriptions
  - [x] Configuration file system: Produce a header file included by `cmf.h` so that the end user doesn't have to compile with the same compiler flags.
- - [ ] Switch build system to Python?
  - [ ] Change surface representation to accommodate 2-D surfaces
  - [ ] Change surface representation to store nodes and topology (instead of stl-ish format)
  - [ ] Move mesh array define functions to base class
@@ -29,6 +28,7 @@ This is a place where items for development can be listed. It feels great to che
  - [ ] Implement Error code handling for CreateDirectory, best bet is probably try-catch
  - [x] Fix the issue with multiple neighbor relationship bifurcation
  - [x] Rewrite neighbor tracking to prevent searches using exact global positioning
- - [ ] Adjust new neighbor tracking to handle domain boundaries
- - [ ] Clean up old neighbor tracking code after validation
- - [ ] Change inter-level exchange model from 'Current gives to neighbor' to 'Current asks from neighbor'
+ - [x] Adjust new neighbor tracking to handle domain boundaries
+ - [x] Clean up old neighbor tracking code after validation
+ - [x] Change inter-level exchange model from 'Current gives to neighbor' to 'Current asks from neighbor'
+ - [ ] Implement de-refinement
