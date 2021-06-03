@@ -30,6 +30,13 @@ namespace cmf
             return *this;
         }
         
+        /// @brief Removes all points from the point cloud
+        /// @author WVN
+        void Clear(void)
+        {
+            points.clear();
+        }
+        
         void WriteVtk(std::string filename)
         {
             std::ofstream myfile;

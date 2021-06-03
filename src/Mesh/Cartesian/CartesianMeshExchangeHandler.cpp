@@ -28,7 +28,7 @@ namespace cmf
                 + "\"!");
         }
     }
-    
+    DebugPointCloud gcloud;
     DataExchangePattern* CartesianMeshExchangeHandler::CreateMeshArrayExchangePattern(CartesianMeshArray* meshArray)
     {
         if (exchanges.find(meshArray)!=exchanges.end())
@@ -41,6 +41,9 @@ namespace cmf
         DataExchangePattern* newPattern = new DataExchangePattern(mesh->GetGroup());
         DefineExchangePatternsForArray(meshArray, newPattern);
         exchanges.insert({meshArray, newPattern});
+        gcloud.WriteVtk("output/exchangePoints.vtk");
+        gcloud.Clear();
+        print("output the point cloud, get rid of this!", __FILE__, __LINE__);
         return newPattern;
     }
     
@@ -316,11 +319,12 @@ namespace cmf
         MdArray<double, 4> currentArray = currentInfo.array.ReCast<double, 4>(0);
         MdArray<double, 4> neighborArray = neighborInfo.array.ReCast<double, 4>(0);
         pattern->Add(new CartesianInterLevelBlockTransaction<double>(neighborArray, currentArray, neighborRank, currentRank, exchangeRegionNeighborView, exchangeRegionCurrentView, exchangeRegionSize, exchangeDims), priority);
+        this->GetExchangeRegionAsPointCloud(gcloud, exchangeRegionNeighborView, exchangeRegionSize, neighborInfo.blockInfo);
+
     }
     
-    void CartesianMeshExchangeHandler::DebugOutputExchangeRegionPointCloud(std::string filename, Vec<double, 6> exchangeRegion, Vec3<int> exchangeSize, BlockInfo info)
+    void CartesianMeshExchangeHandler::GetExchangeRegionAsPointCloud(DebugPointCloud& cloud, Vec<double, 6> exchangeRegion, Vec3<int> exchangeSize, BlockInfo info)
     {
-        DebugPointCloud pc;
         Vec3<double> dijk(0);
         for (int i = 0; i < CMF_DIM; i++) dijk[i]=((exchangeSize[i]==1)?(0.0):((exchangeRegion[2*i+1] - exchangeRegion[2*i])/(exchangeSize[i]-1)));
         for (int k = 0; k < exchangeSize[2]; k++)
@@ -334,11 +338,10 @@ namespace cmf
 #if (CMF_IS3D)
                     xyz[2] = info.blockBounds[4]+ijk[2]*info.dx[2];
 #endif
-                    pc << xyz;
+                    cloud << xyz;
                 }
             }
         }
-        pc.WriteVtk(filename);
     }
     
     void CartesianMeshExchangeHandler::MapExchangeRegionIntoNeighborIndexCoordinates
@@ -398,7 +401,10 @@ namespace cmf
                 }
                 case 0:
                 {
-                    if (currentFinerThanNeighbor)   distToNeighborOrigin = -currentInfo.node->GetOrientationComponent(i)*currentMeshDimWithoutExchanges;
+                    if (currentFinerThanNeighbor)
+                    {
+                        distToNeighborOrigin = (neighHigh==curHigh)?(-currentMeshDimWithoutExchanges):0;
+                    }
                     if (currentCoarserThanNeighbor)
                     {
                         distToNeighborOrigin = (neighLow>curLow)?(0.5*currentMeshDimWithoutExchanges):0;
