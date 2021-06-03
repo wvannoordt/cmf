@@ -141,6 +141,14 @@ namespace cmf
                     Vec<double, 6>& exchangeRegionNeighborView
                 );
             
+                /// @brief Outputs a point cloud file containing the points of the exchange region with respect to the given BlockInfo
+                /// @param filename The name of the file to be output
+                /// @param exchangeRegion The bounding box (in index space) of the exchange region (cell centers)
+                /// @param exchangeSize The dimensions of the exchange region
+                /// @param info The BlockInfo object corresponding to the block of interest
+                /// @author WVN
+            void DebugOutputExchangeRegionPointCloud(std::string filename, Vec<double, 6> exchangeRegion, Vec3<int> exchangeSize, BlockInfo info);
+            
             /// @brief mesh The mesh over which the exchanges are defined
             CartesianMesh* mesh;
             

@@ -46,12 +46,12 @@ namespace cmf
         std::sort(transactions.begin(), transactions.end(), sortRule);
     }
     
-    void DataExchangePattern::Add(IDataTransaction* transaction)
+    IDataTransaction* DataExchangePattern::Add(IDataTransaction* transaction)
     {
-        this->Add(transaction, -1);
+        return this->Add(transaction, -1);
     }
     
-    void DataExchangePattern::Add(IDataTransaction* transaction, int priorityLevel)
+    IDataTransaction* DataExchangePattern::Add(IDataTransaction* transaction, int priorityLevel)
     {
         int sender = transaction->Sender();
         int receiver = transaction->Receiver();
@@ -70,6 +70,7 @@ namespace cmf
                 receiveSizes[sender] += transaction->GetPackedSize();
             }
             transaction->SetPriority(priorityLevel);
+            return transaction;
         }
         else
         {
@@ -77,6 +78,7 @@ namespace cmf
             // This might not be the best way to do this.
             // Delete if the transaction does not pertain to the current rank
             delete transaction;
+            return NULL;
         }
     }
     

@@ -32,14 +32,14 @@ namespace cmf
             /// @param transaction A new transaction to add
             /// \pre NOTE: this exchange pattern object WILL DELETE this pointer when it is deconstructed.
         	/// @author WVN
-            void Add(IDataTransaction* transaction);
+            IDataTransaction* Add(IDataTransaction* transaction);
             
             /// @brief Adds a new data transaction to this data exchange pattern
             /// @param transaction A new transaction to add
             /// @param priorityLevel The priority level of the new exchange, the higher the priority, the sooner the exchange happens
             /// \pre NOTE: this exchange pattern object WILL DELETE this pointer when it is deconstructed.
         	/// @author WVN
-            void Add(IDataTransaction* transaction, int priorityLevel);
+            IDataTransaction* Add(IDataTransaction* transaction, int priorityLevel);
             
             /// @brief Sorts the contained data transactions by their priority value
         	/// @author WVN

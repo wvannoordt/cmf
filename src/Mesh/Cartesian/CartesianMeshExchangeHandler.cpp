@@ -273,7 +273,6 @@ namespace cmf
         pattern->Add(new MultiTransaction(sendBuffer, offsetsSend, sizesSend, currentRank, recvBuffer, offsetsRecv, sizesRecv, neighborRank), 10);
     }
     
-    int nct = 0;
     void CartesianMeshExchangeHandler::CreateGeneralExchangePattern
         (
             DataExchangePattern* pattern,
@@ -316,8 +315,30 @@ namespace cmf
         
         MdArray<double, 4> currentArray = currentInfo.array.ReCast<double, 4>(0);
         MdArray<double, 4> neighborArray = neighborInfo.array.ReCast<double, 4>(0);
-        
         pattern->Add(new CartesianInterLevelBlockTransaction<double>(neighborArray, currentArray, neighborRank, currentRank, exchangeRegionNeighborView, exchangeRegionCurrentView, exchangeRegionSize, exchangeDims), priority);
+    }
+    
+    void CartesianMeshExchangeHandler::DebugOutputExchangeRegionPointCloud(std::string filename, Vec<double, 6> exchangeRegion, Vec3<int> exchangeSize, BlockInfo info)
+    {
+        DebugPointCloud pc;
+        Vec3<double> dijk(0);
+        for (int i = 0; i < CMF_DIM; i++) dijk[i]=((exchangeSize[i]==1)?(0.0):((exchangeRegion[2*i+1] - exchangeRegion[2*i])/(exchangeSize[i]-1)));
+        for (int k = 0; k < exchangeSize[2]; k++)
+        {
+            for (int j = 0; j < exchangeSize[1]; j++)
+            {
+                for (int i = 0; i < exchangeSize[0]; i++)
+                {
+                    Vec3<double> ijk(exchangeRegion[0] + i*dijk[0], exchangeRegion[2] + j*dijk[1], exchangeRegion[4] + k*dijk[2]);
+                    Vec3<double> xyz(info.blockBounds[0]+ijk[0]*info.dx[0], info.blockBounds[2]+ijk[1]*info.dx[1], 0.0);
+#if (CMF_IS3D)
+                    xyz[2] = info.blockBounds[4]+ijk[2]*info.dx[2];
+#endif
+                    pc << xyz;
+                }
+            }
+        }
+        pc.WriteVtk(filename);
     }
     
     void CartesianMeshExchangeHandler::MapExchangeRegionIntoNeighborIndexCoordinates
@@ -380,7 +401,7 @@ namespace cmf
                     if (currentFinerThanNeighbor)   distToNeighborOrigin = -currentInfo.node->GetOrientationComponent(i)*currentMeshDimWithoutExchanges;
                     if (currentCoarserThanNeighbor)
                     {
-                        distToNeighborOrigin = 0.5*neighborInfo.node->GetOrientationComponent(i)*currentMeshDimWithoutExchanges;
+                        distToNeighborOrigin = (neighLow>curLow)?(0.5*currentMeshDimWithoutExchanges):0;
                     }
                     if (currentSameLevelAsNeighbor) distToNeighborOrigin = 0.0;
                     break;
@@ -411,6 +432,10 @@ namespace cmf
         Vec3<int> currentLevels  = currentInfo.node->GetDirectionLevels();
         Vec3<int> refineLevelDifference = neighborLevels - currentLevels;
         
+        bool debug = ((currentInfo.node->GetBlockCenter() - Vec3<double>(0.2, 1.5, 0.0)).Norm()<1e-4);
+        debug = debug && ((neighborInfo.node->GetBlockCenter() - Vec3<double>(0.3, 1.7, 0.0)).Norm()<1e-4);
+        
+        
         for (int i = 0; i < CMF_DIM; i++)
         {
             int currentExchangeSize = currentInfo.exchangeSize[i];
@@ -438,7 +463,8 @@ namespace cmf
                     //done
                     if (currentCoarserThanNeighbor)
                     {
-                        bool topOrientation = (neighborInfo.node->GetOrientationComponent(i)==1);
+                        bool topOrientation = (neighborInfo.node->GetAmrPosition(2*i) > currentInfo.node->GetAmrPosition(2*i));
+                        
                         double delta = topOrientation?0.5*currentMeshDimWithoutExchanges:0.0;
                         exchangeRegionOut[2*i] = 0.5 + delta;
                         exchangeRegionOut[2*i+1] = 0.5*currentMeshDimWithoutExchanges-0.5 + delta;

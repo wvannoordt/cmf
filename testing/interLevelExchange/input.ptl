@@ -13,11 +13,11 @@ GlobalSettings
 }
 Domain
 {
-	blockDim = [1, 1]
+	blockDim = [5, 5]
 	blockBounds = [0, 2, 0, 2]
 	meshDataDim = [32, 32]
 	refinementConstraintType = factor2CompletelyConstrained
-	periodicRefinement = [false, false]
+	periodicRefinement = [true, true]
 	Exchanges
 	{
 		exchangeDim = [3, 3]

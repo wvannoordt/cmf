@@ -72,10 +72,40 @@ void FillAr(cmf::CartesianMeshArray& ar)
 void SillyRefine(cmf::CartesianMeshArray& ar)
 {    
     std::vector<cmf::RefinementTreeNode*> nodes2;
-    std::vector<char> refs2;    
+    std::vector<char> refs2;
+    
     nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
     refs2.push_back(1);
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.2, 1.6, 0.0));
+    refs2.push_back(2);
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.9, 0.0));
+    refs2.push_back(3);
+    
     ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
+    nodes2.clear();
+    refs2.clear();
+    
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
+    refs2.push_back(1);
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.2, 1.6, 0.0));
+    refs2.push_back(2);
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.9, 0.0));
+    refs2.push_back(3);
+    
+    ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
+    nodes2.clear();
+    refs2.clear();
+    
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
+    refs2.push_back(1);
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.2, 1.6, 0.0));
+    refs2.push_back(2);
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.9, 0.0));
+    refs2.push_back(3);
+    
+    ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
+    nodes2.clear();
+    refs2.clear();
 }
 
 void EvalErr(cmf::CartesianMeshArray& ar, double& l2Err, double& linfErr)
@@ -115,11 +145,13 @@ void EvalErr(cmf::CartesianMeshArray& ar, double& l2Err, double& linfErr)
                         l2ErrLocal += errLoc*errLoc;
                         linfErrLocal = DMAX(linfErrLocal, DABS(errLoc));
                         
-                        // if (DABS(arLb(i, j, k) - ghostJunkValue) < 1e-8)
-                        // {
-                        //     print("BAD GHOST CELL VALUE");
-                        //     abort();
-                        // }
+                        if (DABS(arLb(i, j, k) - ghostJunkValue) < 1e-8)
+                        {
+                            print("BAD GHOST CELL VALUE");
+                            print(i, j, k);
+                            print(lb->GetBlockCenter());
+                            abort();
+                        }
                     }
                 }
             }
@@ -145,27 +177,6 @@ int main(int argc, char** argv)
     
     SillyRefine(var);
     
-    cmf::Vec3<double> mm(0.1, 0.6, 0.0);
-    auto n2 = domain.Blocks()->GetNodeAt(mm);
-    
-    // print(n1->GetBlockCenter());
-    // for (int i = 0; i < CMF_DIM; i++)
-    // {
-    //     print(n1->GetAmrPosition(2*i));
-    //     print(n1->GetAmrPosition(2*i+1));
-    // }
-    n2->PrintNeighbors();
-    
-    // print(n2->GetBlockCenter());
-    // for (int i = 0; i < CMF_DIM; i++)
-    // {
-    //     print(n2->GetAmrPosition(2*i));
-    //     print(n2->GetAmrPosition(2*i+1));
-    // }
-    // n2->PrintNeighbors();
-    
-    // print(n1->GetAmrPosition(0) == n2->GetAmrPosition(0));
-    
     var.ComponentName() = "fxyz";
     
     FillArGhost(var, ghostJunkValue);
@@ -173,11 +184,11 @@ int main(int argc, char** argv)
     
     var.Exchange();
     
+    var.ExportFile("output", "test");
+    
     double errInf = 0.0;
     double errL2  = 0.0;
     EvalErr(var, errL2, errInf);
-    
-    var.ExportFile("output", "test");
     
     return 0;
 }
