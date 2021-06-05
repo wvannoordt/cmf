@@ -28,7 +28,7 @@ namespace cmf
                 + "\"!");
         }
     }
-    DebugPointCloud gcloud;
+
     DataExchangePattern* CartesianMeshExchangeHandler::CreateMeshArrayExchangePattern(CartesianMeshArray* meshArray)
     {
         if (exchanges.find(meshArray)!=exchanges.end())
@@ -41,9 +41,6 @@ namespace cmf
         DataExchangePattern* newPattern = new DataExchangePattern(mesh->GetGroup());
         DefineExchangePatternsForArray(meshArray, newPattern);
         exchanges.insert({meshArray, newPattern});
-        gcloud.WriteVtk("output/exchangePoints.vtk");
-        gcloud.Clear();
-        print("output the point cloud, get rid of this!", __FILE__, __LINE__);
         return newPattern;
     }
     
@@ -319,7 +316,6 @@ namespace cmf
         MdArray<double, 4> currentArray = currentInfo.array.ReCast<double, 4>(0);
         MdArray<double, 4> neighborArray = neighborInfo.array.ReCast<double, 4>(0);
         pattern->Add(new CartesianInterLevelBlockTransaction<double>(neighborArray, currentArray, neighborRank, currentRank, exchangeRegionNeighborView, exchangeRegionCurrentView, exchangeRegionSize, exchangeDims), priority);
-        this->GetExchangeRegionAsPointCloud(gcloud, exchangeRegionNeighborView, exchangeRegionSize, neighborInfo.blockInfo);
 
     }
     
