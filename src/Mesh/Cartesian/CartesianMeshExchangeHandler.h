@@ -78,12 +78,14 @@ namespace cmf
             /// @param neighborNode The node that will receive information
             /// @param relationship The senderNode -> receiverNode relationship
             /// @author WVN
-            void CreateExchangeTransaction(
-                DataExchangePattern* pattern,
-                CartesianMeshArray* meshArray,
-                RefinementTreeNode* currentNode,
-                RefinementTreeNode* neighborNode, 
-                NodeEdge relationship);
+            void CreateExchangeTransaction
+                (
+                    DataExchangePattern* pattern,
+                    CartesianMeshArray* meshArray,
+                    RefinementTreeNode* currentNode,
+                    RefinementTreeNode* neighborNode, 
+                    NodeEdge relationship
+                );
             
             /// @brief Creates a direct-injection transaction between two neighboring nodes
             /// @param pattern The exchange pattern to add the transaction to

@@ -182,7 +182,11 @@ int main(int argc, char** argv)
     FillArGhost(var, ghostJunkValue);
     FillAr(var);
     
+    auto interlevels = var.GetExchangePattern()->GetTransactionsByType<cmf::CartesianInterLevelBlockTransaction<double>>();
+    
     var.Exchange();
+    
+    
     
     var.ExportFile("output", "test");
     

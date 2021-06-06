@@ -5,6 +5,7 @@
 #include "CmfError.h"
 #include "SymbolicEvaluation.h"
 #include "BinaryExpression.h"
+#include "DataExchangePattern.h"
 #include "ICmfDataBaseReadWriteObject.h"
 #include "ICmfMeshBuffer.h"
 
@@ -47,6 +48,10 @@ namespace cmf
             /// @brief Returns the parallel group for the object, or NULL if it is a serial object
             /// @author WVN
             virtual ParallelGroup* GetDatabaseParallelGroup(void) override final;
+            
+            /// @brief Returns the data exchange patterns for this array
+            /// @author WVN
+            virtual DataExchangePattern* GetExchangePattern(void) = 0;
             
             /// @brief Addition symbolic operator
             /// @author WVN

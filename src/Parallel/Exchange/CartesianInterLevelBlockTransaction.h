@@ -6,44 +6,65 @@
 #include "CmfPrint.h"
 namespace cmf
 {
+    ///@brief Contains constructor info for CartesianInterLevelBlockTransaction, to avoid too many constructor arguments
+    ///@author WVN
+    template <typename numType> struct CartesianInterLevelBlockInfo
+    {
+        ///@brief The corresponding block array
+        /// \pre if the current rank is not "rank", it is invalid to index this array
+        MdArray<numType, 4> array;
+        
+        ///@brief The rank that owns "array"
+        int rank;
+        
+        ///@brief The index bounding box of the exchange region
+        Vec<double, 6> bounds;
+        
+        ///@brief The size of the exchange region in cells
+        Vec3<int> exchangeSize;
+        
+        ///@brief The dimensions of the exchange cells on the block (not necessarily he same as exchangeSize)
+        Vec3<int> exchangeDims;
+        
+        
+        // (2-D example)
+        //                |<-- numSupportingExchangeCells(2*i) -->|<--       exchange region, direction i        -->|<--numSupportingExchangeCells(2*i+1)-->|
+        //
+        //                                                        |                                                 |
+        //                                                        |                                                 |
+        //                +---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+        //                |         |         |         |         |         |         |         |         |         |         |         |         |         |
+        //                |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |
+        //                |         |         |         |         |         |         |         |         |         |         |         |         |         |
+        //                +---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+        //                |         |         |         |         |         |         |         |         |         |         |         |         |         |
+        //                |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |    +    |
+        //                |         |         |         |         |         |         |         |         |         |         |         |         |         |
+        //                +---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+        //                                                        |                                                 |
+        //                                                        |                                                 |
+        
+        /// @brief Contains the number of cells available for interpolation beyond the corresponding index bound in "bounds" (see relevant sketch in source)
+        Vec<int, 6> numSupportingExchangeCells;
+        
+        /// @brief The physical bounding box of the relevant block (for debugging)
+        Vec<double, 6> spatialBounds;
+    };
+    
     ///@brief A class representing a data transaction between two blocks of differing refinement levels
     ///@author WVN
     template <typename numType> class CartesianInterLevelBlockTransaction : public IDataTransaction
     {
         public:
             ///@brief Constructor
-            ///@param sendArray_in The array that will populate the exchange region on the sending rank.
-            /// \pre if the current rank is not the sending rank, it is invalid to index this array
-            ///@param recvArray_in The array that will receive the exchange region on the receiving rank
-            /// \pre if the current rank is not the receiving rank, it is invalid to index this array
-            /// @param sendRank_in The sending rank
-            /// @param recvRank_in The receiving rank
-            /// @param sendBounds_in The bounding box of the exchange region, in the index-coordinate system of sendArray_in
-            /// @param recvBounds_in The bounding box of the exchange region, in the index-coordinate system of recvArray_in
-            /// @param exchangeSize_in The dimensions of the exchange region, in cells
-            /// @param exchangeDims_in The number of exchange cells in each direction
+            ///@param sendInfo_in Contains info about the sending block
+            ///@param recvInfo_in Contains info about the receiving block
             ///@author WVN
-            CartesianInterLevelBlockTransaction
-                (
-                    MdArray<numType, 4> sendArray_in,
-                    MdArray<numType, 4> recvArray_in,
-                    int sendRank_in,
-                    int recvRank_in,
-                    Vec<double, 6> sendBounds_in,
-                    Vec<double, 6> recvBounds_in,
-                    Vec3<int> exchangeSize_in,
-                    Vec3<int> exchangeDims_in
-                )
-                : IDataTransaction(sendRank_in, recvRank_in)
+            CartesianInterLevelBlockTransaction(CartesianInterLevelBlockInfo<numType>& sendInfo_in, CartesianInterLevelBlockInfo<numType>& recvInfo_in) : IDataTransaction(sendInfo_in.rank, recvInfo_in.rank)
             {
-                sendArray = sendArray_in;
-                recvArray = recvArray_in;
-                sendBounds = sendBounds_in;
-                recvBounds = recvBounds_in;
-                exchangeSize = exchangeSize_in;
-                exchangeDims = exchangeDims_in;
-                
-                numComponentsPerCell = sendArray.dims[0];
+                sendInfo = sendInfo_in;
+                recvInfo = recvInfo_in;
+                numComponentsPerCell = sendInfo.array.dims[0];
             }
             
             ~CartesianInterLevelBlockTransaction(void) { }
@@ -55,9 +76,9 @@ namespace cmf
                 size_t output = 1;
                 
                 //The number of exchange cells
-                output *= exchangeSize[0];
-                output *= exchangeSize[1];
-                output *= exchangeSize[2];
+                output *= sendInfo.exchangeSize[0];
+                output *= sendInfo.exchangeSize[1];
+                output *= sendInfo.exchangeSize[2];
                 
                 //The size of a single cell
                 output*=sizeof(numType);
@@ -81,15 +102,15 @@ namespace cmf
             /// @author WVN
             virtual void Unpack(char* buf) override final
             {
-                int imin = (int)(recvBounds[0] - 0.5);
-                int imax = (int)(recvBounds[1] + 0.5);
-                int jmin = (int)(recvBounds[2] - 0.5);
-                int jmax = (int)(recvBounds[3] + 0.5);
-                int kmin = (int)(recvBounds[4] - 0.5);
-                int kmax = (int)(recvBounds[5] + 0.5);
-                int di = exchangeDims[0];
-                int dj = exchangeDims[1];
-                int dk = exchangeDims[2];
+                int imin = (int)(recvInfo.bounds[0] - 0.5);
+                int imax = (int)(recvInfo.bounds[1] + 0.5);
+                int jmin = (int)(recvInfo.bounds[2] - 0.5);
+                int jmax = (int)(recvInfo.bounds[3] + 0.5);
+                int kmin = (int)(recvInfo.bounds[4] - 0.5);
+                int kmax = (int)(recvInfo.bounds[5] + 0.5);
+                int di = recvInfo.exchangeDims[0];
+                int dj = recvInfo.exchangeDims[1];
+                int dk = recvInfo.exchangeDims[2];
                 size_t offset = 0;
                 for (int k = kmin; k < kmax; k++)
                 {
@@ -99,32 +120,34 @@ namespace cmf
                         {
                             for (int v = 0; v < numComponentsPerCell; v++)
                             {
-                                recvArray(v, i+di, j+dj, k+dk) = 15.145;
+                                recvInfo.array(v, i+di, j+dj, k+dk) = 15.145;
                             }
                         }
                     }
                 }
             }
             
+            ///@brief Returns a struct containing information about the sending block
+            ///@author WVN
+            CartesianInterLevelBlockInfo<numType> GetSendInfo()
+            {
+                return sendInfo;
+            }
+            
+            ///@brief Returns a struct containing information about the receiving block
+            ///@author WVN
+            CartesianInterLevelBlockInfo<numType> GetRecvInfo()
+            {
+                return recvInfo;
+            }
+            
         private:
             
-            /// @brief The array that will populate the exchange region on the sending rank
-            MdArray<numType, 4> sendArray;
+            ///@brief Contains info about the sending block
+            CartesianInterLevelBlockInfo<numType> sendInfo;
             
-            /// @brief The array that will receive the exchange region on the receiving rank
-            MdArray<numType, 4> recvArray;
-            
-            /// @brief The bounding box of the exchange region, in the index-coordinate system of sendArray_in
-            Vec<double, 6> sendBounds;
-            
-            /// @brief The bounding box of the exchange region, in the index-coordinate system of recvArray_in
-            Vec<double, 6> recvBounds;
-            
-            /// @brief The dimensions of the exchange region, in cells
-            Vec3<int> exchangeSize;
-            
-            /// @brief The number of exchange cells in each direction
-            Vec3<int> exchangeDims;
+            ///@brief Contains info about the receiving block
+            CartesianInterLevelBlockInfo<numType> recvInfo;
             
             /// @brief The number of components in a single cell
             int numComponentsPerCell;

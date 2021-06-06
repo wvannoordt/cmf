@@ -315,7 +315,40 @@ namespace cmf
         
         MdArray<double, 4> currentArray = currentInfo.array.ReCast<double, 4>(0);
         MdArray<double, 4> neighborArray = neighborInfo.array.ReCast<double, 4>(0);
-        pattern->Add(new CartesianInterLevelBlockTransaction<double>(neighborArray, currentArray, neighborRank, currentRank, exchangeRegionNeighborView, exchangeRegionCurrentView, exchangeRegionSize, exchangeDims), priority);
+        
+        Vec<int, 6> currentNumSupportingExchangeCells = 0;
+        Vec<int, 6> neighborNumSupportingExchangeCells = 0;
+        
+        Vec<double, 6> neighborSpatialBounds = 0;
+        Vec<double, 6> currentSpatialBounds  = 0;
+        for (int i = 0; i < CMF_DIM; i++)
+        {
+            currentSpatialBounds[2*i]    = currentInfo.blockInfo.blockBounds[2*i];
+            currentSpatialBounds[2*i+1]  = currentInfo.blockInfo.blockBounds[2*i+1];
+            neighborSpatialBounds[2*i]   = neighborInfo.blockInfo.blockBounds[2*i];
+            neighborSpatialBounds[2*i+1] = neighborInfo.blockInfo.blockBounds[2*i+1];
+        }
+        
+        CartesianInterLevelBlockInfo<double> sendInfo;
+        sendInfo.array                      = neighborArray;
+        sendInfo.rank                       = neighborRank;
+        sendInfo.bounds                     = exchangeRegionNeighborView;
+        sendInfo.exchangeSize               = exchangeRegionSize;
+        sendInfo.exchangeDims               = exchangeDims;
+        sendInfo.numSupportingExchangeCells = neighborNumSupportingExchangeCells;
+        sendInfo.spatialBounds              = neighborSpatialBounds;
+        
+        CartesianInterLevelBlockInfo<double> recvInfo;
+        recvInfo.array                      = currentArray;
+        recvInfo.rank                       = currentRank;
+        recvInfo.bounds                     = exchangeRegionCurrentView;
+        recvInfo.exchangeSize               = exchangeRegionSize;
+        recvInfo.exchangeDims               = exchangeDims;
+        recvInfo.numSupportingExchangeCells = currentNumSupportingExchangeCells;
+        recvInfo.spatialBounds              = currentSpatialBounds;
+        
+        auto exchange = new CartesianInterLevelBlockTransaction<double>(sendInfo, recvInfo);
+        pattern->Add(exchange, priority);
 
     }
     

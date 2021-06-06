@@ -116,6 +116,10 @@ namespace cmf
             /// @author WVN
             NodeFilter_t GetFilter(void);
             
+            /// @brief Returns the data exchange patterns for this array
+            /// @author WVN
+            virtual DataExchangePattern* GetExchangePattern(void) override final;
+            
             /// @brief Begin() overload for range iteration
             /// @author WVN
             std::vector<RefinementTreeNode*>::iterator begin() noexcept;

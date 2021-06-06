@@ -7,6 +7,7 @@
 #include "CartesianInterLevelBlockTransaction.h"
 #include <vector>
 #include "CmfGC.h"
+#include <type_traits>
 namespace cmf
 {
     /// @brief Defines a series of data transactions that can be repeated, and also a good reference if you want to 
@@ -40,6 +41,51 @@ namespace cmf
             /// \pre NOTE: this exchange pattern object WILL DELETE this pointer when it is deconstructed.
         	/// @author WVN
             IDataTransaction* Add(IDataTransaction* transaction, int priorityLevel);
+            
+            /// @brief Begin() overload for range iteration
+            /// @author WVN
+            std::vector<IDataTransaction*>::iterator begin() noexcept
+            {
+                return transactions.begin();
+            }
+            
+            /// @brief const Begin() overload for range iteration
+            /// @author WVN
+            std::vector<IDataTransaction*>::const_iterator begin() const noexcept
+            {
+                return transactions.begin();
+            }
+            
+            /// @brief End() overload for range iteration
+            /// @author WVN
+            std::vector<IDataTransaction*>::iterator end() noexcept
+            {
+                return transactions.end();
+            }
+            
+            /// @brief constant End() overload for range iteration
+            /// @author WVN
+            std::vector<IDataTransaction*>::const_iterator end() const noexcept
+            {
+                return transactions.end();
+            }
+            
+            /// @brief Returns a vector of transactions of the template type
+            /// @author WVN
+            template <class searchType> std::vector<searchType*> GetTransactionsByType(void)
+            {
+                std::vector<searchType*> output;
+                static_assert(std::is_base_of<IDataTransaction, searchType>::value, "Template type does not inherit from ");
+                for (auto t:transactions)
+                {
+                    searchType* ptr = dynamic_cast<searchType*>(t);
+                    if (ptr != NULL)
+                    {
+                        output.push_back(ptr);
+                    }
+                }
+                return output;
+            }
             
             /// @brief Sorts the contained data transactions by their priority value
         	/// @author WVN
