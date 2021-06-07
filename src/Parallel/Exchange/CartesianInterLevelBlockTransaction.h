@@ -4,8 +4,34 @@
 #include "Vec.h"
 #include "MdArray.h"
 #include "CmfPrint.h"
+#include "DebugPointCloud.h"
 namespace cmf
 {
+    namespace ExchangeOrientation
+    {
+        enum ExchangeOrientation
+        {
+            faceExchange   = 0,
+            edgeExchange   = 1,
+            cornerExchange = 2
+        };
+    }
+    ///@brief Contains properties of an inter-level mesh exchange, used to set the priority of this exchange
+    ///@author WVN
+    struct CartesianInterLevelExchangeProperties
+    {
+        
+        ///@brief the orientation of this exchange
+        ExchangeOrientation::ExchangeOrientation orientation = ExchangeOrientation::faceExchange;
+        
+        ///@brief Computes the priority of the relevant exchange given the properties. Note that high priority exchanges are performed first
+        ///@author WVN
+        int GetPriority(void)
+        {
+            return 4-(int)orientation;
+        }
+    };
+    
     ///@brief Contains constructor info for CartesianInterLevelBlockTransaction, to avoid too many constructor arguments
     ///@author WVN
     template <typename numType> struct CartesianInterLevelBlockInfo
@@ -45,10 +71,33 @@ namespace cmf
         //                                                        |                                                 |
         
         /// @brief Contains the number of cells available for interpolation beyond the corresponding index bound in "bounds" (see relevant sketch in source)
-        Vec<int, 6> numSupportingExchangeCells;
+        Vec<int, 6> indexSupport;
         
-        /// @brief The physical bounding box of the relevant block (for debugging)
-        Vec<double, 6> spatialBounds;
+        /// @brief The origin of the box in physical space
+        Vec3<double> origin;
+        
+        /// @brief The physical mesh spacing
+        Vec3<double> dx;
+        
+        /// @brief Adds all points in the specified exchange region to the specified point cloud
+        /// @param cloud The cloud to add the exchange region points to
+        void GetExchangeRegionAsPointCloud(DebugPointCloud& cloud)
+        {
+            Vec3<double> dijk(0);
+            for (int i = 0; i < CMF_DIM; i++) dijk[i]=((exchangeSize[i]==1)?(0.0):((bounds[2*i+1] - bounds[2*i])/(exchangeSize[i]-1)));
+            for (int k = 0; k < exchangeSize[2]; k++)
+            {
+                for (int j = 0; j < exchangeSize[1]; j++)
+                {
+                    for (int i = 0; i < exchangeSize[0]; i++)
+                    {
+                        Vec3<double> ijk(bounds[0] + i*dijk[0], bounds[2] + j*dijk[1], bounds[4] + k*dijk[2]);
+                        Vec3<double> xyz(origin[0]+ijk[0]*dx[0], origin[1]+ijk[1]*dx[1], origin[2]+ijk[2]*dx[2]);
+                        cloud << xyz;
+                    }
+                }
+            }
+        }
     };
     
     ///@brief A class representing a data transaction between two blocks of differing refinement levels
@@ -60,10 +109,16 @@ namespace cmf
             ///@param sendInfo_in Contains info about the sending block
             ///@param recvInfo_in Contains info about the receiving block
             ///@author WVN
-            CartesianInterLevelBlockTransaction(CartesianInterLevelBlockInfo<numType>& sendInfo_in, CartesianInterLevelBlockInfo<numType>& recvInfo_in) : IDataTransaction(sendInfo_in.rank, recvInfo_in.rank)
+            CartesianInterLevelBlockTransaction
+                (
+                    CartesianInterLevelBlockInfo<numType>& sendInfo_in,
+                    CartesianInterLevelBlockInfo<numType>& recvInfo_in,
+                    CartesianInterLevelExchangeProperties& exchangeProps_in
+                ) : IDataTransaction(sendInfo_in.rank, recvInfo_in.rank)
             {
                 sendInfo = sendInfo_in;
                 recvInfo = recvInfo_in;
+                exchangeProps = exchangeProps_in;
                 numComponentsPerCell = sendInfo.array.dims[0];
             }
             
@@ -148,6 +203,9 @@ namespace cmf
             
             ///@brief Contains info about the receiving block
             CartesianInterLevelBlockInfo<numType> recvInfo;
+            
+            ///@brief Contains info about the details of the exchange topology
+            CartesianInterLevelExchangeProperties exchangeProps;
             
             /// @brief The number of components in a single cell
             int numComponentsPerCell;

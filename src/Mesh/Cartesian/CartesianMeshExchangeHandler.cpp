@@ -270,7 +270,7 @@ namespace cmf
         void* recvBuffer = (void*)(neighData.data);
         
         //Current node sends to the neighbor
-        pattern->Add(new MultiTransaction(sendBuffer, offsetsSend, sizesSend, currentRank, recvBuffer, offsetsRecv, sizesRecv, neighborRank), 10);
+        pattern->Add(new MultiTransaction(sendBuffer, offsetsSend, sizesSend, currentRank, recvBuffer, offsetsRecv, sizesRecv, neighborRank), 1000);
     }
     
     void CartesianMeshExchangeHandler::CreateGeneralExchangePattern
@@ -283,6 +283,8 @@ namespace cmf
         )
     {
         Vec3<int> edgeVector(relationship.edgeVector[0], relationship.edgeVector[1], CMF_IS3D*(relationship.edgeVector[CMF_DIM-1]));
+        int numNonzeroEdgeComponents = 0;
+        for (int i = 0; i < CMF_DIM; i++) numNonzeroEdgeComponents += ((edgeVector[i]==0)?(0):(1));
         
         //the intersection of the ghost cells of the neighbor with the interior cells of the current form a rectangular prism
         //Interpreted in index-space coordinates of the current block
@@ -316,17 +318,20 @@ namespace cmf
         MdArray<double, 4> currentArray = currentInfo.array.ReCast<double, 4>(0);
         MdArray<double, 4> neighborArray = neighborInfo.array.ReCast<double, 4>(0);
         
-        Vec<int, 6> currentNumSupportingExchangeCells = 0;
-        Vec<int, 6> neighborNumSupportingExchangeCells = 0;
+        Vec<int, 6> currentIndexSupport = 0;
+        Vec<int, 6> neighborIndexSupport = 0;
         
-        Vec<double, 6> neighborSpatialBounds = 0;
-        Vec<double, 6> currentSpatialBounds  = 0;
+        Vec3<double> neighborSpatialOrigin = 0;
+        Vec3<double> currentSpatialOrigin  = 0;
+        
+        Vec3<double> neighborDx = 0;
+        Vec3<double> currentDx  = 0;
         for (int i = 0; i < CMF_DIM; i++)
         {
-            currentSpatialBounds[2*i]    = currentInfo.blockInfo.blockBounds[2*i];
-            currentSpatialBounds[2*i+1]  = currentInfo.blockInfo.blockBounds[2*i+1];
-            neighborSpatialBounds[2*i]   = neighborInfo.blockInfo.blockBounds[2*i];
-            neighborSpatialBounds[2*i+1] = neighborInfo.blockInfo.blockBounds[2*i+1];
+            neighborSpatialOrigin[i] = neighborInfo.blockInfo.blockBounds[2*i];
+            currentSpatialOrigin[i]  = currentInfo.blockInfo.blockBounds[2*i];
+            neighborDx[i] = neighborInfo.blockInfo.dx[i];
+            currentDx[i]  = currentInfo.blockInfo.dx[i];
         }
         
         CartesianInterLevelBlockInfo<double> sendInfo;
@@ -335,8 +340,9 @@ namespace cmf
         sendInfo.bounds                     = exchangeRegionNeighborView;
         sendInfo.exchangeSize               = exchangeRegionSize;
         sendInfo.exchangeDims               = exchangeDims;
-        sendInfo.numSupportingExchangeCells = neighborNumSupportingExchangeCells;
-        sendInfo.spatialBounds              = neighborSpatialBounds;
+        sendInfo.indexSupport               = neighborIndexSupport;
+        sendInfo.origin                     = neighborSpatialOrigin;
+        sendInfo.dx                         = neighborDx;
         
         CartesianInterLevelBlockInfo<double> recvInfo;
         recvInfo.array                      = currentArray;
@@ -344,33 +350,15 @@ namespace cmf
         recvInfo.bounds                     = exchangeRegionCurrentView;
         recvInfo.exchangeSize               = exchangeRegionSize;
         recvInfo.exchangeDims               = exchangeDims;
-        recvInfo.numSupportingExchangeCells = currentNumSupportingExchangeCells;
-        recvInfo.spatialBounds              = currentSpatialBounds;
+        recvInfo.indexSupport               = currentIndexSupport;
+        recvInfo.origin                     = currentSpatialOrigin;
+        recvInfo.dx                         = currentDx;
         
-        auto exchange = new CartesianInterLevelBlockTransaction<double>(sendInfo, recvInfo);
-        pattern->Add(exchange, priority);
-
-    }
-    
-    void CartesianMeshExchangeHandler::GetExchangeRegionAsPointCloud(DebugPointCloud& cloud, Vec<double, 6> exchangeRegion, Vec3<int> exchangeSize, BlockInfo info)
-    {
-        Vec3<double> dijk(0);
-        for (int i = 0; i < CMF_DIM; i++) dijk[i]=((exchangeSize[i]==1)?(0.0):((exchangeRegion[2*i+1] - exchangeRegion[2*i])/(exchangeSize[i]-1)));
-        for (int k = 0; k < exchangeSize[2]; k++)
-        {
-            for (int j = 0; j < exchangeSize[1]; j++)
-            {
-                for (int i = 0; i < exchangeSize[0]; i++)
-                {
-                    Vec3<double> ijk(exchangeRegion[0] + i*dijk[0], exchangeRegion[2] + j*dijk[1], exchangeRegion[4] + k*dijk[2]);
-                    Vec3<double> xyz(info.blockBounds[0]+ijk[0]*info.dx[0], info.blockBounds[2]+ijk[1]*info.dx[1], 0.0);
-#if (CMF_IS3D)
-                    xyz[2] = info.blockBounds[4]+ijk[2]*info.dx[2];
-#endif
-                    cloud << xyz;
-                }
-            }
-        }
+        CartesianInterLevelExchangeProperties exchangeProps;
+        exchangeProps.orientation = (ExchangeOrientation::ExchangeOrientation)numNonzeroEdgeComponents;
+        
+        auto exchange = new CartesianInterLevelBlockTransaction<double>(sendInfo, recvInfo, exchangeProps);
+        pattern->Add(exchange, exchangeProps.GetPriority());
     }
     
     void CartesianMeshExchangeHandler::MapExchangeRegionIntoNeighborIndexCoordinates

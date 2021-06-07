@@ -8,6 +8,7 @@ using cmf::print;
 using cmf::strformat;
 using cmf::strunformat;
 using cmf::cell_t;
+using cmf::ZFill;
 
 #define DMAX(a,b) ((a)>(b)?(a):(b))
 #define DABS(a) (((a)>0)?(a):(-(a)))
@@ -183,6 +184,17 @@ int main(int argc, char** argv)
     FillAr(var);
     
     auto interlevels = var.GetExchangePattern()->GetTransactionsByType<cmf::CartesianInterLevelBlockTransaction<double>>();
+    for (int i = 0; i < interlevels.size(); i++)
+    {
+        auto exch = interlevels[i];
+        cmf::DebugPointCloud pc1, pc2;
+        exch->GetSendInfo().GetExchangeRegionAsPointCloud(pc1);
+        exch->GetRecvInfo().GetExchangeRegionAsPointCloud(pc2);
+        std::string sendFilename = strformat("output/send_{}.vtk", ZFill(i, 7));
+        std::string recvFilename = strformat("output/recv_{}.vtk", ZFill(i, 7));
+        pc1.WriteVtk(sendFilename);
+        pc2.WriteVtk(recvFilename);
+    }
     
     var.Exchange();
     

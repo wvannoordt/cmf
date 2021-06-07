@@ -136,21 +136,13 @@ namespace cmf
             /// @param exchangeRegionNeighborView (output) the bounding box (in index space) of the exchange region as seen by the neighbor node
             /// @author WVN
             void MapExchangeRegionIntoNeighborIndexCoordinates
-                (
+                ( 
                     ExchangeContextBlockData& currentInfo,
                     ExchangeContextBlockData& neighborInfo,
                     Vec3<int> edgeVector,
                     Vec<double, 6>& exchangeRegionCurrentView,
                     Vec<double, 6>& exchangeRegionNeighborView
                 );
-            
-            /// @brief Adds all points in the specified exchange region to the specified point cloud
-            /// @param cloud The cloud to add the exchange region points to
-            /// @param exchangeRegion The bounding box (in index space) of the exchange region (cell centers)
-            /// @param exchangeSize The dimensions of the exchange region
-            /// @param info The BlockInfo object corresponding to the block of interest
-            /// @author WVN
-            void GetExchangeRegionAsPointCloud(DebugPointCloud& cloud, Vec<double, 6> exchangeRegion, Vec3<int> exchangeSize, BlockInfo info);
             
             /// @brief mesh The mesh over which the exchanges are defined
             CartesianMesh* mesh;
