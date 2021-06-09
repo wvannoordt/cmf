@@ -1,2 +1,3 @@
-cmd: 'DIM=2 DOLATEXOUTPUT=0 OPTLEVEL=3 PARALLEL=1 CUDA_ENABLE=1 TESTS=interLevelExchange make test'
+# cmd: 'DIM=2 DOLATEXOUTPUT=0 OPTLEVEL=3 PARALLEL=1 CUDA_ENABLE=1 TESTS=interLevelExchange make test'
+cmd: 'touch /home/wvn/dirs/projects/cmf/src/Mesh/Cartesian/CartesianMeshExchangeHandler.cpp && DIM=2 DOLATEXOUTPUT=0 OPTLEVEL=3 PARALLEL=1 CUDA_ENABLE=1 TESTS=interLevelExchange make test'
 # cmd: './config'

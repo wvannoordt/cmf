@@ -24,11 +24,23 @@ namespace cmf
         ///@brief the orientation of this exchange
         ExchangeOrientation::ExchangeOrientation orientation = ExchangeOrientation::faceExchange;
         
+        ///@brief The difference in refinement level in each direction. -1: sender is finer, 0: same level, 1: sender is coarser
+        Vec3<int> levelDifference;
+        
+        ///@brief The edge vector from the receiver to the sender
+        Vec3<int> edgeVector;
+        
         ///@brief Computes the priority of the relevant exchange given the properties. Note that high priority exchanges are performed first
         ///@author WVN
         int GetPriority(void)
         {
-            return 4-(int)orientation;
+            int levelPriority = 0;
+            auto priorVal = [&](int i, int j) -> int {int w[3] = {1, 2, 1}; int v[3] = {1, 2, 0}; return w[1+j]*v[i+1];};
+            for (int i = 0; i < CMF_DIM; i++)
+            {
+                levelPriority += priorVal(levelDifference[i], edgeVector[i]);
+            }
+            return 12*(3-(int)orientation) + levelPriority;
         }
     };
     

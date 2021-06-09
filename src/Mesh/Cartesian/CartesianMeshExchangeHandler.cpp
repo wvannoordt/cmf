@@ -356,6 +356,8 @@ namespace cmf
         
         CartesianInterLevelExchangeProperties exchangeProps;
         exchangeProps.orientation = (ExchangeOrientation::ExchangeOrientation)numNonzeroEdgeComponents;
+        exchangeProps.levelDifference = currentInfo.node->GetDirectionLevels()-neighborInfo.node->GetDirectionLevels();
+        exchangeProps.edgeVector = edgeVector;
         
         auto exchange = new CartesianInterLevelBlockTransaction<double>(sendInfo, recvInfo, exchangeProps);
         pattern->Add(exchange, exchangeProps.GetPriority());
