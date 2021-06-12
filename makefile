@@ -1,5 +1,11 @@
 LIB_NAME := cmf
 
+ifeq ($(wildcard ./CmfBuildConfig.mk),)
+$(error "Cannot find build configuration file CmfBuildConfig.mk. You must run the configuration script first! Try ./config -help")
+else
+include CmfBuildConfig.mk
+endif
+
 ifndef OPTLEVEL
 OPTLEVEL := 0
 endif
@@ -10,6 +16,17 @@ endif
 
 ifndef DEBUG_LEVEL
 DEBUG_LEVEL := 0
+endif
+
+ifndef PTL_DIR
+PTL_DIR := ${PTL}
+ifeq (${PTL_DIR},)
+$(error "Cannot find PTL on the current system!")
+endif
+endif
+
+ifndef ENABLE_STACK_ALLOCATION
+ENABLE_STACK_ALLOCATION := 0
 endif
 
 ifndef MEMCHECK
@@ -67,14 +84,13 @@ CURRENT_HDRHX_DIR := ${CURRENT_BASEIDIR}/includex
 
 #this path will need to be changed.
 CURRENT_SUB_DIR   := ${CURRENT_BASEIDIR}/..
-CURRENT_PTL_DIR   := ${PTL}
 
 
 IFLAGS_DEPENDENCIES :=
-IFLAGS_DEPENDENCIES += -I${CURRENT_PTL_DIR}/include
+IFLAGS_DEPENDENCIES += -I${PTL_DIR}/include
 
 LFLAGS_DEPENDENCIES :=
-LFLAGS_DEPENDENCIES += -L${CURRENT_PTL_DIR}/lib -lPTL
+LFLAGS_DEPENDENCIES += -L${PTL_DIR}/lib -lPTL
 
 ifeq (${ZLIB_ENABLE}, 1)
 LFLAGS_DEPENDENCIES += -lz
@@ -139,7 +155,7 @@ export VALG
 COMPILE_TIME_OPT :=
 COMPILE_TIME_OPT += -DCMF_DIM=${DIM}
 COMPILE_TIME_OPT += -DCMF_ZLIB_EXT_ENABLE=${ZLIB_ENABLE}
-COMPILE_TIME_OPT += -DCMF_ENABLE_STACK_BLOB=0
+COMPILE_TIME_OPT += -DCMF_ENABLE_STACK_BLOB=${ENABLE_STACK_ALLOCATION}
 COMPILE_TIME_OPT += -DCMF_PARALLEL=${PARALLEL}
 COMPILE_TIME_OPT += -DCUDA_ENABLE=${CUDA_ENABLE}
 COMPILE_TIME_OPT += -DGLIBCXX_FORCE_NEW=1
