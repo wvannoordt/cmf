@@ -17,6 +17,7 @@ namespace cmf
     {
         mesh = mesh_in;
         interpolationOrder = inputInfo.interpolationOrder;
+        if (interpolationOrder%2 != 0) CmfError(strformat("Found odd interpolation order for exchanges ({}). Currently, only even interpolation orders are supported", interpolationOrder));
         WriteLine(2, "Create exchange pattern on mesh \"" + mesh->GetTitle() + "\"");
         exchangeDim = inputInfo.exchangeDim;
         int maxExchangeDim = 0;
@@ -283,8 +284,6 @@ namespace cmf
         )
     {
         Vec3<int> edgeVector(relationship.edgeVector[0], relationship.edgeVector[1], CMF_IS3D*(relationship.edgeVector[CMF_DIM-1]));
-        int numNonzeroEdgeComponents = 0;
-        for (int i = 0; i < CMF_DIM; i++) numNonzeroEdgeComponents += ((edgeVector[i]==0)?(0):(1));
         
         //the intersection of the ghost cells of the neighbor with the interior cells of the current form a rectangular prism
         //Interpreted in index-space coordinates of the current block
@@ -355,12 +354,31 @@ namespace cmf
         recvInfo.dx                         = currentDx;
         
         CartesianInterLevelExchangeProperties exchangeProps;
-        exchangeProps.orientation = (ExchangeOrientation::ExchangeOrientation)numNonzeroEdgeComponents;
+        exchangeProps.orientation = ExchangeOrientationFromEdgeVector(edgeVector);
         exchangeProps.levelDifference = currentInfo.node->GetDirectionLevels()-neighborInfo.node->GetDirectionLevels();
         exchangeProps.edgeVector = edgeVector;
-        
-        auto exchange = new CartesianInterLevelBlockTransaction<double>(sendInfo, recvInfo, exchangeProps);
-        pattern->Add(exchange, exchangeProps.GetPriority());
+        exchangeProps.interpolationOrder = interpolationOrder;
+        switch (exchangeProps.orientation)
+        {
+            case ExchangeOrientation::faceExchange:
+            {
+                auto exchange = new CartesianInterLevelFaceTransaction<double>(sendInfo, recvInfo, exchangeProps);
+                pattern->Add(exchange, exchangeProps.GetPriority());
+                break;
+            }
+            case ExchangeOrientation::edgeExchange:
+            {
+                auto exchange = new CartesianInterLevelEdgeTransaction<double>(sendInfo, recvInfo, exchangeProps);
+                pattern->Add(exchange, exchangeProps.GetPriority());
+                break;
+            }
+            case ExchangeOrientation::cornerExchange:
+            {
+                auto exchange = new CartesianInterLevelCornerTransaction<double>(sendInfo, recvInfo, exchangeProps);
+                pattern->Add(exchange, exchangeProps.GetPriority());
+                break;
+            }
+        }
     }
     
     void CartesianMeshExchangeHandler::MapExchangeRegionIntoNeighborIndexCoordinates

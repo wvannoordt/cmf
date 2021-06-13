@@ -16,6 +16,17 @@ namespace cmf
             cornerExchange = 2
         };
     }
+    
+    ExchangeOrientation::ExchangeOrientation ExchangeOrientationFromEdgeVector(Vec3<int>& edgeVec)
+    {
+        int numNonzeroEdgeComponents = 0;
+        for (int i = 0; i < CMF_DIM; i++) numNonzeroEdgeComponents += ((edgeVec[i]==0)?(0):(1));
+        
+        int table[6] = {0, 2, 1, 0, 1, 2};
+        
+        return (ExchangeOrientation::ExchangeOrientation)table[(numNonzeroEdgeComponents-1)+CMF_IS3D*3];
+    }
+    
     ///@brief Contains properties of an inter-level mesh exchange, used to set the priority of this exchange
     ///@author WVN
     struct CartesianInterLevelExchangeProperties
@@ -29,6 +40,9 @@ namespace cmf
         
         ///@brief The edge vector from the receiver to the sender
         Vec3<int> edgeVector;
+        
+        ///@brief the order of interpolation
+        int interpolationOrder;
         
         ///@brief Computes the priority of the relevant exchange given the properties. Note that high priority exchanges are performed first
         ///@author WVN
@@ -120,6 +134,7 @@ namespace cmf
             ///@brief Constructor
             ///@param sendInfo_in Contains info about the sending block
             ///@param recvInfo_in Contains info about the receiving block
+            ///@param exchangeProps_in Contains info about the topology of the exchange
             ///@author WVN
             CartesianInterLevelBlockTransaction
                 (
@@ -132,6 +147,15 @@ namespace cmf
                 recvInfo = recvInfo_in;
                 exchangeProps = exchangeProps_in;
                 numComponentsPerCell = sendInfo.array.dims[0];
+                
+                int numDifferentRefineLevelDirections = 0;
+                interpolationDirectionFor1D = 0;
+                for (int i = 0; i < CMF_DIM; i++)
+                {
+                    numDifferentRefineLevelDirections += ((exchangeProps.levelDifference[i]==0)?(1):(0));
+                    interpolationDirectionFor1D = (exchangeProps.levelDifference[i]==0)?i:interpolationDirectionFor1D;
+                }
+                is1DInterpolation = (numDifferentRefineLevelDirections==1);
             }
             
             ~CartesianInterLevelBlockTransaction(void) { }
@@ -154,46 +178,6 @@ namespace cmf
                 return output;
             }
             
-            /// @brief Packs the data to the given buffer
-            /// @param buf The buffer to pack the data to
-            /// \pre Note that the size of buf must be at least the size returned by GetPackedSize()
-            /// @author WVN
-            virtual void Pack(char* buf) override final
-            {
-                
-            }
-            
-            /// @brief Unpacks the data from the given buffer
-            /// @param buf The buffer to unpack the data from
-            /// \pre Note that the size of buf must be at least the size returned by GetPackedSize()
-            /// @author WVN
-            virtual void Unpack(char* buf) override final
-            {
-                int imin = (int)(recvInfo.bounds[0] - 0.5);
-                int imax = (int)(recvInfo.bounds[1] + 0.5);
-                int jmin = (int)(recvInfo.bounds[2] - 0.5);
-                int jmax = (int)(recvInfo.bounds[3] + 0.5);
-                int kmin = (int)(recvInfo.bounds[4] - 0.5);
-                int kmax = (int)(recvInfo.bounds[5] + 0.5);
-                int di = recvInfo.exchangeDims[0];
-                int dj = recvInfo.exchangeDims[1];
-                int dk = recvInfo.exchangeDims[2];
-                size_t offset = 0;
-                for (int k = kmin; k < kmax; k++)
-                {
-                    for (int j = jmin; j < jmax; j++)
-                    {
-                        for (int i = imin; i < imax; i++)
-                        {
-                            for (int v = 0; v < numComponentsPerCell; v++)
-                            {
-                                recvInfo.array(v, i+di, j+dj, k+dk) = 15.145;
-                            }
-                        }
-                    }
-                }
-            }
-            
             ///@brief Returns a struct containing information about the sending block
             ///@author WVN
             CartesianInterLevelBlockInfo<numType> GetSendInfo()
@@ -208,7 +192,7 @@ namespace cmf
                 return recvInfo;
             }
             
-        private:
+        protected:
             
             ///@brief Contains info about the sending block
             CartesianInterLevelBlockInfo<numType> sendInfo;
@@ -221,6 +205,12 @@ namespace cmf
             
             /// @brief The number of components in a single cell
             int numComponentsPerCell;
+            
+            /// @brief Indicates if this operator is a 1-Dimensional interpolation operator
+            bool is1DInterpolation;
+            
+            /// @brief If this exchange is a 1-D interpolation, this is the direction of interpolation
+            int interpolationDirectionFor1D;
     };
 }
 
