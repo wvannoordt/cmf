@@ -17,7 +17,7 @@ namespace cmf
         };
     }
     
-    ExchangeOrientation::ExchangeOrientation ExchangeOrientationFromEdgeVector(Vec3<int>& edgeVec)
+    static ExchangeOrientation::ExchangeOrientation ExchangeOrientationFromEdgeVector(Vec3<int>& edgeVec)
     {
         int numNonzeroEdgeComponents = 0;
         for (int i = 0; i < CMF_DIM; i++) numNonzeroEdgeComponents += ((edgeVec[i]==0)?(0):(1));

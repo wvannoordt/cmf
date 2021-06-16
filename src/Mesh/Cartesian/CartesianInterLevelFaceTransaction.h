@@ -5,7 +5,6 @@
 
 namespace cmf
 {
-    int y = 0;
     ///@brief A class representing a data transaction between two blocks of differing refinement levels, oriented on a face
     ///@author WVN
     template <typename numType> class CartesianInterLevelFaceTransaction : public CartesianInterLevelBlockTransaction<numType>
@@ -31,7 +30,7 @@ namespace cmf
                     CartesianInterLevelExchangeProperties& exchangeProps_in
                 ) : CartesianInterLevelBlockTransaction<numType>(sendInfo_in, recvInfo_in, exchangeProps_in)
             {
-                is1DinNormalDirection = is1DInterpolation&&(exchangeProps_in.edgeVector[interpolationDirectionFor1D]!=0);
+                is1DinNormalDirection = is1DInterpolation&&(exchangeProps_in.edgeVector[interpolationDirectionFor1D]==0);
             }
             
             /// @brief Packs the data to the given buffer
@@ -48,7 +47,6 @@ namespace cmf
             ///@author WVN
             void UnpackAs1DInNormalDirection(char* buf)
             {
-                
                 int imin = (int)(recvInfo.bounds[0] - 0.5);
                 int imax = (int)(recvInfo.bounds[1] + 0.5);
                 int jmin = (int)(recvInfo.bounds[2] - 0.5);
@@ -87,7 +85,7 @@ namespace cmf
             ///@author WVN
             void UnpackAs1DInTangentialDirection(char* buf)
             {
-                
+                //Sender is current rank
                 int imin = (int)(recvInfo.bounds[0] - 0.5);
                 int imax = (int)(recvInfo.bounds[1] + 0.5);
                 int jmin = (int)(recvInfo.bounds[2] - 0.5);
