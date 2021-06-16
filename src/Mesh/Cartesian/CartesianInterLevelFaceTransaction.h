@@ -5,6 +5,7 @@
 
 namespace cmf
 {
+    
     ///@brief A class representing a data transaction between two blocks of differing refinement levels, oriented on a face
     ///@author WVN
     template <typename numType> class CartesianInterLevelFaceTransaction : public CartesianInterLevelBlockTransaction<numType>
@@ -39,7 +40,18 @@ namespace cmf
             /// @author WVN
             virtual void Pack(char* buf) override final
             {
-                
+                if (is1DinNormalDirection)
+                {
+                    PackAs1DInNormalDirection(buf);
+                }
+                else if (is1DInterpolation)
+                {
+                    PackAs1DInTangentialDirection(buf);
+                }
+                else
+                {
+                    PackAsMultiDimensional(buf);
+                }
             }
             
             ///@brief Unpacks the data assuming a 1-D normal interpolation operator
@@ -77,7 +89,29 @@ namespace cmf
             ///@author WVN
             void PackAs1DInNormalDirection(char* buf)
             {
-                
+                int imin = (int)(recvInfo.bounds[0] - 0.5);
+                int imax = (int)(recvInfo.bounds[1] + 0.5);
+                int jmin = (int)(recvInfo.bounds[2] - 0.5);
+                int jmax = (int)(recvInfo.bounds[3] + 0.5);
+                int kmin = (int)(recvInfo.bounds[4] - 0.5);
+                int kmax = (int)(recvInfo.bounds[5] + 0.5);
+                int di = recvInfo.exchangeDims[0];
+                int dj = recvInfo.exchangeDims[1];
+                int dk = recvInfo.exchangeDims[2];
+                size_t offset = 0;
+                for (int k = kmin; k < kmax; k++)
+                {
+                    for (int j = jmin; j < jmax; j++)
+                    {
+                        for (int i = imin; i < imax; i++)
+                        {
+                            for (int v = 0; v < numComponentsPerCell; v++)
+                            {
+                                recvInfo.array(v, i+di, j+dj, k+dk) = 1.0;
+                            }
+                        }
+                    }
+                }
             }
             
             ///@brief Unpacks the data assuming a 1-D tangential interpolation operator
