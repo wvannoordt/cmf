@@ -178,6 +178,47 @@ void EvalErr(cmf::CartesianMeshArray& ar, double& l2Err, double& linfErr)
     linfErr = group.Max(linfErrLocal);
 }
 
+bool Test1DInterpolationOperator(void)
+{
+    std::vector<double> logError;
+    std::vector<double> logDx;
+    int order = 5;
+    for (int i = 1; i < 6; i++)
+    {
+        cmf::InterpolationOperator1D interp;
+        interp.order = order;
+        interp.SetSize(18);
+        double x0 = 0.0;
+        double x1 = 0.917/i;
+        double xs = 0.1;
+        double dxx = (x1-x0)/(interp.size-1);
+        logDx.push_back(log10(dxx));
+        for (int j = 0; j < interp.size; j++)
+        {
+            interp.coords[j] = x0 + j*dxx;
+            interp.data[j] = sin(interp.coords[j])+2.0*cos(2.0*interp.coords[j]);
+        }
+        double xana = sin(xs)+2.0*cos(2.0*xs);
+        int imin = interp.FindMinStencilIndex(xs);
+        double result = 0.0;
+        for (int i = 0; i < interp.order; i++)
+        {
+            double coeff = interp.GetCoefficientAtPoint(imin, i, xs);
+            double data = interp.data[imin+i];
+            result += coeff*data;
+        }
+        logError.push_back(log10(abs(xana-result)));
+    }
+    
+    double sum = 0.0;
+    for (int i = 0; i < logError.size()-1; i++)
+    {
+        sum += (logError[i+1] - logError[i])/(logDx[i+1] - logDx[i]);
+    }
+    sum /= (logError.size()-1);
+    return sum > (order-0.7);
+}
+
 int main(int argc, char** argv)
 {
     EXIT_WARN_IF_PARALLEL;
@@ -220,5 +261,10 @@ int main(int argc, char** argv)
     double errL2  = 0.0;
     EvalErr(var, errL2, errInf);
     
+    if (!Test1DInterpolationOperator())
+    {
+        print("1D INTERPOLATION OPERATOR TEST FAILED");
+        return 1;
+    }
     return 0;
 }

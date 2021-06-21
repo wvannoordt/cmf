@@ -4,9 +4,7 @@
 #include "IDataTransaction.h"
 #include "SingleTransaction.h"
 #include "MultiTransaction.h"
-#include "CartesianInterLevelCornerTransaction.h"
-#include "CartesianInterLevelEdgeTransaction.h"
-#include "CartesianInterLevelFaceTransaction.h"
+#include "CartesianInterLevelBlockTransaction.h"
 #include <vector>
 #include "CmfGC.h"
 #include <type_traits>

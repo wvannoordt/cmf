@@ -5,6 +5,7 @@
 #include "MdArray.h"
 #include "CmfPrint.h"
 #include "DebugPointCloud.h"
+#include "InterpolationOperator1D.h"
 namespace cmf
 {
     namespace ExchangeOrientation
@@ -156,9 +157,46 @@ namespace cmf
                     interpolationDirectionFor1D = (exchangeProps.levelDifference[i]==0)?i:interpolationDirectionFor1D;
                 }
                 is1DInterpolation = (numDifferentRefineLevelDirections==1);
+                CreateInterpolationOperators();
             }
             
             ~CartesianInterLevelBlockTransaction(void) { }
+            
+            /// @brief Creates the interpolation operators, e.g. stores the coordinates of the interpolation supports
+            /// @author WVN
+            void CreateInterpolationOperators(void)
+            {
+                for (int i = 0; i < CMF_DIM; i++)
+                {
+                    CreateSingleInterpolationOperator(sendOperators[i], sendInfo, exchangeProps, i);
+                }
+            }
+            
+            /// @brief Creates a single, 1D interpolation operator provided information about the topology of an exchange
+            /// @param interp The interpolation operator to create (output)
+            /// @param info contains information about the block structure of the relevant array
+            /// @param props contains information about the properties of this exchange \see CartesianInterLevelExchangeProperties
+            /// @param idir The cartesian direction relative to info.array
+            /// @author WVN
+            void CreateSingleInterpolationOperator(InterpolationOperator1D& interp, CartesianInterLevelBlockInfo<numType>& info, CartesianInterLevelExchangeProperties& props, int idir)
+            {
+                double imin = info.bounds[2*idir]     - 0.5;
+                double imax = info.bounds[2*idir + 1] + 0.5;
+                int iLowerBound = 0;
+                int iUpperBound = info.array.dims[idir+1] - 2*info.exchangeDims[idir];
+                
+                //more adjustment required here.
+                
+                //ugly
+                
+                interp.SetSize(iUpperBound-iLowerBound+1);
+                interp.FillData(0.0);
+                for (int i = 0; i < iUpperBound-iLowerBound+1; i++)
+                {
+                    interp.coords[i] = (double)(iLowerBound+i);
+                }
+                interp.order = props.interpolationOrder;
+            }
             
             /// @brief Returns the size of the compacted data
             /// @author WVN
@@ -192,6 +230,66 @@ namespace cmf
                 return recvInfo;
             }
             
+            /// @brief Packs the data to the given buffer
+            /// @param buf The buffer to pack the data to
+            /// \pre Note that the size of buf must be at least the size returned by GetPackedSize()
+            /// @author WVN
+            virtual void Pack(char* buf) override final
+            {
+                numType* numTypeBuf = (numType*)buf;
+                size_t offset = 0;
+                Vec3<double> dijk = 0;
+                for (int d = 0; d < CMF_DIM; d++)
+                {
+                    dijk[d] = (sendInfo.exchangeSize[d]==1)?(0.0):((sendInfo.bounds[2*d+1] - sendInfo.bounds[2*d])/(sendInfo.exchangeSize[d]-1));
+                }
+                for (int k = 0; k < sendInfo.exchangeSize[2]; k++)
+                {
+                    for (int j = 0; j < sendInfo.exchangeSize[1]; j++)
+                    {
+                        for (int i = 0; i < sendInfo.exchangeSize[0]; i++)
+                        {
+                            for (int v = 0; v < numComponentsPerCell; v++)
+                            {
+                                // for (int)
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /// @brief Unpacks the data from the given buffer
+            /// @param buf The buffer to unpack the data from
+            /// \pre Note that the size of buf must be at least the size returned by GetPackedSize()
+            /// @author WVN
+            virtual void Unpack(char* buf) override final
+            {
+                numType* numTypeBuf = (numType*)buf;
+                int imin = (int)(recvInfo.bounds[0] - 0.5);
+                int imax = (int)(recvInfo.bounds[1] + 0.5);
+                int jmin = (int)(recvInfo.bounds[2] - 0.5);
+                int jmax = (int)(recvInfo.bounds[3] + 0.5);
+                int kmin = (int)(recvInfo.bounds[4] - 0.5);
+                int kmax = (int)(recvInfo.bounds[5] + 0.5);
+                int di = recvInfo.exchangeDims[0];
+                int dj = recvInfo.exchangeDims[1];
+                int dk = recvInfo.exchangeDims[2];
+                size_t offset = 0;
+                for (int k = kmin; k < kmax; k++)
+                {
+                    for (int j = jmin; j < jmax; j++)
+                    {
+                        for (int i = imin; i < imax; i++)
+                        {
+                            for (int v = 0; v < numComponentsPerCell; v++)
+                            {
+                                recvInfo.array(v, i+di, j+dj, k+dk) = 0.0 + numTypeBuf[offset++];
+                            }
+                        }
+                    }
+                }
+            }
+            
         protected:
             
             ///@brief Contains info about the sending block
@@ -202,6 +300,12 @@ namespace cmf
             
             ///@brief Contains info about the details of the exchange topology
             CartesianInterLevelExchangeProperties exchangeProps;
+            
+            ///@brief An array of 1-D interpolation operators used to construct exchange cell values on the sending block
+            InterpolationOperator1D sendOperators[CMF_DIM];
+            
+            ///@brief An array of 1-D interpolation operators used to construct exchange cell values on the receiving block
+            InterpolationOperator1D recvOperators[CMF_DIM];
             
             /// @brief The number of components in a single cell
             int numComponentsPerCell;

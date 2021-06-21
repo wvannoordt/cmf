@@ -358,27 +358,8 @@ namespace cmf
         exchangeProps.levelDifference = currentInfo.node->GetDirectionLevels()-neighborInfo.node->GetDirectionLevels();
         exchangeProps.edgeVector = edgeVector;
         exchangeProps.interpolationOrder = interpolationOrder;
-        switch (exchangeProps.orientation)
-        {
-            case ExchangeOrientation::faceExchange:
-            {
-                auto exchange = new CartesianInterLevelFaceTransaction<double>(sendInfo, recvInfo, exchangeProps);
-                pattern->Add(exchange, exchangeProps.GetPriority());
-                break;
-            }
-            case ExchangeOrientation::edgeExchange:
-            {
-                auto exchange = new CartesianInterLevelEdgeTransaction<double>(sendInfo, recvInfo, exchangeProps);
-                pattern->Add(exchange, exchangeProps.GetPriority());
-                break;
-            }
-            case ExchangeOrientation::cornerExchange:
-            {
-                auto exchange = new CartesianInterLevelCornerTransaction<double>(sendInfo, recvInfo, exchangeProps);
-                pattern->Add(exchange, exchangeProps.GetPriority());
-                break;
-            }
-        }
+        auto exchange = new CartesianInterLevelBlockTransaction<double>(sendInfo, recvInfo, exchangeProps);
+        pattern->Add(exchange, exchangeProps.GetPriority());
     }
     
     void CartesianMeshExchangeHandler::MapExchangeRegionIntoNeighborIndexCoordinates
