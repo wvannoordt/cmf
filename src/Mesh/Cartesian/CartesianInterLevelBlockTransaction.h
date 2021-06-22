@@ -230,6 +230,18 @@ namespace cmf
                 return recvInfo;
             }
             
+            /// @brief Interpolates the data on the provided block at the given coordinates using the provided operators
+            /// @param ijk Coordinates to interpolate to. Note that cell centers assume integer values, while faces are half-integers
+            /// @param operators An array of operator objects used for the multi-dimensional interpolation
+            /// @param array The array to interpolate. Note that this array should include exchange cells
+            /// @param exchangeDims the dimensions of the exchange cells of array
+            /// @param var The cell variable to interpolate
+            /// @author WVN
+            inline numType InterpAt(Vec3<double>& ijk, InterpolationOperator1D (&operators)[CMF_DIM], Vec3<int> exchangeDims, MdArray<numType, 4>& array, int var)
+            {
+                return 1.0;
+            }
+            
             /// @brief Packs the data to the given buffer
             /// @param buf The buffer to pack the data to
             /// \pre Note that the size of buf must be at least the size returned by GetPackedSize()
@@ -239,19 +251,23 @@ namespace cmf
                 numType* numTypeBuf = (numType*)buf;
                 size_t offset = 0;
                 Vec3<double> dijk = 0;
+                Vec3<double> ijk = 0;
                 for (int d = 0; d < CMF_DIM; d++)
                 {
                     dijk[d] = (sendInfo.exchangeSize[d]==1)?(0.0):((sendInfo.bounds[2*d+1] - sendInfo.bounds[2*d])/(sendInfo.exchangeSize[d]-1));
                 }
                 for (int k = 0; k < sendInfo.exchangeSize[2]; k++)
                 {
+                    ijk[2] = sendInfo.bounds[4]+k*dijk[2];
                     for (int j = 0; j < sendInfo.exchangeSize[1]; j++)
                     {
+                        ijk[1] = sendInfo.bounds[2]+k*dijk[1];
                         for (int i = 0; i < sendInfo.exchangeSize[0]; i++)
                         {
+                            ijk[0] = sendInfo.bounds[0]+k*dijk[0];
                             for (int v = 0; v < numComponentsPerCell; v++)
                             {
-                                // for (int)
+                                numTypeBuf[offset++] = InterpAt(ijk, sendOperators, sendInfo.exchangeDims, sendInfo.array, v);
                             }
                         }
                     }
@@ -283,7 +299,8 @@ namespace cmf
                         {
                             for (int v = 0; v < numComponentsPerCell; v++)
                             {
-                                recvInfo.array(v, i+di, j+dj, k+dk) = 0.0 + numTypeBuf[offset++];
+                                Vec3<double> ijk(i+di+0.5, j+dj+0.5, k+dk+0.5);
+                                recvInfo.array(v, i+di, j+dj, k+dk) = InterpAt(ijk, recvOperators, recvInfo.exchangeDims, recvInfo.array, v) + numTypeBuf[offset++];
                             }
                         }
                     }
