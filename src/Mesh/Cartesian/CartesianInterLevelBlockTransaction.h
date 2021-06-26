@@ -193,7 +193,7 @@ namespace cmf
                 interp.FillData(0.0);
                 for (int i = 0; i < iUpperBound-iLowerBound+1; i++)
                 {
-                    interp.coords[i] = (double)(iLowerBound+i);
+                    interp.coords[i] = (double)(iLowerBound+i)+info.exchangeDims[idir];
                 }
                 interp.order = props.interpolationOrder;
             }
@@ -237,9 +237,47 @@ namespace cmf
             /// @param exchangeDims the dimensions of the exchange cells of array
             /// @param var The cell variable to interpolate
             /// @author WVN
-            inline numType InterpAt(Vec3<double>& ijk, InterpolationOperator1D (&operators)[CMF_DIM], Vec3<int> exchangeDims, MdArray<numType, 4>& array, int var)
+            inline numType InterpolateAt(Vec3<double>& ijk, InterpolationOperator1D (&operators)[CMF_DIM], Vec3<int> exchangeDims, MdArray<numType, 4>& array, int var)
             {
-                return 1.0;
+                Vec3<int> startIdx;
+                for (int d = 0; d < CMF_DIM; d++)
+                {
+                    startIdx[d] = operators[d].FindMinStencilIndex(ijk[d]);
+                }
+                numType output = 0.0;
+                Vec3<double> coeff = 1.0;
+                Vec3<int> idx;
+                for (int k = 0; k < (CMF_IS3D?operators[CMF_DIM-1].order:1); k++)
+                {
+                    idx[2] = k;
+                    for (int j = 0; j < operators[1].order; j++)
+                    {
+                        idx[1] = j;
+                        for (int i = 0; i < operators[0].order; i++)
+                        {
+                            idx[0] = i;
+                            for (int d = 0; d < CMF_DIM; d++)
+                            {
+                                coeff[d] = operators[d].GetCoefficientAtPoint(startIdx[d], idx[d], ijk[d]);
+                            }
+                            Vec3<double> dataIdx = 0;
+                            Vec3<int> dataIndex = 0;
+                            bool isValidData = true;
+                            auto abs = [](double z) ->double {return (z<0)?(-z):z;};
+                            for (int d = 0; d < CMF_DIM; d++)
+                            {
+                                dataIdx[d] = operators[d].coords[startIdx[d]+idx[d]];
+                                int didx = floor(dataIdx[d]);
+                                dataIndex[d] = didx;
+                                isValidData = isValidData && abs(dataIdx[d]-didx)<1e-3 && didx>=exchangeDims[d] && didx<exchangeDims[d]+array.dims[1+d];
+                            }
+                            double data = 0.0;
+                            if (isValidData) data = array(var, dataIndex[0], dataIndex[1], dataIndex[2]);
+                            output += coeff[0]*coeff[1]*coeff[2]*data;
+                        }
+                    }
+                }
+                return output;
             }
             
             /// @brief Packs the data to the given buffer
@@ -258,16 +296,16 @@ namespace cmf
                 }
                 for (int k = 0; k < sendInfo.exchangeSize[2]; k++)
                 {
-                    ijk[2] = sendInfo.bounds[4]+k*dijk[2];
+                    ijk[2] = sendInfo.bounds[4]+k*dijk[2] - 0.5 + sendInfo.exchangeDims[2];
                     for (int j = 0; j < sendInfo.exchangeSize[1]; j++)
                     {
-                        ijk[1] = sendInfo.bounds[2]+k*dijk[1];
+                        ijk[1] = sendInfo.bounds[2]+j*dijk[1] - 0.5 + sendInfo.exchangeDims[1];
                         for (int i = 0; i < sendInfo.exchangeSize[0]; i++)
                         {
-                            ijk[0] = sendInfo.bounds[0]+k*dijk[0];
+                            ijk[0] = sendInfo.bounds[0]+i*dijk[0] - 0.5 + sendInfo.exchangeDims[0];
                             for (int v = 0; v < numComponentsPerCell; v++)
                             {
-                                numTypeBuf[offset++] = InterpAt(ijk, sendOperators, sendInfo.exchangeDims, sendInfo.array, v);
+                                numTypeBuf[offset++] = InterpolateAt(ijk, sendOperators, sendInfo.exchangeDims, sendInfo.array, v);
                             }
                         }
                     }
@@ -299,8 +337,8 @@ namespace cmf
                         {
                             for (int v = 0; v < numComponentsPerCell; v++)
                             {
-                                Vec3<double> ijk(i+di+0.5, j+dj+0.5, k+dk+0.5);
-                                recvInfo.array(v, i+di, j+dj, k+dk) = InterpAt(ijk, recvOperators, recvInfo.exchangeDims, recvInfo.array, v) + numTypeBuf[offset++];
+                                Vec3<double> ijk(i+di, j+dj, k+dk);
+                                recvInfo.array(v, i+di, j+dj, k+dk) = 0.0*InterpolateAt(ijk, recvOperators, recvInfo.exchangeDims, recvInfo.array, v) + numTypeBuf[offset++];
                             }
                         }
                     }

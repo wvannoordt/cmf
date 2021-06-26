@@ -2,7 +2,7 @@ GlobalSettings
 {
 	Display
 	{
-		debugLevel = 5
+		debugLevel = 4
 		trackOutputOrigins = false
 		colorOutput = true
 	}

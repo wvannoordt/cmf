@@ -20,7 +20,7 @@ namespace cmf
         unsigned int size = 0;
         
         ///@brief The order of interpolation
-        unsigned int order = 0;
+        int order = 0;
         
         ///@brief Sets the size property and reallocates the coordinate and data buffer. This does not copy any existing data from old buffers.
         ///@param size_in the number of elements to resize to
@@ -80,7 +80,10 @@ namespace cmf
                     break;
                 }
             }
-            if (j>size-(order+1)/2) j = size-(order+1)/2;
+            if (j>size-(order+1)/2)
+            {
+                j = size-(order+1)/2;
+            }
             return ((j-order/2)<0)?0:(j-order/2);
         }
         

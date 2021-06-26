@@ -19,7 +19,7 @@ const double ghostJunkValue = -10.0;
 
 double fxyz(double x, double y, double z)
 {
-    double alpha = 2.0;
+    double alpha = 1.0;
     return cos(4*PI*alpha*y)*sin(PI*alpha*z) + sin(2*PI*alpha*y)*cos(3*PI*alpha*x) + cos(2*PI*alpha*z)*cos(2*PI*alpha*x);
 }
 
@@ -81,10 +81,10 @@ void SillyRefine(cmf::CartesianMeshArray& ar)
     refs2.push_back(2);
     nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.9, 0.0));
     refs2.push_back(3);
-    
     ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
     nodes2.clear();
     refs2.clear();
+    return;
     
     nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
     refs2.push_back(1);
@@ -260,6 +260,8 @@ int main(int argc, char** argv)
     double errInf = 0.0;
     double errL2  = 0.0;
     EvalErr(var, errL2, errInf);
+    
+    print(errL2, errInf);
     
     if (!Test1DInterpolationOperator())
     {
