@@ -338,7 +338,7 @@ namespace cmf
                             for (int v = 0; v < numComponentsPerCell; v++)
                             {
                                 Vec3<double> ijk(i+di, j+dj, k+dk);
-                                recvInfo.array(v, i+di, j+dj, k+dk) = 0.0*InterpolateAt(ijk, recvOperators, recvInfo.exchangeDims, recvInfo.array, v) + numTypeBuf[offset++];
+                                recvInfo.array(v, i+di, j+dj, k+dk) = InterpolateAt(ijk, recvOperators, recvInfo.exchangeDims, recvInfo.array, v) + numTypeBuf[offset++];
                             }
                         }
                     }

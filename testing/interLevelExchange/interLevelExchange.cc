@@ -70,6 +70,34 @@ void FillAr(cmf::CartesianMeshArray& ar)
     }
 }
 
+void SubArr(cmf::CartesianMeshArray& ar)
+{
+    for (auto lb: ar)
+    {
+        cmf::BlockArray<double> arLb = ar[lb];
+        cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
+        int ijk[3] = {0};
+        for (cell_t k = arLb.kmin-arLb.exchangeK; k < arLb.kmax+arLb.exchangeK; k++)
+        {
+            ijk[2] = k;
+            for (cell_t j = arLb.jmin-arLb.exchangeJ; j < arLb.jmax+arLb.exchangeJ; j++)
+            {
+                ijk[1] = j;
+                for (cell_t i = arLb.imin-arLb.exchangeI; i < arLb.imax+arLb.exchangeI; i++)
+                {
+                    ijk[0] = i;
+                    double xyz[3] = {0.0};
+                    for (int d = 0; d < CMF_DIM; d++)
+                    {
+                        xyz[d] = info.blockBounds[2*d] + (0.5 + (double)ijk[d])*info.dx[d];
+                    }
+                    arLb(i, j, k) -= fxyz(xyz[0], xyz[1], xyz[2]);
+                }
+            }
+        }
+    }
+}
+
 void SillyRefine(cmf::CartesianMeshArray& ar)
 {    
     std::vector<cmf::RefinementTreeNode*> nodes2;
@@ -84,7 +112,6 @@ void SillyRefine(cmf::CartesianMeshArray& ar)
     ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
     nodes2.clear();
     refs2.clear();
-    return;
     
     nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
     refs2.push_back(1);
@@ -227,46 +254,57 @@ int main(int argc, char** argv)
     cmf::globalSettings = cmf::GlobalSettings(cmf::mainInput["GlobalSettings"]);
     cmf::CreateParallelContext(&argc, &argv);
 
-    cmf::CartesianMeshInputInfo inputInfo(cmf::mainInput["Domain"]);
-    cmf::CartesianMesh domain(inputInfo);
-    auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble);
-    
-    SillyRefine(var);
-    
-    var.ComponentName() = "fxyz";
-    
-    FillArGhost(var, ghostJunkValue);
-    FillAr(var);
-    
-    auto interlevels = var.GetExchangePattern()->GetTransactionsByType<cmf::CartesianInterLevelBlockTransaction<double>>();
-    for (int i = 0; i < interlevels.size(); i++)
+    std::vector<int> meshLevels;
+    meshLevels.push_back(16);
+    meshLevels.push_back(24);
+    meshLevels.push_back(32);
+    meshLevels.push_back(48);
+    for (int idx = 0; idx < meshLevels.size(); idx++)
     {
-        auto exch = interlevels[i];
-        cmf::DebugPointCloud pc1, pc2;
-        exch->GetSendInfo().GetExchangeRegionAsPointCloud(pc1);
-        exch->GetRecvInfo().GetExchangeRegionAsPointCloud(pc2);
-        std::string sendFilename = strformat("output/send_{}.vtk", ZFill(i, 7));
-        std::string recvFilename = strformat("output/recv_{}.vtk", ZFill(i, 7));
-        pc1.WriteVtk(sendFilename);
-        pc2.WriteVtk(recvFilename);
-    }
-    
-    var.Exchange();
-    
-    
-    
-    var.ExportFile("output", "test");
-    
-    double errInf = 0.0;
-    double errL2  = 0.0;
-    EvalErr(var, errL2, errInf);
-    
-    print(errL2, errInf);
-    
-    if (!Test1DInterpolationOperator())
-    {
-        print("1D INTERPOLATION OPERATOR TEST FAILED");
-        return 1;
+        int meshLevel = meshLevels[idx];
+        PTL::PropertyTree localTree;
+        localTree.GetContext()->CreateDefinition("numPoints", strformat("{}", meshLevel));
+        localTree.Read(inFile);
+        cmf::CartesianMeshInputInfo inputInfo(localTree["Domain"]);
+        cmf::CartesianMesh domain(inputInfo);
+        auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble);
+        
+        SillyRefine(var);
+        
+        var.ComponentName() = "fxyz";
+        
+        FillArGhost(var, ghostJunkValue);
+        FillAr(var);
+        
+        auto interlevels = var.GetExchangePattern()->GetTransactionsByType<cmf::CartesianInterLevelBlockTransaction<double>>();
+        for (int i = 0; i < interlevels.size(); i++)
+        {
+            auto exch = interlevels[i];
+            cmf::DebugPointCloud pc1, pc2;
+            exch->GetSendInfo().GetExchangeRegionAsPointCloud(pc1);
+            exch->GetRecvInfo().GetExchangeRegionAsPointCloud(pc2);
+            std::string sendFilename = strformat("output/send_{}.vtk", ZFill(i, 7));
+            std::string recvFilename = strformat("output/recv_{}.vtk", ZFill(i, 7));
+            pc1.WriteVtk(sendFilename);
+            pc2.WriteVtk(recvFilename);
+        }
+        
+        var.Exchange();
+        
+        double errInf = 0.0;
+        double errL2  = 0.0;
+        EvalErr(var, errL2, errInf);
+        
+        SubArr(var);
+        var.ExportFile("output", "test");
+        
+        print(errL2, errInf);
+        
+        if (!Test1DInterpolationOperator())
+        {
+            print("1D INTERPOLATION OPERATOR TEST FAILED");
+            return 1;
+        }
     }
     return 0;
 }
