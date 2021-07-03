@@ -24,7 +24,7 @@ namespace cmf
             
             /// @author WVN
             /// @brief Gets the list of blocks to be iterated over
-            virtual std::vector<RefinementTreeNode*>* GetAllNodes(void){return NULL;}
+            virtual std::vector<RefinementTreeNode*>* GetAllNodes(void) {return NULL;}
             
             /// @author WVN
             /// @brief Returns true if the iterable object has this node in its parallel partition

@@ -2,6 +2,7 @@
 #define CMF_PRINT_DEBUG_H
 #include <iostream>
 #include <ostream>
+#include "CmfOutputStream.h"
 namespace cmf
 {
     

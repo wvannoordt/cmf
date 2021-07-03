@@ -175,6 +175,16 @@ namespace cmf
         return Blocks();
     }
     
+    std::vector<RefinementTreeNode*>::iterator CartesianMesh::begin() noexcept
+    {
+        return GetAllNodes()->begin();
+    }
+    
+    std::vector<RefinementTreeNode*>::iterator CartesianMesh::end() noexcept
+    {
+        return GetAllNodes()->end();
+    }
+    
     bool CartesianMesh::ParallelPartitionContainsNode(RefinementTreeNode* node)
     {
         if (!partition) return true;

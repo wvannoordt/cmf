@@ -178,7 +178,15 @@ namespace cmf
             
             /// @author WVN
             /// @brief Gets the list of blocks to be iterated over
-            std::vector<RefinementTreeNode*>* GetAllNodes(void);
+            virtual std::vector<RefinementTreeNode*>* GetAllNodes(void) override;
+            
+            /// @brief Begin() overload for range iteration
+            /// @author WVN
+            std::vector<RefinementTreeNode*>::iterator begin() noexcept;
+            
+            /// @brief End() overload for range iteration
+            /// @author WVN
+            std::vector<RefinementTreeNode*>::iterator end() noexcept;
             
             /// @author WVN
             /// @brief Returns true if the mesh has this node in its parallel partition

@@ -39,6 +39,7 @@ namespace cmf
             CmfOutputStream& operator << (float a);
             CmfOutputStream& operator << (bool a);
         private:
+                        
             /// @brief List of streams to be output to
             std::vector<std::ostream*> streams;
             /// @brief List of file buffers that the streams output to
