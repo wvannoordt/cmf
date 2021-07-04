@@ -53,10 +53,20 @@ namespace cmf
             /// @author WVN
             bool BoxIntersectsBoundary(double* bounds);
             
+            /// @brief Determines whether the provided box intersects the boundary of the geometry
+            /// @param bounds The bounds of the box to check (xmin, xmax, ymin, ymax, zmin, zmax)
+            /// @author WVN
+            bool BoxIntersectsBoundary(Vec<double, 6> bounds);
+            
             /// @brief Writes the surface triangulation to a file
             /// @param filename The file to write
             /// @author WVN
             void WriteTriangulation(std::string filename);
+            
+            
+            /// @brief Returns the number of faces
+            /// @author WVN
+            size_t GetNumFaces(void);
             
             /// @brief (Debugging only) Writes the triangles that intersect a given box as an STL file.
             /// Returns the subset of intersecting faces
@@ -74,6 +84,16 @@ namespace cmf
             /// @param n A pointer to the array to fill with the normal vector info
             /// @author WVN
             void CopyFaceInfo(int faceIndex, double* p1, double* p2, double* p3, double* n);
+            
+            /// @brief Accessor for vertex data
+            /// @param i The face index
+            /// @param v The vertex index (0-2)
+            /// @param p The coordinate index (0-2)
+            /// @author WVN
+            double& operator () (size_t i, int v, int c)
+            {
+                return points[9*i + 3*v+c];
+            }
         
         private:
             

@@ -720,6 +720,17 @@ namespace cmf
     {
         return blockBounds;
     }
+    
+    Vec<double, 6> RefinementTreeNode::GetBlockBoundsVec6(void)
+    {
+        Vec<double, 6> output = 0;
+        output[5] = 1;
+        for (int i = 0; i < blockBounds.size(); i++)
+        {
+            output[i] = blockBounds[i];
+        }
+        return output;
+    }
 
     void RefinementTreeNode::Destroy(void)
     {

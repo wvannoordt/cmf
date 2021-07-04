@@ -269,7 +269,7 @@ int main(int argc, char** argv)
         cmf::CartesianMesh domain(inputInfo);
         auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble);
         
-        SillyRefine(var);
+        // SillyRefine(var);
         
         var.ComponentName() = "fxyz";
         

@@ -209,6 +209,11 @@ namespace cmf
             /// @author WVN
             std::vector<double> GetBlockBounds(void);
             
+            /// @brief Returns an array of size 2*CMF_DIM representing the bounding box of the current node.
+            /// Returned as (xmin, xmax, ymin, ymax, zmin=0, zmax=1)
+            /// @author WVN
+            Vec<double, 6> GetBlockBoundsVec6(void);
+            
             /// @brief Recursively counts the number of terminal nodes and increments totalNumBlocks accordingly.
             /// Deprecated, should not be used.
             /// @param totalNumBlocks Pointer to a counter to be incremented

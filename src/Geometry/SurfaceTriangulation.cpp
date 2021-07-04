@@ -100,6 +100,12 @@ namespace cmf
         numFaces = n;
         conditions.SetCondition("SetNumFaces", true);
     }
+    
+    size_t SurfaceTriangulation::GetNumFaces(void)
+    {
+        return numFaces;
+    }
+    
     void SurfaceTriangulation::ComputeBoundingBox(void)
     {
         for (int d = 0; d < 3; d++){boundingBox[2*d] = 1e50;}
@@ -278,6 +284,11 @@ namespace cmf
             }
         }
         myfile.close();
+    }
+    
+    bool SurfaceTriangulation::BoxIntersectsBoundary(Vec<double, 6> bounds)
+    {
+        return this->BoxIntersectsBoundary(&bounds[0]);
     }
     
     bool SurfaceTriangulation::BoxIntersectsBoundary(double* bounds)
