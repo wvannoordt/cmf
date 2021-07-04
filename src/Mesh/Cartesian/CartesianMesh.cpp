@@ -194,7 +194,7 @@ namespace cmf
     BlockInfo CartesianMesh::GetBlockInfo(RefinementTreeNode* node)
     {
         BlockInfo output;
-        double* blockBounds = node->GetBlockBounds();
+        auto blockBounds = node->GetBlockBounds();
         for (int d = 0; d < CMF_DIM; d++)
         {
             output.blockBounds[2*d] = blockBounds[2*d];

@@ -19,11 +19,11 @@ namespace cmf
         int interpolationOrder;
         
         /// @brief An array of size CMF_DIM that represents the number of exchange cells (used to facilitate data exchange) in each direction
-        int* exchangeDim;
+        std::vector<int> exchangeDim;
         
         /// @brief empty Constructor
         /// @author WVN
-        CartesianMeshExchangeInfo(void){exchangeDim = NULL;}
+        CartesianMeshExchangeInfo(void){}
         
         /// @brief Constructor for the CartesianMeshInputInfo object.
         /// @param inputSection Section to be read from
@@ -41,7 +41,7 @@ namespace cmf
         {
             input["interpolationOrder"].MapTo(&interpolationOrder)
                 = new PTL::PTLInteger(2, "The order of interpolation from one level to the next, or previous, when performing exchanges");
-            input["exchangeDim"].MapTo(&exchangeDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Number of exchange cells to use in each direction", [](int i){return 0;});
+            input["exchangeDim"].MapTo(&exchangeDim) = new PTL::PTLIntegerVector("Number of exchange cells to use in each direction", CMF_DIM, [](int i){return 3;});
         }
     };
     /// @brief Defines an object for handling data exchanges on Cartesian meshes
@@ -151,7 +151,7 @@ namespace cmf
             int interpolationOrder;
             
             /// @brief An array of size CMF_DIM that represents the number of exchange cells (used to facilitate data exchange) in each direction
-            int* exchangeDim;
+            std::vector<int> exchangeDim;
         
             /// @brief Map of block exchange patterns
             std::map<CartesianMeshArray*, DataExchangePattern*> exchanges;

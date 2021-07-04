@@ -30,6 +30,9 @@ namespace cmf
         /// @author WVN
         ICmfMeshInfo(PTL::PropertySection& inputTree)
             : ICmfInputObject(inputTree){}
+            
+        /// @brief Constructor for manual definition
+        ICmfMeshInfo(void) {}
     };
 
     class ICmfMesh: public ICmfDataBaseReadWriteObject

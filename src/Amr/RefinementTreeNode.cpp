@@ -22,7 +22,7 @@ namespace cmf
 {
     RefinementTreeNode::RefinementTreeNode
     (
-        double* hostBounds,
+        std::vector<double> hostBounds,
         char refineType_in,
         char refineOrientation_in,
         int level_in,
@@ -90,8 +90,9 @@ namespace cmf
         }
     }
 
-    void RefinementTreeNode::DefineBounds(double* hostBounds, char refineType_in, char refineOrientation_in)
+    void RefinementTreeNode::DefineBounds(std::vector<double> hostBounds, char refineType_in, char refineOrientation_in)
     {
+        blockBounds.resize(6, 0.0);
         for (int d = 0; d < CMF_DIM; d++)
         {
             char iRefined = (refineType_in>>d)&1;
@@ -229,7 +230,7 @@ namespace cmf
     bool RefinementTreeNode::RefineRequiredFromRelationship(RefinementTreeNode* newChildNode, RefinementTreeNode* toBeRefined, NodeEdge relationship, char* newRefTypeOut)
     {
         *newRefTypeOut = 0;
-        bool* periodicRefine = toBeRefined->rootBlock->periodicRefinement;
+        auto periodicRefine = toBeRefined->rootBlock->periodicRefinement;
         bool noRefineBecauseOfPeriodicity = false;
         for (int d = 0; d < CMF_DIM; d++)
         {
@@ -715,7 +716,7 @@ namespace cmf
         this->Destroy();
     }
 
-    double* RefinementTreeNode::GetBlockBounds(void)
+    std::vector<double> RefinementTreeNode::GetBlockBounds(void)
     {
         return blockBounds;
     }

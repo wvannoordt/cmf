@@ -50,8 +50,8 @@ namespace cmf
             {
                 dims[i] = arDim[i];
             }
-            int* meshDataDim = pointerPair.array->handler->mesh->meshDataDim;
-            int* meshExchange = pointerPair.array->handler->mesh->exchangeDim;
+            int* meshDataDim = &(pointerPair.array->handler->mesh->meshDataDim[0]);
+            int* meshExchange = &(pointerPair.array->handler->mesh->exchangeDim[0]);
             dims[TotalRank()-3] = meshDataDim[0] + 2*meshExchange[0];
             dims[TotalRank()-2] = meshDataDim[1] + 2*meshExchange[1];
 #if(CMF_IS3D)
@@ -139,8 +139,8 @@ namespace cmf
             size_t elementSizeBytes = SizeOfArrayType(pointerPair.array->elementType);
             dims[0] = elementSize;
             dims[1] = totalComponents;
-            int* meshDataDim = pointerPair.array->handler->mesh->meshDataDim;
-            int* meshExchange = pointerPair.array->handler->mesh->exchangeDim;
+            int* meshDataDim = &(pointerPair.array->handler->mesh->meshDataDim[0]);
+            int* meshExchange = &(pointerPair.array->handler->mesh->exchangeDim[0]);
             dims[2] = meshDataDim[0] + 2*meshExchange[0];
             dims[3] = meshDataDim[1] + 2*meshExchange[1];
 #if(CMF_IS3D)

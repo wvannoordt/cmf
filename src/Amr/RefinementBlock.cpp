@@ -14,7 +14,7 @@
 #include "IPostRefinementCallback.h"
 namespace cmf
 {
-    RefinementBlock::RefinementBlock(int* blockDim_in, double* blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in, bool* periodicRefinement_in)
+    RefinementBlock::RefinementBlock(std::vector<int> blockDim_in, std::vector<double> blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in, std::vector<bool> periodicRefinement_in)
     {
         periodicRefinement = periodicRefinement_in;
         blockDim = blockDim_in;
@@ -66,7 +66,7 @@ namespace cmf
         return this;
     }
     
-    double* RefinementBlock::GetBlockBounds(void)
+    std::vector<double> RefinementBlock::GetBlockBounds(void)
     {
         return blockBounds;
     }
@@ -99,7 +99,8 @@ namespace cmf
     {
         deallocTrunks = true;
         trunks = new RefinementTreeNode* [totalNumTrunks];
-        double localBounds[2*CMF_DIM];
+        std::vector<double> localBounds;
+        localBounds.resize(6, 0.0);
         int idx[CMF_DIM];        
         for (int i = 0; i < totalNumTrunks; i++)
         {
@@ -211,14 +212,25 @@ namespace cmf
         }
         this->PostRefinementCallbacks();
     }
+    
+    void RefinementBlock::RefineAt(Vec3<double> coords, char refinementType)
+    {
+        std::vector<RefinementTreeNode*> nds;
+        std::vector<char> refs;
+        auto node = this->GetNodeAt(coords);
+        if (node!= NULL)
+        {
+            nds.push_back(node);
+            refs.push_back(refinementType);
+            this->RefineNodes(nds, refs);
+        }
+    }
 
     void RefinementBlock::RefineAt(double coords[CMF_DIM], char refinementType)
     {
-        RefinementTreeNode* target = GetNodeAt(coords);
-        if (target)
-        {
-            target->Refine(refinementType);
-        }
+        Vec3<double> coordsv = 0;
+        for (int i = 0; i < CMF_DIM; i++) coordsv[i] = coords[i];
+        this->RefineAt(coordsv, refinementType);
     }
     
     RefinementTreeNode* RefinementBlock::GetNodeAt(Vec3<double>& coords)

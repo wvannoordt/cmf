@@ -31,7 +31,7 @@ namespace cmf
             /// \see RefinementConstraint.h
             /// @param periodicRefinement_in A boolean array of size CMF_DIM indicating whether or not refinement constraints are applied periodically
             /// @author WVN
-            RefinementBlock(int* blockDim_in, double* blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in, bool* periodicRefinement_in);
+            RefinementBlock(std::vector<int> blockDim_in, std::vector<double> blockBounds_in, RefinementConstraint::RefinementConstraint constraint_in, std::vector<bool> periodicRefinement_in);
             
             /// @brief Destructor for the RefinementBlock object. Explicitly calls Destroy and destroys all contained RefinementTreeNode objects.
             /// @author WVN
@@ -66,6 +66,12 @@ namespace cmf
             /// @param refinementType The type of refinement to apply to the relevant node, if found
             /// @author WVN
             void RefineAt(double coords[CMF_DIM], char refinementType);
+            
+            /// @brief Refines the node that contains the coordinates provided.
+            /// @param coords The coordinates to refine at
+            /// @param refinementType The type of refinement to apply to the relevant node, if found
+            /// @author WVN
+            void RefineAt(Vec3<double> coords, char refinementType);
             
             /// @brief Refines the list of the provided nodes and calls all post-refinement callback functions. This is the preferred way of refining large numbers of nodes.
             /// @param nodes A list of nodes to refine
@@ -164,7 +170,7 @@ namespace cmf
             /// @brief Returns an array of size 2*CMF_DIM representing the bounding box of the current refinement box.
             /// Returned as (xmin, xmax, ymin, ymax, [zmin, zmax])
             /// @author WVN
-            double* GetBlockBounds(void);
+            std::vector<double> GetBlockBounds(void);
             
             /// @brief Outputs a file with neighbor information (DEBUGGING ONLY!)
             /// @author WVN
@@ -217,19 +223,19 @@ namespace cmf
             void HandleRefinementQueryOutsideDomain(double coords[CMF_DIM]);
             
             /// @brief An array of size CMF_DIM that represents the initial block dimensions
-            int* blockDim;
+            std::vector<int> blockDim;
             
             /// @brief The product of the elements of blockDim
             int totalNumTrunks;
             
             /// @brief An array of size 2*CMF_DIM the represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
-            double* blockBounds;
+            std::vector<double> blockBounds;
             
             /// @brief An array of size CMF_DIM that represent the size of a single initial node in each dimension
             double dx[CMF_DIM];
             
             ///@brief A boolean array of size CMF_DIM indicating whether or not refinement constraints are applied periodically
-            bool* periodicRefinement;
+            std::vector<bool> periodicRefinement;
             
             /// @brief An array to store the initial nodes of this refinement block
             RefinementTreeNode** trunks;

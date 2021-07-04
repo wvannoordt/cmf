@@ -79,7 +79,7 @@ namespace cmf
         	/// @author WVN
             RefinementTreeNode
             (
-                double* hostBounds,
+                std::vector<double> hostBounds,
                 char refineType_in,
                 char refineOrientation_in,
                 int level_in,
@@ -207,7 +207,7 @@ namespace cmf
             /// @brief Returns an array of size 2*CMF_DIM representing the bounding box of the current node.
             /// Returned as (xmin, xmax, ymin, ymax, [zmin, zmax])
             /// @author WVN
-            double* GetBlockBounds(void);
+            std::vector<double> GetBlockBounds(void);
             
             /// @brief Recursively counts the number of terminal nodes and increments totalNumBlocks accordingly.
             /// Deprecated, should not be used.
@@ -367,7 +367,7 @@ namespace cmf
             /// @param refineType_in The refinement type that produced the current node
             /// @param refineOrientation_in The refinement orientation of the current node
             /// @author WVN
-            void DefineBounds(double* hostBounds, char refineType_in, char refineOrientation_in);
+            void DefineBounds(std::vector<double> hostBounds, char refineType_in, char refineOrientation_in);
             
             /// @brief Computes the bounding box of the current node using the exact number system based on the refinement levels and whether or not the current node shares 
             /// @author WVN
@@ -401,7 +401,7 @@ namespace cmf
             char subNodeRefinementType;
             
             /// @brief The block bounds of the current node, blockBounds = (xmin, xmax, ymin, ymax, [zmin, zmax])
-            double blockBounds[2*CMF_DIM];
+            std::vector<double> blockBounds;
             
             /// @brief The RefinementConstraint that determines, when this node is refined, which of its neighbors (and subsequently their neighbors, etc...) must be refines as well
             RefinementConstraint::RefinementConstraint constraint;

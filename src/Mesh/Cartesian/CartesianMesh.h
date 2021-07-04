@@ -23,20 +23,20 @@ namespace cmf
     /// @author WVN
     struct CartesianMeshInputInfo : ICmfMeshInfo
     {
-        /// @brief An array of size CMF_DIM that represents the initial block dimensions
-        int* blockDim;
+        /// @brief A vector of size CMF_DIM (at least) that represents the initial block dimensions
+        std::vector<int> blockDim;
 
-        /// @brief An array of size 2*CMF_DIM that represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
-        double* blockBounds;
+        /// @brief A vector of size 2*CMF_DIM (at least) that represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
+        std::vector<double> blockBounds;
         
-        /// @brief A logical array of CMF_DIM indicating whether or not neighbor refinement constraints should be applied periodically in the corresponding direction [x, y, (z)]
-        bool* periodicRefinement;
+        /// @brief A logical vector of CMF_DIM indicating whether or not neighbor refinement constraints should be applied periodically in the corresponding direction [x, y, (z)]
+        std::vector<bool> periodicRefinement;
 
         /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
         RefinementConstraint::RefinementConstraint refinementConstraintType;
 
         /// @brief An array of size CMF_DIM that represents the initial block data dimensions
-        int* meshDataDim;
+        std::vector<int> meshDataDim;
         
         /// @brief A struct containing information to create a parallel partition
         CartesianMeshParallelPartitionInfo partitionInfo;
@@ -53,23 +53,30 @@ namespace cmf
             Define(*objectInput);
             Parse();
         }
+        
+        /// @brief Empy constructor for the manual definition
+        /// @author WVN
+        CartesianMeshInputInfo(void)
+        {
+            
+        }
 
         /// @brief Defines the object from the input secton
         /// @param input The section to be read from
         /// @author WVN
         void Define(PTL::PropertySection& input)
         {
-            input["blockDim"].MapTo(&blockDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Base block dimensions", [](int i){return 2;});
+            input["blockDim"].MapTo(&blockDim) = new PTL::PTLIntegerVector("Base block dimensions", 3, [](int i){if (i==2 && CMF_DIM==2) {return 1;} return 2;});
             
-            input["blockBounds"].MapTo(&blockBounds) = new PTL::PTLStaticDoubleArray(2*CMF_DIM, "Base block bounds", [](int i){return (double)(i&1);});
+            input["blockBounds"].MapTo(&blockBounds) = new PTL::PTLDoubleVector("Base block bounds", 6, [](int i){return (double)(i&1);});
             
             input["refinementConstraintType"].MapTo((int*)&refinementConstraintType)
-                = new PTL::PTLAutoEnum(RefinementConstraint::free, RefinementConstraintStr, "Determines how refinements are constrained");
+                = new PTL::PTLAutoEnum(RefinementConstraint::factor2CompletelyConstrained, RefinementConstraintStr, "Determines how refinements are constrained");
                 
             input["periodicRefinement"].MapTo(&periodicRefinement)
-                = new PTL::PTLStaticBooleanArray(CMF_DIM, "Determines if the refinementConstraintType applies accross domain boundaries", [](int i){return true;});
+                = new PTL::PTLBooleanVector("Determines if the refinementConstraintType applies accross domain boundaries", 3, [](int i){return true;});
                 
-            input["meshDataDim"].MapTo(&meshDataDim) = new PTL::PTLStaticIntegerArray(CMF_DIM, "Dimensions of data", [](int i){return 2;});
+            input["meshDataDim"].MapTo(&meshDataDim) = new PTL::PTLIntegerVector("Dimensions of data", 3, [](int i){return 16;});
             
             partitionInfo.Define(input["Partition"]);
             exchangeInfo.Define(input["Exchanges"]);
@@ -172,6 +179,10 @@ namespace cmf
             /// @author WVN
             BlockInfo GetBlockInfo(BlockIterator& blockIter);
             
+            /// @brief Returns the bounding box of the mesh
+            /// @author WVN
+            std::vector<double> GetBlockBounds(void) {return blockBounds;}
+            
             /// @brief Returns the total number of nodes that are contained within the iterable object
             /// @author WVN
             size_t Size(void);
@@ -235,17 +246,17 @@ namespace cmf
             /// @brief contains the mesh blocks of the current mesh
             RefinementBlock* blocks;
 
-            /// @brief An array of size CMF_DIM that represents the initial block dimensions
-            int* blockDim;
+            /// @brief An vector that represents the initial block dimensions
+            std::vector<int> blockDim;
 
             /// @brief An array of size 2*CMF_DIM the represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
-            double* blockBounds;
+            std::vector<double> blockBounds;
 
             /// @brief An array of size CMF_DIM that represents the initial block data dimensions
-            int* meshDataDim;
+            std::vector<int> meshDataDim;
             
             /// @brief An array of size CMF_DIM that represents the number of exchange cells (used to facilitate data exchange) in each direction
-            int* exchangeDim;
+            std::vector<int> exchangeDim;
 
             /// @brief See RefinementTreeNode::RefinementConstraint. Applied to all contained nodes
             RefinementConstraint::RefinementConstraint refinementConstraintType;

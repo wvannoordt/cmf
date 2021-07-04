@@ -81,6 +81,15 @@ namespace cmf
         ///@brief Scalar multiplication
         Vec3 operator * (const numericType a) {return Vec3(a*v[0], a*v[1], a*v[2]);}
         
+        ///@brief Scalar multiplication
+        Vec3& operator *= (const numericType a) {v[0]*=a; v[1]*=a; v[2]*=a; return *this;}
+        
+        ///@brief Increment operator
+        Vec3& operator += (Vec3& rhs) {v[0]+=rhs[0]; v[1]+=rhs[1]; v[2]+=rhs[2]; return *this;}
+        
+        ///@brief Decrement operator
+        Vec3& operator -= (Vec3& rhs) {v[0]-=rhs[0]; v[1]-=rhs[1]; v[2]-=rhs[2]; return *this;}
+        
         ///@brief Scalar division
         Vec3 operator / (const numericType a) {return Vec3(v[0]/a, v[1]/a, v[2]/a);}
         
@@ -107,6 +116,10 @@ namespace cmf
         /// @brief Zero constructor
         /// @author WVN
         Vec(void) {for (int i = 0; i < VECDIM; i++) v[i] = 0;}
+        
+        /// @brief Zero constructor
+        /// @author WVN
+        Vec(std::vector<numericType> inpt) {for (int i = 0; i < VECDIM; i++) v[i] = inpt[i];}
         
         /// @brief Constructor
         /// @param x Pointer (of size > VECDIM)
