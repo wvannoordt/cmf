@@ -271,7 +271,8 @@ namespace cmf
         void* recvBuffer = (void*)(neighData.data);
         
         //Current node sends to the neighbor
-        pattern->Add(new MultiTransaction(sendBuffer, offsetsSend, sizesSend, currentRank, recvBuffer, offsetsRecv, sizesRecv, neighborRank), 1000);
+        auto mt = pattern->Add<MultiTransaction>(sendBuffer, offsetsSend, sizesSend, currentRank, recvBuffer, offsetsRecv, sizesRecv, neighborRank);
+        mt->SetPriority(1000);
     }
     
     void CartesianMeshExchangeHandler::CreateGeneralExchangePattern
@@ -358,8 +359,9 @@ namespace cmf
         exchangeProps.levelDifference = currentInfo.node->GetDirectionLevels()-neighborInfo.node->GetDirectionLevels();
         exchangeProps.edgeVector = edgeVector;
         exchangeProps.interpolationOrder = interpolationOrder;
-        auto exchange = new CartesianInterLevelBlockTransaction<double>(sendInfo, recvInfo, exchangeProps);
-        pattern->Add(exchange, exchangeProps.GetPriority());
+
+        auto cilbt = pattern->Add<CartesianInterLevelBlockTransaction<double>>(sendInfo, recvInfo, exchangeProps);
+        cilbt->SetPriority(exchangeProps.GetPriority());
     }
     
     void CartesianMeshExchangeHandler::MapExchangeRegionIntoNeighborIndexCoordinates

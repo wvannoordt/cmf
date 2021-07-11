@@ -103,39 +103,43 @@ void SillyRefine(cmf::CartesianMeshArray& ar)
     std::vector<cmf::RefinementTreeNode*> nodes2;
     std::vector<char> refs2;
     
-    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
-    refs2.push_back(1);
-    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.2, 1.6, 0.0));
-    refs2.push_back(2);
-    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.9, 0.0));
-    refs2.push_back(3);
-    ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
-    nodes2.clear();
-    refs2.clear();
-    
-    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
-    refs2.push_back(1);
-    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.2, 1.6, 0.0));
-    refs2.push_back(2);
-    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.9, 0.0));
-    refs2.push_back(3);
-    
-    ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
-    nodes2.clear();
-    refs2.clear();
-    
-    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
-    refs2.push_back(1);
-    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.2, 1.6, 0.0));
-    refs2.push_back(2);
-    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.9, 0.0));
-    refs2.push_back(3);
-    
-    ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
-    nodes2.clear();
-    refs2.clear();
+    // nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
+    // refs2.push_back(1);
+    // nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.2, 1.6, 0.0));
+    // refs2.push_back(2);
+    // nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.9, 0.0));
+    // refs2.push_back(3);
+    // ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
+    // nodes2.clear();
+    // refs2.clear();
+    // 
+    // nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
+    // refs2.push_back(1);
+    // nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.2, 1.6, 0.0));
+    // refs2.push_back(2);
+    // nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.9, 0.0));
+    // refs2.push_back(3);
+    // 
+    // ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
+    // nodes2.clear();
+    // refs2.clear();
+    // 
+    // nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.6, 0.0));
+    // refs2.push_back(1);
+    // nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.2, 1.6, 0.0));
+    // refs2.push_back(2);
+    // nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.2, 0.9, 0.0));
+    // refs2.push_back(3);
+    // 
+    // ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
+    // nodes2.clear();
+    // refs2.clear();
     
     nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.4, 1.3, 0.0));
+    refs2.push_back(1);
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.4, 1.0, 0.0));
+    refs2.push_back(2);
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(0.6, 0.6, 0.0));
     refs2.push_back(3);
     
     ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
@@ -256,9 +260,9 @@ int main(int argc, char** argv)
 
     std::vector<int> meshLevels;
     meshLevels.push_back(16);
-    meshLevels.push_back(24);
-    meshLevels.push_back(32);
-    meshLevels.push_back(48);
+    // meshLevels.push_back(24);
+    // meshLevels.push_back(32);
+    // meshLevels.push_back(48);
     for (int idx = 0; idx < meshLevels.size(); idx++)
     {
         int meshLevel = meshLevels[idx];
@@ -269,14 +273,14 @@ int main(int argc, char** argv)
         cmf::CartesianMesh domain(inputInfo);
         auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble);
         
-        // SillyRefine(var);
+        SillyRefine(var);
         
         var.ComponentName() = "fxyz";
         
         FillArGhost(var, ghostJunkValue);
         FillAr(var);
         
-        auto interlevels = var.GetExchangePattern()->GetTransactionsByType<cmf::CartesianInterLevelBlockTransaction<double>>();
+        auto interlevels = var.GetExchangePattern()->GetItemsByType<cmf::CartesianInterLevelBlockTransaction<double>>();
         for (int i = 0; i < interlevels.size(); i++)
         {
             auto exch = interlevels[i];

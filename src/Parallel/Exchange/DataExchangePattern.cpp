@@ -34,31 +34,22 @@ namespace cmf
                 Cmf_Free(receiveBuffer[rank]);
             }
         }
-        for (auto tr:transactions)
-        {
-            delete tr;
-        }
     }
     
     void DataExchangePattern::SortByPriority(void)
     {
+        std::vector<IDataTransaction*>& transactions = this->items;
         auto sortRule = [](IDataTransaction* const& a, IDataTransaction* const& b) -> bool { return (a->Priority() > b->Priority()); };
         std::sort(transactions.begin(), transactions.end(), sortRule);
     }
     
-    IDataTransaction* DataExchangePattern::Add(IDataTransaction* transaction)
-    {
-        return this->Add(transaction, -1);
-    }
-    
-    IDataTransaction* DataExchangePattern::Add(IDataTransaction* transaction, int priorityLevel)
+    void DataExchangePattern::OnAdd(IDataTransaction* transaction)
     {
         int sender = transaction->Sender();
         int receiver = transaction->Receiver();
         int currentRank = group->Rank();
         if ((sender == currentRank) || (receiver == currentRank))
         {
-            transactions.push_back(transaction);
             if ((sender == currentRank) && (transaction->GetPackedSize() > 0))
             {
                 resizeOutBufferRequired[receiver] = true;
@@ -69,21 +60,12 @@ namespace cmf
                 resizeInBufferRequired[sender] = true;
                 receiveSizes[sender] += transaction->GetPackedSize();
             }
-            transaction->SetPriority(priorityLevel);
-            return transaction;
-        }
-        else
-        {
-            CmfError("This is a temporary error: a data exchange pattern has been added where neither the sender nor the receiver are the current rank");
-            // This might not be the best way to do this.
-            // Delete if the transaction does not pertain to the current rank
-            delete transaction;
-            return NULL;
         }
     }
     
     void DataExchangePattern::Pack(void)
     {
+        std::vector<IDataTransaction*>& transactions = this->items;
         pointerIndices = sendBuffer;
         for (const auto tr:transactions)
         {
@@ -98,12 +80,12 @@ namespace cmf
     
     void DataExchangePattern::Unpack(void)
     {
-        pointerIndices = receiveBuffer; //Vector deep-copy.
+        pointerIndices = receiveBuffer;
         
         //Note that self-to-self transactions are not copied between
         //send and receive buffers on the same rank. Why would they be? :-)
         pointerIndices[group->Rank()] = sendBuffer[group->Rank()];
-        
+        std::vector<IDataTransaction*>& transactions = this->items;
         for (const auto tr:transactions)
         {
             int currentRank = group->Rank();
@@ -173,6 +155,7 @@ namespace cmf
     void DataExchangePattern::ResizeOutBuffer(int rank)
     {
         size_t totalSize = 0;
+        std::vector<IDataTransaction*>& transactions = this->items;
         for (const auto tr:transactions)
         {
             if (tr->Sender() == group->Rank()) totalSize += tr->GetPackedSize();
@@ -187,6 +170,7 @@ namespace cmf
     void DataExchangePattern::ResizeInBuffer(int rank)
     {
         size_t totalSize = 0;
+        std::vector<IDataTransaction*>& transactions = this->items;
         for (const auto tr:transactions)
         {
             if (tr->Receiver() == group->Rank()) totalSize += tr->GetPackedSize();

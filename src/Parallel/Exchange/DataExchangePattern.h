@@ -8,12 +8,13 @@
 #include <vector>
 #include "CmfGC.h"
 #include <type_traits>
+#include "BaseClassContainer.h"
 namespace cmf
 {
     /// @brief Defines a series of data transactions that can be repeated, and also a good reference if you want to 
     /// know how to spell "receive"
 	/// @author WVN
-    class DataExchangePattern
+    class DataExchangePattern : public BaseClassContainer<IDataTransaction>
     {
         public:
             /// @brief Constructor
@@ -29,63 +30,10 @@ namespace cmf
         	/// @author WVN
             void ExchangeData(void);
             
-            /// @brief Adds a new data transaction to this data exchange pattern
-            /// @param transaction A new transaction to add
-            /// \pre NOTE: this exchange pattern object WILL DELETE this pointer when it is deconstructed.
-        	/// @author WVN
-            IDataTransaction* Add(IDataTransaction* transaction);
-            
-            /// @brief Adds a new data transaction to this data exchange pattern
-            /// @param transaction A new transaction to add
-            /// @param priorityLevel The priority level of the new exchange, the higher the priority, the sooner the exchange happens
-            /// \pre NOTE: this exchange pattern object WILL DELETE this pointer when it is deconstructed.
-        	/// @author WVN
-            IDataTransaction* Add(IDataTransaction* transaction, int priorityLevel);
-            
-            /// @brief Begin() overload for range iteration
+            /// @brief Add item callback, sets sizes of pack/unpack buffers
+            /// @param The new transaction
             /// @author WVN
-            std::vector<IDataTransaction*>::iterator begin() noexcept
-            {
-                return transactions.begin();
-            }
-            
-            /// @brief const Begin() overload for range iteration
-            /// @author WVN
-            std::vector<IDataTransaction*>::const_iterator begin() const noexcept
-            {
-                return transactions.begin();
-            }
-            
-            /// @brief End() overload for range iteration
-            /// @author WVN
-            std::vector<IDataTransaction*>::iterator end() noexcept
-            {
-                return transactions.end();
-            }
-            
-            /// @brief constant End() overload for range iteration
-            /// @author WVN
-            std::vector<IDataTransaction*>::const_iterator end() const noexcept
-            {
-                return transactions.end();
-            }
-            
-            /// @brief Returns a vector of transactions of the template type
-            /// @author WVN
-            template <class searchType> std::vector<searchType*> GetTransactionsByType(void)
-            {
-                std::vector<searchType*> output;
-                static_assert(std::is_base_of<IDataTransaction, searchType>::value, "Template type does not inherit from ");
-                for (auto t:transactions)
-                {
-                    searchType* ptr = dynamic_cast<searchType*>(t);
-                    if (ptr != NULL)
-                    {
-                        output.push_back(ptr);
-                    }
-                }
-                return output;
-            }
+            virtual void OnAdd(IDataTransaction* newItem) override final;
             
             /// @brief Sorts the contained data transactions by their priority value
         	/// @author WVN
@@ -112,10 +60,6 @@ namespace cmf
             
             /// @brief The group that this exchange pattern is executed over
             ParallelGroup* group;
-            
-            /// @brief The list of individual transactions
-            /// \pre Note that this object IS RESPONSIBLE for deleting these.
-            std::vector<IDataTransaction*> transactions;
             
             /// @brief Indicates whether or not the outgoing buffer reqires resizing for the corresponding rank
             std::vector<bool> resizeOutBufferRequired;
