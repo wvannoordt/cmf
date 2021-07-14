@@ -27,7 +27,7 @@ void FillArGhost(cmf::CartesianMeshArray& ar, double val)
 {
     for (auto lb: ar)
     {
-        cmf::BlockArray<double> arLb = ar[lb];
+        cmf::BlockArray<double, 1> arLb = ar[lb];
         cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
         for (cell_t k = arLb.kmin-arLb.exchangeK; k < arLb.kmax+arLb.exchangeK; k++)
         {
@@ -35,7 +35,10 @@ void FillArGhost(cmf::CartesianMeshArray& ar, double val)
             {
                 for (cell_t i = arLb.imin-arLb.exchangeI; i < arLb.imax+arLb.exchangeI; i++)
                 {
-                    arLb(i, j, k) = val;
+                    for (int v = 0; v < arLb.dims[0]; v++)
+                    {
+                        arLb(v, i, j, k) = val;
+                    }
                 }
             }
         }
@@ -46,7 +49,7 @@ void FillAr(cmf::CartesianMeshArray& ar)
 {
     for (auto lb: ar)
     {
-        cmf::BlockArray<double> arLb = ar[lb];
+        cmf::BlockArray<double, 1> arLb = ar[lb];
         cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
         int ijk[3] = {0};
         for (cell_t k = arLb.kmin; k < arLb.kmax; k++)
@@ -63,35 +66,10 @@ void FillAr(cmf::CartesianMeshArray& ar)
                     {
                         xyz[d] = info.blockBounds[2*d] + (0.5 + (double)ijk[d])*info.dx[d];
                     }
-                    arLb(i, j, k) = fxyz(xyz[0], xyz[1], xyz[2]);
-                }
-            }
-        }
-    }
-}
-
-void SubArr(cmf::CartesianMeshArray& ar)
-{
-    for (auto lb: ar)
-    {
-        cmf::BlockArray<double> arLb = ar[lb];
-        cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
-        int ijk[3] = {0};
-        for (cell_t k = arLb.kmin-arLb.exchangeK; k < arLb.kmax+arLb.exchangeK; k++)
-        {
-            ijk[2] = k;
-            for (cell_t j = arLb.jmin-arLb.exchangeJ; j < arLb.jmax+arLb.exchangeJ; j++)
-            {
-                ijk[1] = j;
-                for (cell_t i = arLb.imin-arLb.exchangeI; i < arLb.imax+arLb.exchangeI; i++)
-                {
-                    ijk[0] = i;
-                    double xyz[3] = {0.0};
-                    for (int d = 0; d < CMF_DIM; d++)
+                    for (int v = 0; v < arLb.dims[0]; v++)
                     {
-                        xyz[d] = info.blockBounds[2*d] + (0.5 + (double)ijk[d])*info.dx[d];
+                        arLb(v, i, j, k) = fxyz(xyz[0], xyz[1], xyz[2]);
                     }
-                    arLb(i, j, k) -= fxyz(xyz[0], xyz[1], xyz[2]);
                 }
             }
         }
@@ -163,9 +141,12 @@ void EvalErr(cmf::CartesianMeshArray& ar, double& l2Err, double& linfErr)
     int dof = 0;
     for (auto lb: ar)
     {
-        cmf::BlockArray<double> arLb = ar[lb];
+        cmf::BlockArray<double, 1> arLb = ar[lb];
         cmf::BlockInfo info = ar.Mesh()->GetBlockInfo(lb);
         int ijk[3] = {0};
+        double blockMax = -1.0;
+        auto max = [](double a, double b) -> double {return a<b?b:a;};
+        auto abs = [](double a) -> double {return a<0?-a:a;};
         auto iGhost = [&](int ii, int jj, int kk) -> bool 
         {
             return (ii < arLb.imin)||(ii >= arLb.imax)||(kk < arLb.kmin)||(kk >= arLb.kmax)||(jj < arLb.jmin)||(jj >= arLb.jmax);
@@ -184,21 +165,41 @@ void EvalErr(cmf::CartesianMeshArray& ar, double& l2Err, double& linfErr)
                     {
                         xyz[d] = info.blockBounds[2*d] + (0.5 + (double)ijk[d])*info.dx[d];
                     }
-                    if (iGhost(i, j, k))
+                    for (int v = 0; v < arLb.dims[0]; v++)
                     {
-                        dof++;
-                        double errLoc = (arLb(i, j, k) - fxyz(xyz[0], xyz[1], xyz[2]));
-                        l2ErrLocal += errLoc*errLoc;
-                        linfErrLocal = DMAX(linfErrLocal, DABS(errLoc));
-                        
-                        if (DABS(arLb(i, j, k) - ghostJunkValue) < 1e-8)
+                        double errLoc = (arLb(v, i, j, k) - fxyz(xyz[0], xyz[1], xyz[2]));
+                        if (iGhost(i, j, k))
                         {
-                            print("BAD GHOST CELL VALUE");
-                            print(i, j, k);
-                            print(lb->GetBlockCenter());
-                            abort();
+                            dof++;
+                            blockMax = max(blockMax, abs(errLoc));
+                            if (v==0)
+                            {
+                                l2ErrLocal += errLoc*errLoc;
+                                linfErrLocal = DMAX(linfErrLocal, DABS(errLoc));
+                            }
+                            if (DABS(arLb(v, i, j, k) - ghostJunkValue) < 1e-8)
+                            {
+                                print("BAD GHOST CELL VALUE");
+                                print(i, j, k);
+                                print(lb->GetBlockCenter());
+                                abort();
+                            }
+                        }
+                        if (v==1)
+                        {
+                            arLb(v, i, j, k) = errLoc;
                         }
                     }
+                }
+            }
+        }
+        for (cell_t k = arLb.kmin - arLb.exchangeK; k < arLb.kmax + arLb.exchangeK; k++)
+        {
+            for (cell_t j = arLb.jmin - arLb.exchangeJ; j < arLb.jmax + arLb.exchangeJ; j++)
+            {
+                for (cell_t i = arLb.imin - arLb.exchangeI; i < arLb.imax + arLb.exchangeI; i++)
+                {
+                    arLb(2, i, j, k) = blockMax;
                 }
             }
         }
@@ -245,6 +246,7 @@ bool Test1DInterpolationOperator(void)
     for (int i = 0; i < logError.size()-1; i++)
     {
         sum += (logError[i+1] - logError[i])/(logDx[i+1] - logDx[i]);
+        std::cout << (logError[i+1] - logError[i])/(logDx[i+1] - logDx[i]) << std::endl;
     }
     sum /= (logError.size()-1);
     return sum > (order-0.7);
@@ -257,7 +259,6 @@ int main(int argc, char** argv)
     cmf::ReadInput(inFile);
     cmf::globalSettings = cmf::GlobalSettings(cmf::mainInput["GlobalSettings"]);
     cmf::CreateParallelContext(&argc, &argv);
-
     std::vector<int> meshLevels;
     meshLevels.push_back(16);
     // meshLevels.push_back(24);
@@ -271,11 +272,13 @@ int main(int argc, char** argv)
         localTree.Read(inFile);
         cmf::CartesianMeshInputInfo inputInfo(localTree["Domain"]);
         cmf::CartesianMesh domain(inputInfo);
-        auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble);
+        auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble, {3});
         
         SillyRefine(var);
         
-        var.ComponentName() = "fxyz";
+        var.ComponentName({0}) = "data";
+        var.ComponentName({1}) = "error";
+        var.ComponentName({2}) = "maxBlockError";
         
         FillArGhost(var, ghostJunkValue);
         FillAr(var);
@@ -299,16 +302,15 @@ int main(int argc, char** argv)
         double errL2  = 0.0;
         EvalErr(var, errL2, errInf);
         
-        SubArr(var);
         var.ExportFile("output", "test");
         
         print(errL2, errInf);
         
-        if (!Test1DInterpolationOperator())
-        {
-            print("1D INTERPOLATION OPERATOR TEST FAILED");
-            return 1;
-        }
+        // if (!Test1DInterpolationOperator())
+        // {
+        //     print("1D INTERPOLATION OPERATOR TEST FAILED");
+        //     return 1;
+        // }
     }
     return 0;
 }
