@@ -45,20 +45,20 @@ namespace cmf
     
     void DataExchangePattern::OnAdd(IDataTransaction* transaction)
     {
-        int sender = transaction->Sender();
-        int receiver = transaction->Receiver();
-        int currentRank = group->Rank();
+        ComputeDevice sender = transaction->Sender();
+        ComputeDevice receiver = transaction->Receiver();
+        ComputeDevice currentRank = group->Rank();
         if ((sender == currentRank) || (receiver == currentRank))
         {
             if ((sender == currentRank) && (transaction->GetPackedSize() > 0))
             {
-                resizeOutBufferRequired[receiver] = true;
-                sendSizes[receiver] += transaction->GetPackedSize();
+                resizeOutBufferRequired[receiver.id] = true;
+                sendSizes[receiver.id] += transaction->GetPackedSize();
             }
             if ((receiver == currentRank) && (transaction->GetPackedSize() > 0))
             {
-                resizeInBufferRequired[sender] = true;
-                receiveSizes[sender] += transaction->GetPackedSize();
+                resizeInBufferRequired[sender.id] = true;
+                receiveSizes[sender.id] += transaction->GetPackedSize();
             }
         }
     }
@@ -69,11 +69,11 @@ namespace cmf
         pointerIndices = sendBuffer;
         for (const auto tr:transactions)
         {
-            int currentRank = group->Rank();
+            ComputeDevice currentRank = group->Rank();
             if (tr->Sender() == currentRank)
             {
-                tr->Pack(pointerIndices[tr->Receiver()]);
-                pointerIndices[tr->Receiver()] += tr->GetPackedSize();
+                tr->Pack(pointerIndices[tr->Receiver().id]);
+                pointerIndices[tr->Receiver().id] += tr->GetPackedSize();
             }
         }
     }
@@ -84,15 +84,15 @@ namespace cmf
         
         //Note that self-to-self transactions are not copied between
         //send and receive buffers on the same rank. Why would they be? :-)
-        pointerIndices[group->Rank()] = sendBuffer[group->Rank()];
+        pointerIndices[group->Rank().id] = sendBuffer[group->Rank().id];
         std::vector<IDataTransaction*>& transactions = this->items;
         for (const auto tr:transactions)
         {
-            int currentRank = group->Rank();
+            ComputeDevice currentRank = group->Rank();
             if (tr->Receiver() == currentRank)
             {
-                tr->Unpack(pointerIndices[tr->Sender()]);
-                pointerIndices[tr->Sender()] += tr->GetPackedSize();
+                tr->Unpack(pointerIndices[tr->Sender().id]);
+                pointerIndices[tr->Sender().id] += tr->GetPackedSize();
             }
         }
     }
@@ -113,7 +113,7 @@ namespace cmf
         int numReceivesTotal = 0;
         for (int rank = 0; rank < group->Size(); rank++)
         {
-            if ((rank != group->Rank()) && (receiveSizes[rank] > 0))
+            if ((rank != group->Rank().id) && (receiveSizes[rank] > 0))
             {
                 numReceivesTotal++;
             }
@@ -128,7 +128,7 @@ namespace cmf
         for (int rank = 0; rank < group->Size(); rank++)
         {
             // Note that self-to-self transactions are handled using memcpy() in the Unpack() function
-            if ((rank != group->Rank()) && (receiveSizes[rank] > 0))
+            if ((rank != group->Rank().id) && (receiveSizes[rank] > 0))
             {
                 group->QueueReceive(receiveBuffer[rank], receiveSizes[rank], parallelChar, rank, &requestHandles[counter]);
                 counter++;
@@ -138,7 +138,7 @@ namespace cmf
         for (int rank = 0; rank < group->Size(); rank++)
         {
             //Send the data
-            if ((rank != group->Rank()) && (sendSizes[rank] > 0))
+            if ((rank != group->Rank().id) && (sendSizes[rank] > 0))
             {
                 group->BlockingSynchronousSend(sendBuffer[rank], sendSizes[rank], parallelChar, rank);
             }

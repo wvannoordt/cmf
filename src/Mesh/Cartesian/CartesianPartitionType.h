@@ -9,6 +9,7 @@ namespace cmf
         enum CartesianPartitionType
         {
             uniform,
+            singleGPU,
             unsupported
         };
     }
@@ -17,7 +18,8 @@ namespace cmf
     {
         switch (refType)
         {
-            case CartesianPartitionType::uniform: return "uniform";
+            case CartesianPartitionType::uniform:     return "uniform";
+            case CartesianPartitionType::singleGPU:   return "singleGPU";
             case CartesianPartitionType::unsupported: return "unsupported";
         }
         return PTL_AUTO_ENUM_TERMINATOR;

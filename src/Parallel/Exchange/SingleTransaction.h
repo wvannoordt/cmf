@@ -1,6 +1,7 @@
 #ifndef CMF_SINGLE_TRANSACTION_H
 #define CMF_SINGLE_TRANSACTION_H
 #include "IDataTransaction.h"
+
 namespace cmf
 {
     /// @brief A class representing a data exchange transaction of a single, contiguous memory buffer
@@ -15,7 +16,7 @@ namespace cmf
             /// @param sender_in The sending rank
             /// @param receiver_in The receiving rank
             /// @author WVN
-            SingleTransaction(void* sendTarget_in, void* recvTarget_in, size_t size_in, int sender_in, int receiver_in);
+            SingleTransaction(void* sendTarget_in, void* recvTarget_in, size_t size_in, ComputeDevice sender_in, ComputeDevice receiver_in);
             
             /// @brief Returns the size of the compacted data
         	/// @author WVN

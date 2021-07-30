@@ -5,7 +5,7 @@
 #include "RefinementTreeNode.h"
 #include "ICartesianPartitionBuilder.h"
 #include "CartesianUniformPartition.h"
-#include "BlockPartitionInfo.h"
+#include "CartesianMeshSingleGpuPartition.h"
 #include "IPostRefinementCallback.h"
 #include <map>
 namespace cmf
@@ -77,7 +77,7 @@ namespace cmf
             /// @brief Returns the BlockPartitionInfo for the given node
             /// @param node The node to get the partition info for
             /// @author WVN
-            BlockPartitionInfo GetPartitionInfo(RefinementTreeNode* node);
+            ComputeDevice GetPartitionInfo(RefinementTreeNode* node);
             
         private:
             
@@ -93,7 +93,7 @@ namespace cmf
             CartesianPartitionType::CartesianPartitionType partitionType;
             
             /// @brief The parallel partition data
-            std::map<RefinementTreeNode*, BlockPartitionInfo> partition;
+            std::map<RefinementTreeNode*, ComputeDevice> partition;
             
             /// @brief The object responsible for assigning existing and new blocks to the parallel partition
             ICartesianPartitionBuilder* builder;

@@ -34,7 +34,7 @@ namespace cmf
     void ParallelFile::PurgeAsciiStream(void)
     {
         size_t writeSize = 0;
-        if (group->Rank()==serialRank)
+        if (group->Rank().id==serialRank)
         {
             std::string strn = asciiStream.str();
             writeSize = strn.length();
@@ -104,7 +104,7 @@ namespace cmf
     std::string ParallelFile::SerialRead(void)
     {
         std::string output = this->Read();
-        if (group->Rank() == serialRank) return output;
+        if (group->Rank().id == serialRank) return output;
         return "";
     }
 

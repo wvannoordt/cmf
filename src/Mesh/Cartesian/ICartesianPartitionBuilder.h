@@ -2,7 +2,6 @@
 #define CMT_CART_MESH_PAR_PART_BUI_H
 #include "RefinementTreeNode.h"
 #include <map>
-#include "BlockPartitionInfo.h"
 namespace cmf
 {
     class CartesianMesh;
@@ -23,7 +22,7 @@ namespace cmf
             /// @param partition The partition to populate
             /// @param mesh The mesh containing the blocks to be partitioned
             /// @author WVN
-            virtual void CreatePartition(std::map<RefinementTreeNode*, BlockPartitionInfo>* partition, CartesianMesh* mesh) = 0;
+            virtual void CreatePartition(std::map<RefinementTreeNode*, ComputeDevice>* partition, CartesianMesh* mesh) = 0;
             
             /// @brief Adds a new node to the partition and assigns a rank according to the specialized strategy
             /// @param newNode The new node to add
@@ -32,7 +31,7 @@ namespace cmf
         
         protected:
             /// @brief The underlying partition data
-            std::map<RefinementTreeNode*, BlockPartitionInfo>* meshPartition;
+            std::map<RefinementTreeNode*, ComputeDevice>* meshPartition;
     };
 }
 

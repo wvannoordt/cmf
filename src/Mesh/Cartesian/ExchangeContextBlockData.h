@@ -2,7 +2,7 @@
 #define CMF_EXCHANGE_CONTEXT_BLOCK_DATA_H
 #include "Vec.h"
 #include "RefinementTreeNode.h"
-#include "BlockPartitionInfo.h"
+#include "ComputeDevice.h"
 #include "BlockInfo.h"
 #include "BlockArray.h"
 
@@ -18,7 +18,7 @@ namespace cmf
         RefinementTreeNode* node;
         
         /// @brief contains information about the partition for this block
-        BlockPartitionInfo  partitionInfo;
+        ComputeDevice  device;
         
         /// @brief contains mesh information about this block
         BlockInfo           blockInfo;

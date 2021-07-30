@@ -6,6 +6,8 @@
 #include "CmfPrint.h"
 #include "DebugPointCloud.h"
 #include "InterpolationOperator1D.h"
+#include "RefinementTreeNode.h"
+#include "ComputeDevice.h"
 namespace cmf
 {
     namespace ExchangeOrientation
@@ -68,7 +70,7 @@ namespace cmf
         MdArray<numType, 4> array;
         
         ///@brief The rank that owns "array"
-        int rank;
+        ComputeDevice rank;
         
         ///@brief The index bounding box of the exchange region
         Vec<double, 6> bounds;
@@ -105,6 +107,9 @@ namespace cmf
         
         /// @brief The physical mesh spacing
         Vec3<double> dx;
+        
+        /// @brief The node associated with this exchange
+        RefinementTreeNode* node;
         
         /// @brief Adds all points in the specified exchange region to the specified point cloud
         /// @param cloud The cloud to add the exchange region points to

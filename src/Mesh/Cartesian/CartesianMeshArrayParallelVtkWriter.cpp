@@ -157,14 +157,14 @@ namespace cmf
         int* allBlocks = parGroup->SharedValues(numBlocksLocal);
         int blocksBefore = 0;
         int totalNumBlocksWritten = parGroup->Sum(numBlocksLocal);
-        for (int p = 0; p < parGroup->Rank(); p++)
+        for (int p = 0; p < parGroup->Rank().id; p++)
         {
             blocksBefore += allBlocks[p];
         }
         
         for (int process = 0; process < parGroup->Size(); process++)
         {
-            if (parGroup->Rank()==process)
+            if (parGroup->Rank().id==process)
             {
                 for (auto lb: array)
                 {

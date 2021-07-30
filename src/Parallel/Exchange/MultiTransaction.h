@@ -3,6 +3,7 @@
 #include "CmfGC.h"
 #include "IDataTransaction.h"
 #include <vector>
+#include "ComputeDevice.h"
 
 namespace cmf
 {
@@ -22,8 +23,8 @@ namespace cmf
             /// @param recvRank_in The rank of the receiver
             /// @author WVN
             MultiTransaction(
-                void* sendTarget_in, std::vector<size_t>& sendOffsets_in, std::vector<size_t>& sendSizes_in, int sendRank_in,
-                void* recvTarget_in, std::vector<size_t>& recvOffsets_in, std::vector<size_t>& recvSizes_in, int recvRank_in);
+                void* sendTarget_in, std::vector<size_t>& sendOffsets_in, std::vector<size_t>& sendSizes_in, ComputeDevice sendRank_in,
+                void* recvTarget_in, std::vector<size_t>& recvOffsets_in, std::vector<size_t>& recvSizes_in, ComputeDevice recvRank_in);
             
             /// @brief Destructor
             /// @author WVN
@@ -60,7 +61,7 @@ namespace cmf
             std::vector<size_t> sendSizes;
             
             /// @brief The sending rank
-            int sendRank;
+            ComputeDevice sendRank;
             
             /// @brief The address of the array to be received, or NULL if it lies on another rank
             void* recvTarget;
@@ -72,7 +73,7 @@ namespace cmf
             std::vector<size_t> recvSizes;
             
             /// @brief The receiving rank
-            int recvRank;
+            ComputeDevice recvRank;
             
     };
 }

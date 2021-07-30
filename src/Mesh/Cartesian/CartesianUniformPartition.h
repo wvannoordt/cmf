@@ -1,7 +1,6 @@
 #ifndef CMF_CART_UNIFORM_PART_H
 #define CMF_CART_UNIFORM_PART_H
 #include "ICartesianPartitionBuilder.h"
-#include "BlockPartitionInfo.h"
 namespace cmf
 {
     /// @brief A class that implements a uniform partitioning strategy
@@ -21,7 +20,7 @@ namespace cmf
             /// @param partition The partition to populate
             /// @param mesh The mesh containing the blocks to be partitioned
             /// @author WVN
-            void CreatePartition(std::map<RefinementTreeNode*, BlockPartitionInfo>* partition, CartesianMesh* mesh);
+            void CreatePartition(std::map<RefinementTreeNode*, ComputeDevice>* partition, CartesianMesh* mesh);
             
             /// @brief Adds a new node to the partition and assigns a rank according to the specialized strategy
             /// @param newNode The new node to add

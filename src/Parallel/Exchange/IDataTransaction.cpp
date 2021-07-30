@@ -2,18 +2,18 @@
 
 namespace cmf
 {
-    IDataTransaction::IDataTransaction(int sender_in, int receiver_in)
+    IDataTransaction::IDataTransaction(ComputeDevice sender_in, ComputeDevice receiver_in)
     {
         sender = sender_in;
         receiver = receiver_in;
     }
     
-    int IDataTransaction::Sender(void)
+    ComputeDevice IDataTransaction::Sender(void)
     {
         return sender;
     }
     
-    int IDataTransaction::Receiver(void)
+    ComputeDevice IDataTransaction::Receiver(void)
     {
         return receiver;
     }

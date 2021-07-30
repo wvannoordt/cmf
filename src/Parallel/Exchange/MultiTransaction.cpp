@@ -6,8 +6,8 @@
 namespace cmf
 {
     MultiTransaction::MultiTransaction(
-        void* sendTarget_in, std::vector<size_t>& sendOffsets_in, std::vector<size_t>& sendSizes_in, int sendRank_in,
-        void* recvTarget_in, std::vector<size_t>& recvOffsets_in, std::vector<size_t>& recvSizes_in, int recvRank_in)
+        void* sendTarget_in, std::vector<size_t>& sendOffsets_in, std::vector<size_t>& sendSizes_in, ComputeDevice sendRank_in,
+        void* recvTarget_in, std::vector<size_t>& recvOffsets_in, std::vector<size_t>& recvSizes_in, ComputeDevice recvRank_in)
         : IDataTransaction(sendRank_in, recvRank_in)
     {
         sendTarget  = sendTarget_in;

@@ -17,7 +17,7 @@ namespace cmf
         
     }
     
-    void CartesianUniformPartition::CreatePartition(std::map<RefinementTreeNode*, BlockPartitionInfo>* partition, CartesianMesh* mesh)
+    void CartesianUniformPartition::CreatePartition(std::map<RefinementTreeNode*, ComputeDevice>* partition, CartesianMesh* mesh)
     {
         meshPartition = partition;
         counter = 0;
@@ -31,11 +31,10 @@ namespace cmf
     
     void CartesianUniformPartition::AddNewNode(RefinementTreeNode* newNode)
     {
-        meshPartition->insert({newNode, BlockPartitionInfo()});
-        
-        BlockPartitionInfo* newInfo = &((*meshPartition)[newNode]);
-        newInfo->rank = counter;
-        newInfo->isCPU = true;
+        ComputeDevice newDevice;
+        newDevice.id = counter;
+        newDevice.isGpu = false;
+        meshPartition->insert({newNode, newDevice});
         IncrementCounter();
     }
     

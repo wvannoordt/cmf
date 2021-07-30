@@ -28,6 +28,12 @@ namespace cmf
                 builder = new CartesianUniformPartition();                
                 break;
             }
+            case CartesianPartitionType::singleGPU:
+            {
+                deleteBuilder = true;
+                builder = new CartesianMeshSingleGpuPartition();                
+                break;
+            }
             default:
             {
                 CmfError("Invalid CartesianPartitionType type!");
@@ -37,7 +43,7 @@ namespace cmf
         builder->CreatePartition(&partition, mesh);
     }
     
-    BlockPartitionInfo CartesianMeshParallelPartition::GetPartitionInfo(RefinementTreeNode* node)
+    ComputeDevice CartesianMeshParallelPartition::GetPartitionInfo(RefinementTreeNode* node)
     {
         if (partition.find(node)==partition.end()) CmfError("Requested partition for an unpartitioned node.");
         return partition[node];
@@ -61,7 +67,7 @@ namespace cmf
             for (BlockIterator lb(mesh, BlockFilters::Terminal, IterableMode::serial); lb.HasNext(); lb++)
             {
                 output << lb.Node();
-                output["rank"] << (double)partition[lb.Node()].rank;
+                output["rank"] << (double)(partition[lb.Node()].id - partition[lb.Node()].isGpu?1:0)*(partition[lb.Node()].isGpu?-1:1);
             }
             output.Write(filename);
         }
@@ -76,7 +82,7 @@ namespace cmf
         }
         else
         {
-            return (partition[node].rank == mesh->meshGroup->Rank());
+            return (partition[node] == mesh->meshGroup->Rank());
         }
     }
     

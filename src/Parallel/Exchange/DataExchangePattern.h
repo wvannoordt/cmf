@@ -9,6 +9,7 @@
 #include "CmfGC.h"
 #include <type_traits>
 #include "BaseClassContainer.h"
+#include "ComputeDevice.h"
 namespace cmf
 {
     /// @brief Defines a series of data transactions that can be repeated, and also a good reference if you want to 

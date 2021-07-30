@@ -1,11 +1,14 @@
 #ifndef CMF_PARALLEL_GROUP
 #define CMF_PARALLEL_GROUP
+
 #include "CmfMPI.h"
 #include "Parallel.h"
 #include "ParallelTypes.h"
 #include "CudaDeviceHandler.h"
 #include "ICmfHashable.h"
 #include "CmfPrint.h"
+#include "ComputeDevice.h"
+
 namespace cmf
 {
     /// @brief Class defining a parrallel group around a parallel communicator.
@@ -37,7 +40,7 @@ namespace cmf
             
             /// @brief Returns the process ID of the current process
             /// @author WVN
-            int Rank(void);
+            ComputeDevice Rank(void);
             
             /// @brief Returns the size of the current communicator world
             /// @author WVN
@@ -170,7 +173,7 @@ namespace cmf
         private:
             
             /// @brief Rank of the current process
-            int processId;
+            ComputeDevice processId;
             
             /// @brief Number of processes in this parallel group
             int processCount;
@@ -209,7 +212,7 @@ namespace cmf
             int synchCount;
             
             /// @brief The rank of the root rank
-            int rootRank;
+            ComputeDevice rootRank;
     };
 
     /// @brief The default parallel group for global parallel operations

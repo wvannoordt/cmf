@@ -250,7 +250,8 @@ namespace cmf
     
     bool CartesianMeshArray::ParallelPartitionContainsNode(RefinementTreeNode* node)
     {
-        return this->Mesh()->GetPartition()->Mine(node);
+        auto output = this->Mesh()->GetPartition()->Mine(node);
+        return output;
     }
     
     void CartesianMeshArray::WriteFilterToFile(ParallelFile& file)

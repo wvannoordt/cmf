@@ -81,13 +81,13 @@ namespace cmf
         ExchangeContextBlockData neighbor;
         
         //Retrieve partition info and block dimensions from the mesh
-        current.partitionInfo  = mesh->partition->GetPartitionInfo(currentNode);
-        neighbor.partitionInfo = mesh->partition->GetPartitionInfo(neighborNode);
+        current.device  = mesh->partition->GetPartitionInfo(currentNode);
+        neighbor.device = mesh->partition->GetPartitionInfo(neighborNode);
         current.blockInfo      = mesh->GetBlockInfo(currentNode);
         neighbor.blockInfo     = mesh->GetBlockInfo(neighborNode);
         
-        int myrank = meshArray->Mesh()->GetGroup()->Rank();
-        if ((current.partitionInfo.rank != myrank) && (neighbor.partitionInfo.rank != myrank)) return;
+        ComputeDevice myrank = meshArray->Mesh()->GetGroup()->Rank();
+        if ((current.device != myrank) && (neighbor.device != myrank)) return;
         
         current.node = currentNode;
         neighbor.node = neighborNode;
@@ -258,9 +258,9 @@ namespace cmf
             }
         }
         
-        int currentRank  = currentInfo.partitionInfo.rank;
-        int neighborRank = neighborInfo.partitionInfo.rank;
-        if (!currentInfo.partitionInfo.isCPU || !neighborInfo.partitionInfo.isCPU)
+        ComputeDevice currentRank  = currentInfo.device;
+        ComputeDevice neighborRank = neighborInfo.device;
+        if (currentInfo.device.isGpu || neighborInfo.device.isGpu)
         {
             CmfError("GPU exchanges are not implemented yet!!!!");
         }
@@ -306,8 +306,8 @@ namespace cmf
         //                                                 this is an output                                                  vvvv
         MapExchangeRegionIntoNeighborIndexCoordinates(currentInfo, neighborInfo, edgeVector, exchangeRegionCurrentView, exchangeRegionNeighborView);
         
-        int currentRank = currentInfo.partitionInfo.rank;
-        int neighborRank = neighborInfo.partitionInfo.rank;
+        ComputeDevice currentRank = currentInfo.device;
+        ComputeDevice neighborRank = neighborInfo.device;
         int priority = 100;
         
         if (meshArray->GetElementType() != CmfArrayType::CmfDouble)
@@ -343,6 +343,7 @@ namespace cmf
         sendInfo.indexSupport               = neighborIndexSupport;
         sendInfo.origin                     = neighborSpatialOrigin;
         sendInfo.dx                         = neighborDx;
+        sendInfo.node                       = neighborInfo.node;
         
         CartesianInterLevelBlockInfo<double> recvInfo;
         recvInfo.array                      = currentArray;
@@ -353,6 +354,7 @@ namespace cmf
         recvInfo.indexSupport               = currentIndexSupport;
         recvInfo.origin                     = currentSpatialOrigin;
         recvInfo.dx                         = currentDx;
+        recvInfo.node                       = currentInfo.node;
         
         CartesianInterLevelExchangeProperties exchangeProps;
         exchangeProps.orientation = ExchangeOrientationFromEdgeVector(edgeVector);

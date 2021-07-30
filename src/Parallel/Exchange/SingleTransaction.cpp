@@ -5,7 +5,7 @@
 
 namespace cmf
 {
-    SingleTransaction::SingleTransaction(void* sendTarget_in, void* recvTarget_in, size_t size_in, int sender_in, int receiver_in)
+    SingleTransaction::SingleTransaction(void* sendTarget_in, void* recvTarget_in, size_t size_in, ComputeDevice sender_in, ComputeDevice receiver_in)
         : IDataTransaction(sender_in, receiver_in)
     {
         sendTarget = sendTarget_in;

@@ -46,7 +46,7 @@ namespace cmf
             template <typename... Ts> void SerialWrite(Ts... ts)
             {
                 if (!isOpen) CmfError("Attempted call to ParallelFile::SerialWriteLine, but there is no file open");
-                if (group->Rank()==serialRank)
+                if (group->Rank().id==serialRank)
                 {
                     PrintToStream(asciiStream, ts...);
                 }

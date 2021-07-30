@@ -2,6 +2,7 @@
 #define CMF_IDATA_TRANSACTION_H
 
 #include "CmfGC.h"
+#include "ComputeDevice.h"
 
 namespace cmf
 {
@@ -16,7 +17,7 @@ namespace cmf
             /// @param sender_in The sending rank
             /// @param receiver_in The receiving rank
         	/// @author WVN
-            IDataTransaction(int sender_in, int receiver_in);
+            IDataTransaction(ComputeDevice sender_in, ComputeDevice receiver_in);
             
             /// @brief Destructor
         	/// @author WVN
@@ -40,11 +41,11 @@ namespace cmf
             
             /// @brief Returns the rank of the sending process
         	/// @author WVN
-            int Sender(void);
+            ComputeDevice Sender(void);
             
             /// @brief Returns the rank of the receiving process
         	/// @author WVN
-            int Receiver(void);
+            ComputeDevice Receiver(void);
             
             /// @brief Returns the priority of this transaction
         	/// @author WVN
@@ -57,10 +58,10 @@ namespace cmf
         protected:
             
             /// @brief The sending rank
-            int sender;
+            ComputeDevice sender;
             
             /// @brief The receiving rank
-            int receiver;
+            ComputeDevice receiver;
             
             /// @@brief The priority of the transaction: when calling Sort() on a DataExchangePattern, transactions are
             /// sorted according to this value.

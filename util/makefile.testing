@@ -10,6 +10,17 @@ ifndef PARALLEL_TEST_RUN
 PARALLEL_TEST_RUN := 0
 endif
 
+LINKSTEP :=
+CU_O_TARGET := 
+CUDA_OBJS := 
+ifndef KERNELS
+KERNELS :=
+else
+LINKSTEP := cudaDlink
+CU_O_TARGET := obj/ks.dlink.o
+CUDA_OBJS := $(addprefix obj/,$(addsuffix .o,$(basename ${KERNELS})))
+endif
+
 ifndef PARALLEL_PROCESSES
 PARALLEL_PROCESSES := 1
 endif
@@ -49,12 +60,20 @@ endif
 
 COMPFLAGS := ${GPROF_FLAG}
 
-main: setup
-	${CC_HOST} ${TEST_FLAGS} ${COMPFLAGS} ${CURRENT_ICONFIG} ${MAINCC} -o ${TARGET} ${CURRENT_LCONFIG}
+main: setup ${CUDA_OBJS} ${LINKSTEP}
+	${CC_HOST} ${TEST_FLAGS} ${COMPFLAGS} ${CURRENT_ICONFIG} -I. -c ${MAINCC} -o obj/main.o
+	${CC_HOST} ${TEST_FLAGS} ${COMPFLAGS} ${CURRENT_ICONFIG} obj/*.o -o ${TARGET} ${CURRENT_LCONFIG}
+
+cudaDlink:
+	${CC_DEVICE} ${DEVICE_DLINK_FLAGS} ${COMPILE_TIME_OPT} ${CUDA_OBJS} -o ${CU_O_TARGET} -lcudadevrt
+
+${CUDA_OBJS}: obj/%.o: %.cu
+	${CC_DEVICE} ${DEVICE_FLAGS} ${COMPILE_TIME_OPT} ${CURRENT_ICONFIG} -I. ${IFLAGS_DEPENDENCIES} $< -o $@
 
 setup:
-	rm -rf ./output
-	mkdir -p output
+	echo ${CUDA_OBJS}
+	rm -rf ./output ./obj
+	mkdir -p output obj
 	ln -sf ${CURRENT_BASEIDIR}/util/makefile.latex output/makefile
 
 clean:

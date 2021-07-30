@@ -10,7 +10,8 @@ namespace cmf
     
     ParallelGroup::ParallelGroup(void)
     {
-        processId = 0;
+        processId.id = 0;
+        processId.isGpu = false;
         processCount = 1;
         communicator = defaultCommunicator;
         workArray = NULL;
@@ -21,7 +22,8 @@ namespace cmf
         mpiAutoInitIfRequiredCalled = false;
         deleteCudaDeviceHandler = false;
         synchCount = 0;
-        rootRank = 0;
+        rootRank.id = 0;
+        rootRank.isGpu = false;
     }
     
     
@@ -42,7 +44,7 @@ namespace cmf
             WriteLine(1, "WARNING: it is suggested to read cmf::globalSettings from a PTL file before creating the global parallel context");
         }
         communicator = comm;
-        CMF_MPI_CHECK(MPI_Comm_rank(comm, &processId));
+        CMF_MPI_CHECK(MPI_Comm_rank(comm, &processId.id));
         CMF_MPI_CHECK(MPI_Comm_size(comm, &processCount));
         isRoot = (processId==rootRank);
         serialMode = false;
@@ -135,7 +137,7 @@ namespace cmf
     void ParallelGroup::Gatherv(const void *sendbuf, int sendcount, ParallelDataType sendtype, void *recvbuf, const int* recvcounts, const int* displs, ParallelDataType recvtype)
     {
         MpiAutoInitIfRequired();
-        CMF_MPI_CHECK(MPI_Gatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, rootRank, communicator));
+        CMF_MPI_CHECK(MPI_Gatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, rootRank.id, communicator));
     }
     
     void ParallelGroup::AllReduce(const void *sendbuf, void *recvbuf, int count, ParallelDataType datatype, ParallelOperation op)
@@ -200,7 +202,7 @@ namespace cmf
         return gVal;
     }
     
-    int ParallelGroup::Rank(void)
+    ComputeDevice ParallelGroup::Rank(void)
     {
         return processId;
     }

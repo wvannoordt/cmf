@@ -4,6 +4,7 @@
 #include <type_traits>
 #include "CmfError.h"
 #include "CudaStaticDefs.h"
+#include "StaticArray.h"
 
 namespace cmf
 {
