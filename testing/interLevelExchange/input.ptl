@@ -15,7 +15,7 @@ Domain
 {
 	blockDim = [5, 5]
 	blockBounds = [0, 2, 0, 2]
-	meshDataDim = [$(numPoints), $(numPoints)]
+	meshDataDim = [10, 10]
 	refinementConstraintType = factor2CompletelyConstrained
 	periodicRefinement = [true, true]
 	Exchanges

@@ -77,6 +77,7 @@ setup:
 	ln -sf ${CURRENT_BASEIDIR}/util/makefile.latex output/makefile
 
 clean:
+	rm -rf ./obj
 	-rm ${TARGET}
 
 .PHONY: test
