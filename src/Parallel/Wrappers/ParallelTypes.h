@@ -3,6 +3,7 @@
 #include "CmfMPI.h"
 #include <stdio.h>
 #include "CmfError.h"
+#include <typeinfo>
 namespace cmf
 {
 #if(CMF_PARALLEL)
