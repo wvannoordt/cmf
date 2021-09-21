@@ -4,6 +4,7 @@
 #include <set>
 #include <deque>
 #include <map>
+#include "MemSpace.h"
 #include "CmfArrayType.h"
 #include "ICmfMeshBuffer.h"
 
@@ -21,6 +22,9 @@ namespace cmf
         
         /// @brief A list of free blocks
         int numberOfVacantBlocks = 0;
+        
+        /// @brief indicates if base is allocated on GPU
+        bool gpu;
     };
     
     /// @brief Handles memory allocation for a Cartesian mesh array
@@ -39,18 +43,31 @@ namespace cmf
             /// @author WVN
             ~CartesianMeshBuffer(void);
             
-            /// @brief Expands the current memory pool to get enough free memory for the provided number of blocks
+            /// @brief Expands the current (CPU) memory pool to get enough free memory for the provided number of blocks
             /// @param numBlocks The number of blocks to reserve
             /// @author WVN
             void ReserveBlocks(int numBlocks);
+            
+            /// @brief Expands the current memory pool to get enough free memory for the provided number of blocks
+            /// @param numBlocks The number of blocks to reserve
+            /// @param space The space to allocate in (MemSpace::Cpu or MemSpace::Gpu)
+            /// @param gpuDeviceId the ID of the GPU to allocate on (ignored if CPU allocation)
+            /// @author WVN
+            void ReserveBlocks(int numBlocks, MemSpace::MemSpace space, int gpuDeviceId);
             
             /// @brief Frees all memory in the buffer
             /// @author WVN
             void Clear(void);
             
-            /// @brief Returns a pointer to an available block of memory. This function might allocate new blocks.
+            /// @brief Returns a (CPU) pointer to an available block of memory. This function might allocate new blocks.
             /// @author WVN
             void* Claim(void);
+            
+            /// @brief Returns a pointer to an available block of memory. This function might allocate new blocks.
+            /// @param space The memory space to get memory from
+            /// @param gpuDeviceId the ID of the GPU device (ignored if on CPU)
+            /// @author WVN
+            void* Claim(MemSpace::MemSpace space, int gpuDeviceId);
             
             /// @brief Marks the provided block as available. Should be treated as freeing the block array
             /// @author WVN
@@ -72,8 +89,11 @@ namespace cmf
             /// @brief A map of base pointers to blocks (not chunks) to the chunk they belong to
             std::map<void*, CartesianDataChunk*> pointerToChunks;
             
-            /// @brief A list of vacant block arrays and their corresponding chunk objects
-            std::deque<std::pair<void*, CartesianDataChunk*>> vacantBlocks;
+            /// @brief A list of vacant CPU block arrays and their corresponding chunk objects
+            std::deque<std::pair<void*, CartesianDataChunk*>> vacantBlocksCpu;
+            
+            /// @brief A list of vacant GPU block arrays and their corresponding chunk objects
+            std::deque<std::pair<void*, CartesianDataChunk*>> vacantBlocksGpu;
             
             /// @brief the size (in elements) of each block
             size_t blockArraySize;

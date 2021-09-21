@@ -5,7 +5,7 @@ GlobalSettings
 	{
 		debugLevel = 3
 		trackOutputOrigins = false
-		colorOutput = false
+		colorOutput = true
 	}
 	Memory
 	{

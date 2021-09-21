@@ -17,6 +17,13 @@ namespace cmf
         	/// @author WVN
             ~CudaDeviceHandler(void);
             
+            /// @brief Returns number of CUDA devices
+        	/// @author WVN
+            int NumDevices(void)
+            {
+                return numberOfDevices;
+            }
+            
         private:
             /// @brief The number of devices available to the current node
             int numberOfDevices;

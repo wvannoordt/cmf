@@ -2,6 +2,7 @@
 #define CMF_GC_H
 #include <map>
 #include "Config.h"
+#include "MemSpace.h"
 
 namespace cmf
 {

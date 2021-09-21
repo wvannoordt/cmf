@@ -169,6 +169,13 @@ namespace cmf
             /// @brief Returns isRoot
             /// @author WVN
             bool IsRoot(void);
+            
+            /// @brief Returns information about CUDA devices on the present machine
+            /// @author WVN
+            CudaDeviceHandler* GetCudaDevices(void)
+            {
+                return deviceHandler;
+            }
         
         private:
             

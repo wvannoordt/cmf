@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 #include <initializer_list>
+#include <memory>
+
 #include "ArrayInfo.h"
 #include "ICmfMeshArray.h"
 #include "AmrFcnTypes.h"
@@ -167,6 +169,11 @@ namespace cmf
                 return elementType;
             }
             
+            /// @brief Returns the device responsible for a given block
+            /// @param node the node to get the device for
+            /// @author WVN
+            ComputeDevice GetBlockDevice(RefinementTreeNode* node);
+            
         private:
             
             /// @brief Populates the provided buffer object with the necessary information for parallel IO
@@ -225,7 +232,7 @@ namespace cmf
             /// @brief indicates if it is necessary to delete the meshBuffer
             bool deleteMeshBuffer;
             
-            /// @brief The mesh buffer object
+            /// @brief The mesh buffer object for CPU allocation
             CartesianMeshBuffer* meshBuffer;
             
             /// @brief Nodes over which this variable is defined. It is not 

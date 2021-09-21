@@ -18,11 +18,24 @@ namespace cmf
         Clear();
     }
     
-    
     void CartesianMeshBuffer::ReserveBlocks(int numBlocks)
     {
+        this->ReserveBlocks(numBlocks, MemSpace::Cpu, 0);
+    }
+    
+    void CartesianMeshBuffer::ReserveBlocks(int numBlocks, MemSpace::MemSpace space, int gpuDeviceId)
+    {
+        if (numBlocks==0) return;
+        if (numBlocks<0) CmfError("CartesianMeshBuffer::ReserveBlocks requesting to allocate negative memory!");
         CartesianDataChunk* newChunk = new CartesianDataChunk();
-        newChunk->base = Cmf_Alloc(numBlocks*blockArraySize*SizeOfArrayType(arrayType));
+        if (space==MemSpace::Gpu)
+        {
+            newChunk->base = Cmf_GpuAlloc(numBlocks*blockArraySize*SizeOfArrayType(arrayType), gpuDeviceId);
+        }
+        else
+        {
+            newChunk->base = Cmf_Alloc(numBlocks*blockArraySize*SizeOfArrayType(arrayType));
+        }
         newChunk->numBlocks = numBlocks;
         newChunk->numberOfVacantBlocks = numBlocks;
         chunks.push_back(newChunk);
@@ -31,7 +44,8 @@ namespace cmf
             size_t offset = i*blockArraySize*SizeOfArrayType(arrayType);
             void* blockPointer = (void*)((char*)newChunk->base + offset);
             pointerToChunks.insert({blockPointer, newChunk});
-            vacantBlocks.push_back({blockPointer, newChunk});
+            if (space==MemSpace::Gpu) {vacantBlocksGpu.push_back({blockPointer, newChunk});}
+            else {vacantBlocksCpu.push_back({blockPointer, newChunk});}
         }
     }
     
@@ -41,7 +55,14 @@ namespace cmf
         {
             if (ch->base != NULL)
             {
-                Cmf_Free(ch->base);
+                if (ch->gpu)
+                {
+                    Cmf_GpuFree(ch->base);
+                }
+                else
+                {
+                    Cmf_Free(ch->base);
+                }
             }
             delete ch;
         }
@@ -60,7 +81,8 @@ namespace cmf
         }
         CartesianDataChunk* chunk = pointerToChunks[ptr];
         chunk->numberOfVacantBlocks++;
-        vacantBlocks.push_back({ptr, chunk});
+        if (chunk->gpu) {vacantBlocksGpu.push_back({ptr, chunk});}
+        else {vacantBlocksCpu.push_back({ptr, chunk});}
     }
     
     void CartesianMeshBuffer::ClearVacantChunks(void)
@@ -76,7 +98,8 @@ namespace cmf
             {
                 numChunksCleared++;
                 numBlocksCleared += ch->numBlocks;
-                Cmf_Free(ch->base);
+                if (ch->gpu) {Cmf_GpuFree(ch->base);}
+                else {Cmf_Free(ch->base);}
                 ch->base = NULL;
                 ch->numBlocks = 0;
                 ch->numberOfVacantBlocks = 0;
@@ -87,21 +110,33 @@ namespace cmf
         WriteLine(4, strformat("Cleared {} blocks from {} chunks. Available blocks remaining: {}", numBlocksCleared, numChunksCleared, numVacantBlocks));
     }
     
-    void* CartesianMeshBuffer::Claim(void)
+    void* CartesianMeshBuffer::Claim()
     {
-        if (vacantBlocks.empty())
+        return this->Claim(MemSpace::Cpu, 0);
+    }
+    
+    void* CartesianMeshBuffer::Claim(MemSpace::MemSpace space, int gpuDeviceId)
+    {
+        auto relevantBlocks = &vacantBlocksCpu;
+        if (space == MemSpace::Gpu) relevantBlocks = &vacantBlocksGpu;
+        if (space == MemSpace::Gpu && vacantBlocksGpu.empty())
+        {
+            WriteLine(4, strformat("Reserving {} Cartesian blocks (GPU)", blockBatchSize));
+            this->ReserveBlocks(blockBatchSize, space, gpuDeviceId);
+        }
+        if (space == MemSpace::Cpu && vacantBlocksCpu.empty())
         {
             WriteLine(4, strformat("Reserving {} Cartesian blocks", blockBatchSize));
             this->ReserveBlocks(blockBatchSize);
         }
         
         
-        void* output = vacantBlocks.front().first;
-        CartesianDataChunk* chunk = vacantBlocks.front().second;
+        void* output = relevantBlocks->front().first;
+        CartesianDataChunk* chunk = relevantBlocks->front().second;
         
         chunk->numberOfVacantBlocks--;
         
-        vacantBlocks.pop_front();
+        relevantBlocks->pop_front();
         return output;
     }
 }

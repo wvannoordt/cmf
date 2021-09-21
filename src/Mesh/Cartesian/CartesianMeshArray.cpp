@@ -25,11 +25,21 @@ namespace cmf
     
     void CartesianMeshArray::AllocateInitialBlocks(void)
     {
-        size_t numBlocksToAllocate = allocatedNodes.size();
+        auto devices = this->Mesh()->GetGroup()->GetCudaDevices();
+        if (devices->NumDevices()>1) WriteLine(0, WarningStr() + " CMF doesn't yet support multiple CUDA devices!");
+        
+        size_t numBlocksToAllocateCpu = 0;
+        size_t numBlocksToAllocateGpu = 0;
+        for (auto node: allocatedNodes)
+        {
+            if (this->GetBlockDevice(node).isGpu) numBlocksToAllocateGpu++;
+            else numBlocksToAllocateCpu++;
+        }
         size_t blockSizeInElements = GetArraySizePerBlock();
         deleteMeshBuffer = true;
         meshBuffer = new CartesianMeshBuffer(blockSizeInElements, elementType);
-        meshBuffer->ReserveBlocks(numBlocksToAllocate);
+        meshBuffer->ReserveBlocks(numBlocksToAllocateCpu);
+        meshBuffer->ReserveBlocks(numBlocksToAllocateGpu, MemSpace::Gpu, 0);
         DefinePointerMap();
     }
     
@@ -187,11 +197,26 @@ namespace cmf
         return (pointerMap.find(node)!=pointerMap.end());
     }
     
+    ComputeDevice CartesianMeshArray::GetBlockDevice(RefinementTreeNode* node)
+    {
+        auto partition = this->Mesh()->GetPartition();
+        return partition->GetPartitionInfo(node);
+    }
+    
     void CartesianMeshArray::DefinePointerMap(void)
     {
         for (auto& node:allocatedNodes)
         {
-            void* newPtr = meshBuffer->Claim();
+            ComputeDevice blockOwner = this->GetBlockDevice(node);
+            void* newPtr = NULL;
+            if (blockOwner.isGpu)
+            {
+                CmfError("no idea");
+            }
+            else
+            {
+                newPtr = meshBuffer->Claim();
+            }
             pointerMap.insert({node, newPtr});
         }
     }
