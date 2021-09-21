@@ -82,7 +82,7 @@ namespace cmf
         }
         else
         {
-            return (partition[node] == mesh->meshGroup->Rank());
+            return (partition[node].id == mesh->meshGroup->Rank().id);
         }
     }
     

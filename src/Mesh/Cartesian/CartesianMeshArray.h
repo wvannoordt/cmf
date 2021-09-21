@@ -56,9 +56,13 @@ namespace cmf
             /// @author WVN
             void Destroy(void);
             
-            /// @brief Returns the size of the total data stored in a block
+            /// @brief Returns the size of the total data stored in a block (elements, not bytes)
             /// @author WVN
             size_t GetArraySizePerBlock(void);
+            
+            /// @brief Returns the size of the total data stored in a block (bytes, not elements)
+            /// @author WVN
+            size_t GetArrayBytesPerBlock(void);
             
             /// @brief The callback function for new nodes
             /// @param newChildNodes The newly created child nodes to be handled

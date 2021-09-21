@@ -1,3 +1,6 @@
+#include <set>
+
+#include "CmfCuda.h"
 #include "CartesianMeshArrayParallelVtkWriter.h"
 #include "CartesianMeshArrayHandler.h"
 #include "CartesianMesh.h"
@@ -6,7 +9,6 @@
 #include "CreateDirectory.h"
 #include "Utils.hx"
 #include "Base64ByteConversionStream.h"
-#include <set>
 namespace cmf
 {
     CartesianMeshArrayParallelVtkWriter::CartesianMeshArrayParallelVtkWriter(std::string directory_in, std::string fileTitle_in)
@@ -126,6 +128,20 @@ namespace cmf
         MdArray<char, 4> bufferBlock(elementSize, maxSize[0], maxSize[1], maxSize[2]);
         bufferBlock.data = (char*)Cmf_Alloc(elementSize*maxSize[0]*maxSize[1]*maxSize[2]*sizeof(char));
         
+        bool hasAnyGpuBlocks = false;
+        for (auto node: array)
+        {
+            if (array.GetBlockDevice(node).isGpu)
+            {
+                hasAnyGpuBlocks = true;
+                break;
+            }
+        }
+        char* hostEndpoint = NULL;
+        if (hasAnyGpuBlocks)
+        {
+            hostEndpoint = (char*)Cmf_Alloc(array.GetArrayBytesPerBlock());
+        }
         
         int numBlocksWritten = 0;
         int numBlocksLocal = 0;
@@ -210,6 +226,15 @@ namespace cmf
                     myfile << spaces(8) << strformat("<Piece Extent=\"0 {} 0 {} 0 {}\">", nTotali, nTotalj, nTotalk) << std::endl;
                     
                     RawUnwrappedBlockArray blockBytes(elementSize, vnames.size(), array[lb]);
+                    bool blockIsGpu = array.GetBlockDevice(lb).isGpu;
+                    if (blockIsGpu)
+                    {
+                        char* gpuBuffer = blockBytes.data;
+                        char* cpuBuffer = hostEndpoint;
+                        blockBytes.data = cpuBuffer;
+                        int gpuId = 0;
+                        GpuMemTransfer((void*)gpuBuffer, (void*)cpuBuffer, array.GetArrayBytesPerBlock(), gpuId, DeviceTransferDirection::GpuToCpu);
+                    }
                     
                     myfile << spaces(12) << "<CellData Scalars=\"" << varsString << "\">" << std::endl;
                     size_t storageIdx = 0;
@@ -304,6 +329,10 @@ namespace cmf
             myfile.close();
         }
         Cmf_Free(bufferBlock.data);
+        if (hasAnyGpuBlocks)
+        {
+            Cmf_Free(hostEndpoint);
+        }
         parGroup->Synchronize();
     }
 }

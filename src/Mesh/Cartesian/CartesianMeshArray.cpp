@@ -205,13 +205,15 @@ namespace cmf
     
     void CartesianMeshArray::DefinePointerMap(void)
     {
+        auto devices = this->Mesh()->GetGroup()->GetCudaDevices();
+        if (devices->NumDevices()>1) WriteLine(0, WarningStr() + " CMF doesn't yet support multiple CUDA devices!");
         for (auto& node:allocatedNodes)
         {
             ComputeDevice blockOwner = this->GetBlockDevice(node);
             void* newPtr = NULL;
             if (blockOwner.isGpu)
             {
-                CmfError("no idea");
+                newPtr = meshBuffer->Claim(MemSpace::Gpu, 0);
             }
             else
             {
@@ -234,6 +236,11 @@ namespace cmf
         for (int d = 0; d < CMF_DIM; d++) numCells *= (handler->mesh->meshDataDim[d] + 2*handler->mesh->exchangeDim[d]);
         size_t output = numCells * rankMult;
         return output;
+    }
+    
+    size_t CartesianMeshArray::GetArrayBytesPerBlock(void)
+    {
+        return this->GetArraySizePerBlock()*SizeOfArrayType(elementType);
     }
     
     CartesianMeshArray::~CartesianMeshArray(void)

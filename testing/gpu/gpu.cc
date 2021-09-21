@@ -37,7 +37,7 @@ void FillArr(cmf::CartesianMeshArray& arr)
     for (auto lb: arr)
     {
         cmf::BlockArray<double, 1> arLb = arr[lb];
-        FillBlock(arLb);
+        FillBlockGpu(arLb);
     }
 }
 
@@ -60,10 +60,8 @@ int main(int argc, char** argv)
     
     FillArr(var);
     
-    var.Exchange();
+    // var.Exchange();
     var.ExportFile("output", "test");
-    
-    domain.GetPartition()->OutputPartitionToVtk("partition.vtk");
     
     return 0;
 }

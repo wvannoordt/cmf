@@ -31,10 +31,12 @@ namespace cmf
         if (space==MemSpace::Gpu)
         {
             newChunk->base = Cmf_GpuAlloc(numBlocks*blockArraySize*SizeOfArrayType(arrayType), gpuDeviceId);
+            newChunk->gpu = true;
         }
         else
         {
             newChunk->base = Cmf_Alloc(numBlocks*blockArraySize*SizeOfArrayType(arrayType));
+            newChunk->gpu = false;
         }
         newChunk->numBlocks = numBlocks;
         newChunk->numberOfVacantBlocks = numBlocks;
