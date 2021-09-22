@@ -14,14 +14,14 @@ GlobalSettings
 }
 Domain
 {
-	blockDim = [5, 5]
-	blockBounds = [0, 2, 0, 2]
-	meshDataDim = [$(numPoints), $(numPoints)]
+	blockDim = [5, 5, 1]
+	blockBounds = [0, 2, 0, 2, 0, 0.5]
+	meshDataDim = [$(numPoints), $(numPoints), $(numPoints)]
 	refinementConstraintType = factor2CompletelyConstrained
-	periodicRefinement = [true, true]
+	periodicRefinement = [true, true, true]
 	Exchanges
 	{
-		exchangeDim = [3, 3]
+		exchangeDim = [3, 3, 3]
 		interpolationOrder = 2
 	}
 	Partition

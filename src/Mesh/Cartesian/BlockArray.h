@@ -14,7 +14,7 @@ namespace cmf
     template <typename arType, const int elementRank = 0> struct BlockArray : public ICmfHasBlockBoundIndices
     {
         /// @brief Gives the total rank, including the spatial indices
-        static constexpr int TotalRank() {return elementRank+3;}
+        static _CmfShared_ constexpr int TotalRank() {return elementRank+3;}
         /// @brief The underlying data array
         arType* data;
         /// @brief The total rank (including spatial indices)

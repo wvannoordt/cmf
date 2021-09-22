@@ -15,11 +15,12 @@
 #define CMF_CUDA_CHECK(myCudaCall) {cudaError_t er_INTERNAL = (myCudaCall); if (er_INTERNAL!=cudaSuccess) {CmfError(std::string("F") + "ailed call to CUDA runtime API. Call: " + #myCudaCall + "\nError: " + cudaGetErrorString(er_INTERNAL));}}
 typedef cudaDeviceProp CmfCudaDeviceProperties;
 #else
-
 #define CMF_CUDA_CHECK(myCudaCall) ;
+#endif
 
 namespace cmf
 {
+#if(!CUDA_ENABLE)
     /// @brief Wraps cudaDeviceProp (see CUDA documentation)
     /// @author WVN
     struct CmfCudaDeviceProperties
@@ -101,7 +102,36 @@ namespace cmf
         /// @brief 1 if the device is using a TCC driver or 0 if not
         int tccDriver;
     };
-}
 #endif
+    
+    namespace DeviceTransferDirection
+    {
+        enum DeviceTransferDirection
+        {
+            GpuToCpu,
+            CpuToGpu
+        };
+    }
+    
+    /// @brief Wrapper for cudaMemcpy
+    /// @param source the data source
+    /// @param destination the data destination
+    /// @param size the size (bytes) of the data to copy
+    /// @param gpuId the device to Transfer to (or from)
+    /// @param direction the direction to copy (one of DeviceTransferDirection::GpuToCpu or DeviceTransferDirection::CpuToGpu)
+    /// @author WVN
+    static void GpuMemTransfer(void* source, void* destination, size_t size, int gpuId, DeviceTransferDirection::DeviceTransferDirection direction)
+    {
+        CMF_CUDA_CHECK(cudaSetDevice(gpuId));
+        if (direction == DeviceTransferDirection::GpuToCpu)
+        {
+            CMF_CUDA_CHECK(cudaMemcpy(destination, source, size, cudaMemcpyDeviceToHost));
+        }
+        if (direction == DeviceTransferDirection::CpuToGpu)
+        {
+            CMF_CUDA_CHECK(cudaMemcpy(destination, source, size, cudaMemcpyHostToDevice));
+        }
+    }
+}
 
 #endif
