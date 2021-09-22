@@ -58,9 +58,11 @@ int main(int argc, char** argv)
     var.ComponentName({1}) = "error";
     var.ComponentName({2}) = "maxBlockError";
     
+    cmf::Vec3<> x(0.01, 0.01, 0.01);
+    // domain.Blocks()->RefineAt(x, 7);
     FillArr(var);
     
-    var.Exchange();
+    // var.Exchange();
     var.ExportFile("output", "test");
     
     domain.GetPartition()->OutputPartitionToVtk("partition.vtk");

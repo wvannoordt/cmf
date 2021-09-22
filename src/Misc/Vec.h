@@ -8,7 +8,7 @@ namespace cmf
     /// @brief A simple 3D vector class
     /// \pre Note: use this class sparingly, as it is not optimized
     /// @author WVN
-    template <typename numericType> struct Vec3
+    template <typename numericType=double> struct Vec3
     {
         /// @brief Zero constructor
         /// @author WVN
