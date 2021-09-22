@@ -109,7 +109,14 @@ namespace cmf
         {
             if (this->ParallelPartitionContainsNode(p))
             {
-                void* newChildBasePtr = meshBuffer->Claim();
+                ComputeDevice dev = this->GetBlockDevice(p);
+                int gpuId = 0;
+                MemSpace::MemSpace space = MemSpace::Cpu;
+                if (dev.isGpu)
+                {
+                    space = MemSpace::Gpu;
+                }
+                void* newChildBasePtr = meshBuffer->Claim(space, gpuId);
                 if (pointerMap.find(p)!=pointerMap.end())
                 {
                     CmfError("Attempted to re-allocate an already-allocated pointer for a new child block after refinement...");

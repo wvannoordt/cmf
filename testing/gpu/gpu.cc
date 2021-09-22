@@ -15,23 +15,6 @@ using cmf::ZFill;
 
 const double ghostJunkValue = -10.0;
 
-void FillBlock(cmf::BlockArray<double, 1>& arLb)
-{
-    for (cell_t k = arLb.kmin; k < arLb.kmax; k++)
-    {
-        for (cell_t j = arLb.jmin; j < arLb.jmax; j++)
-        {
-            for (cell_t i = arLb.imin; i < arLb.imax; i++)
-            {
-                for (int v = 0; v < arLb.dims[0]; v++)
-                {
-                    arLb(v, i, j, k) = (double)((3-2*v)*(i+j+k));
-                }
-            }
-        }
-    }
-}
-
 void FillArr(cmf::CartesianMeshArray& arr)
 {
     for (auto lb: arr)
@@ -52,14 +35,16 @@ int main(int argc, char** argv)
     localTree.Read(inFile);
     cmf::CartesianMeshInputInfo inputInfo(localTree["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
+    
     auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble, {3});
     
-    var.ComponentName({0}) = "data";
-    var.ComponentName({1}) = "error";
-    var.ComponentName({2}) = "maxBlockError";
+    var.ComponentName({0}) = "i";
+    var.ComponentName({1}) = "j";
+    var.ComponentName({2}) = "k";
     
     cmf::Vec3<> x(0.01, 0.01, 0.01);
-    // domain.Blocks()->RefineAt(x, 7);
+    domain.Blocks()->RefineAt(x, 7);
+    
     FillArr(var);
     
     // var.Exchange();
