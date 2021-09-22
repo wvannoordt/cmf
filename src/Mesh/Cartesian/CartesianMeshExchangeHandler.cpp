@@ -87,7 +87,7 @@ namespace cmf
         neighbor.blockInfo     = mesh->GetBlockInfo(neighborNode);
         
         ComputeDevice myrank = meshArray->Mesh()->GetGroup()->Rank();
-        if ((current.device != myrank) && (neighbor.device != myrank)) return;
+        if ((current.device.id != myrank.id) && (neighbor.device.id != myrank.id)) return;
         
         current.node = currentNode;
         neighbor.node = neighborNode;
@@ -260,9 +260,12 @@ namespace cmf
         
         ComputeDevice currentRank  = currentInfo.device;
         ComputeDevice neighborRank = neighborInfo.device;
-        if (currentInfo.device.isGpu || neighborInfo.device.isGpu)
+        bool notImplemented = (currentInfo.device.isGpu && neighborInfo.device.isGpu) && (currentInfo.device.id != neighborInfo.device.id);
+        notImplemented = notImplemented || (currentInfo.device.isGpu && !neighborInfo.device.isGpu);
+        notImplemented = notImplemented || (!currentInfo.device.isGpu && neighborInfo.device.isGpu);
+        if (notImplemented)
         {
-            CmfError("GPU exchanges are not implemented yet!!!!");
+            CmfError("[Not Implemented] A few exchanges are not yet implmented -- this partition satisfies one of these conditions.");
         }
         
         //Get the relevant pointer. neither block is on the current rank, then the pointer is null,
