@@ -14,8 +14,8 @@ GlobalSettings
 }
 Domain
 {
-	blockDim = [5, 5, 1]
-	blockBounds = [0, 2, 0, 2, 0, 0.5]
+	blockDim = [2, 2, 2]
+	blockBounds = [0, 1, 0, 1, 0, 1]
 	meshDataDim = [$(numPoints), $(numPoints), $(numPoints)]
 	refinementConstraintType = factor2CompletelyConstrained
 	periodicRefinement = [true, true, true]
