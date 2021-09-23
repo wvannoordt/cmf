@@ -8,30 +8,44 @@ namespace cmf
     {
         group = group_in;
         int groupSize = group->Size();
-        resizeOutBufferRequired.resize(groupSize, true);
-        resizeInBufferRequired.resize(groupSize, true);
-        sendBufferIsAllocated.resize(groupSize, false);
-        receiveBufferIsAllocated.resize(groupSize, false);
-        sendBuffer.resize(groupSize, NULL);
-        receiveBuffer.resize(groupSize, NULL);
-        requestHandles.resize(groupSize);
-        sendSizes.resize(groupSize, 0);
-        receiveSizes.resize(groupSize, 0);
+        
+        //GPU stuff
+        int numDevices = group->GetCudaDevices()->NumDevices();
+        gpus.resize(numDevices);
+        for (int i = 0; i < numDevices; i++)
+        {
+            gpus[i].isGpu = true;
+            gpus[i].id = group->Rank().id;
+            gpus[i].deviceNum = i;
+        }
+        
+        int totalNumBuffers = groupSize + numDevices;
+        resizeOutBufferRequired.resize(totalNumBuffers, true);
+        resizeInBufferRequired.resize(totalNumBuffers, true);
+        sendBufferIsAllocated.resize(totalNumBuffers, false);
+        receiveBufferIsAllocated.resize(totalNumBuffers, false);
+        sendBuffer.resize(totalNumBuffers, NULL);
+        receiveBuffer.resize(totalNumBuffers, NULL);
+        requestHandles.resize(totalNumBuffers);
+        sendSizes.resize(totalNumBuffers, 0);
+        receiveSizes.resize(totalNumBuffers, 0);
     }
     
     DataExchangePattern::~DataExchangePattern(void)
     {
-        for (int rank = 0; rank < group->Size(); rank++)
+        for (int rank = 0; rank < sendBuffer.size(); rank++)
         {
             if (sendBufferIsAllocated[rank])
             {
                 sendBufferIsAllocated[rank] = false;
-                Cmf_Free(sendBuffer[rank]);
+                if (rank>=group->Size()) { Cmf_GpuFree(sendBuffer[rank]); }
+                else { Cmf_Free(sendBuffer[rank]); }
             }
             if (receiveBufferIsAllocated[rank])
             {
                 receiveBufferIsAllocated[rank] = false;
-                Cmf_Free(receiveBuffer[rank]);
+                if (rank>=group->Size()) { Cmf_GpuFree(receiveBuffer[rank]); }
+                else { Cmf_Free(receiveBuffer[rank]); }
             }
         }
     }
@@ -48,19 +62,11 @@ namespace cmf
         ComputeDevice sender = transaction->Sender();
         ComputeDevice receiver = transaction->Receiver();
         ComputeDevice currentRank = group->Rank();
-        if ((sender == currentRank) || (receiver == currentRank))
-        {
-            if ((sender == currentRank) && (transaction->GetPackedSize() > 0))
-            {
-                resizeOutBufferRequired[receiver.id] = true;
-                sendSizes[receiver.id] += transaction->GetPackedSize();
-            }
-            if ((receiver == currentRank) && (transaction->GetPackedSize() > 0))
-            {
-                resizeInBufferRequired[sender.id] = true;
-                receiveSizes[sender.id] += transaction->GetPackedSize();
-            }
-        }
+        
+        if (sender.id   == currentRank.id) resizeOutBufferRequired[receiver.id] = true;
+        if (receiver.id == currentRank.id) resizeInBufferRequired [sender.id]   = true;
+        if (sender.id   == currentRank.id && sender.isGpu)   resizeOutBufferRequired[group->Size()+sender.deviceNum] = true;
+        if (receiver.id == currentRank.id && receiver.isGpu) resizeInBufferRequired[group->Size()+sender.deviceNum] = true;
     }
     
     void DataExchangePattern::Pack(void)
@@ -69,7 +75,7 @@ namespace cmf
         pointerIndices = sendBuffer;
         for (const auto tr:transactions)
         {
-            ComputeDevice currentRank = group->Rank();
+            ComputeDevice currentRank = group->Rank(); //This call will never return a GPU device
             if (tr->Sender() == currentRank)
             {
                 tr->Pack(pointerIndices[tr->Receiver().id]);
@@ -88,7 +94,7 @@ namespace cmf
         std::vector<IDataTransaction*>& transactions = this->items;
         for (const auto tr:transactions)
         {
-            ComputeDevice currentRank = group->Rank();
+            ComputeDevice currentRank = group->Rank(); //This call will never return a GPU device
             if (tr->Receiver() == currentRank)
             {
                 tr->Unpack(pointerIndices[tr->Sender().id]);
@@ -100,7 +106,7 @@ namespace cmf
     void DataExchangePattern::ExchangeData(void)
     {
         group->Synchronize();
-        for (int rank = 0; rank < group->Size(); rank++)
+        for (int rank = 0; rank < sendBuffer.size(); rank++)
         {
             if (resizeOutBufferRequired[rank] || !sendBufferIsAllocated[rank])    this->ResizeOutBuffer(rank);
             if (resizeInBufferRequired[rank]  || !receiveBufferIsAllocated[rank]) this->ResizeInBuffer(rank);
@@ -161,8 +167,23 @@ namespace cmf
             if (tr->Sender() == group->Rank()) totalSize += tr->GetPackedSize();
         }
         // Consider a wrapper for realloc() if downsizing, it is a lot faster!
-        if (sendBufferIsAllocated[rank]) Cmf_Free(sendBuffer[rank]);
-        sendBuffer[rank] = (char*)Cmf_Alloc(totalSize);
+        bool isGpu = false;
+        ComputeDevice device;
+        if (rank >= group->Size())
+        {
+            device = gpus[rank-group->Size()];
+            isGpu = true;
+        }
+        if (isGpu)
+        {
+            if (sendBufferIsAllocated[rank]) Cmf_GpuFree(sendBuffer[rank]);
+            sendBuffer[rank] = (char*)Cmf_GpuAlloc(totalSize, device.deviceNum);
+        }
+        else
+        {
+            if (sendBufferIsAllocated[rank]) Cmf_Free(sendBuffer[rank]);
+            sendBuffer[rank] = (char*)Cmf_Alloc(totalSize);
+        }
         resizeOutBufferRequired[rank] = false;
         sendBufferIsAllocated[rank] = true;
     }
@@ -176,8 +197,23 @@ namespace cmf
             if (tr->Receiver() == group->Rank()) totalSize += tr->GetPackedSize();
         }
         // Consider a wrapper for realloc() if downsizing, it is a lot faster!
-        if (receiveBufferIsAllocated[rank]) Cmf_Free(receiveBuffer[rank]);
-        receiveBuffer[rank] = (char*)Cmf_Alloc(totalSize);
+        bool isGpu = false;
+        ComputeDevice device;
+        if (rank >= group->Size())
+        {
+            device = gpus[rank-group->Size()];
+            isGpu = true;
+        }
+        if (isGpu)
+        {
+            if (receiveBufferIsAllocated[rank]) Cmf_GpuFree(receiveBuffer[rank]);
+            receiveBuffer[rank] = (char*)Cmf_GpuAlloc(totalSize, device.deviceNum);
+        }
+        else
+        {
+            if (receiveBufferIsAllocated[rank]) Cmf_Free(receiveBuffer[rank]);
+            receiveBuffer[rank] = (char*)Cmf_Alloc(totalSize);
+        }
         resizeInBufferRequired[rank] = false;
         receiveBufferIsAllocated[rank] = true;
     }

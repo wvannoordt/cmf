@@ -62,7 +62,7 @@ namespace cmf
             /// @brief The group that this exchange pattern is executed over
             ParallelGroup* group;
             
-            /// @brief Indicates whether or not the outgoing buffer reqires resizing for the corresponding rank
+            /// @brief Indicates whether or not the outgoing buffer reqires resizing for the corresponding rank.
             std::vector<bool> resizeOutBufferRequired;
             
             /// @brief Indicates whether or not the outgoing buffer reqires resizing for the corresponding rank
@@ -94,6 +94,9 @@ namespace cmf
             
             /// @brief The list of status handles
             std::vector<ParallelStatus> statusHandles;
+            
+            /// @brief The list of Gpu devices on the current machine
+            std::vector<ComputeDevice> gpus;
     };
 }
 

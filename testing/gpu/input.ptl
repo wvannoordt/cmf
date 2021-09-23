@@ -3,7 +3,7 @@ GlobalSettings
 {
 	Display
 	{
-		debugLevel = 4
+		debugLevel = 8
 		trackOutputOrigins = false
 		colorOutput = true
 	}
@@ -26,6 +26,6 @@ Domain
 	}
 	Partition
 	{
-		partitionType = singleGPU
+		partitionType = @choose(1, singleGPU, uniform)
 	}
 }

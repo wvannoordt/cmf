@@ -15,13 +15,32 @@ using cmf::ZFill;
 
 const double ghostJunkValue = -10.0;
 
+void FillBlockCpu(cmf::BlockArray<double, 1>& arLb)
+{
+    for (cmf::cell_t k = arLb.kmin; k < arLb.kmax; k++)
+    {
+        for (cmf::cell_t j = arLb.jmin; j < arLb.jmax; j++)
+        {
+            for (cmf::cell_t i = arLb.imin; i < arLb.imax; i++)
+            {
+                arLb(0, i, j, k) = i;
+                arLb(1, i, j, k) = j;
+                arLb(2, i, j, k) = k;
+            }
+        }
+    }
+}
+
 void FillArr(cmf::CartesianMeshArray& arr)
 {
     for (auto lb: arr)
     {
+        auto device = arr.GetBlockDevice(lb);
         cmf::BlockArray<double, 1> arLb = arr[lb];
-        FillBlockGpu(arLb);
+        if (device.isGpu) { FillBlockGpu(arLb); }
+        else { FillBlockCpu(arLb); }
     }
+    CMF_CUDA_CHECK(cudaDeviceSynchronize());
 }
 
 int main(int argc, char** argv)

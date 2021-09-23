@@ -10,7 +10,12 @@ namespace cmf
         ///@brief indicates if the device is a GPU or not (currently only supporting Nvidia GPUs)
         bool isGpu;
         
-        ///@brief an ID code that delimits the rank of this device in its pool
+        ///@brief if this device is a gpu, deviceNum indicates its device identifier relative to its host
+        int deviceNum;
+        
+        ///@brief an ID code that delimits the rank of this device in its pool. Note that if
+        ///this device is a GPU, then this id indicates the rank of its host in the relevant parallel
+        ///group
         int id;
         
         ///@brief Constructor
@@ -19,6 +24,16 @@ namespace cmf
         {
             isGpu = isGpu_in;
             id = id_in;
+            deviceNum = 0;
+        }
+        
+        ///@brief Constructor
+        ///@author WVN
+        ComputeDevice(bool isGpu_in, int id_in, int deviceNum_in)
+        {
+            isGpu = isGpu_in;
+            id = id_in;
+            deviceNum = deviceNum_in;
         }
         
         ///@brief Constructor
@@ -26,6 +41,7 @@ namespace cmf
         ComputeDevice(void)
         {
             isGpu = false;
+            deviceNum = 0;
             id = 0;
         }
         
