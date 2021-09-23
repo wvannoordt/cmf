@@ -81,8 +81,8 @@ namespace cmf
         ExchangeContextBlockData neighbor;
         
         //Retrieve partition info and block dimensions from the mesh
-        current.device  = mesh->partition->GetPartitionInfo(currentNode);
-        neighbor.device = mesh->partition->GetPartitionInfo(neighborNode);
+        current.device  = mesh->GetPartition()->GetPartitionInfo(currentNode);
+        neighbor.device = mesh->GetPartition()->GetPartitionInfo(neighborNode);
         current.blockInfo      = mesh->GetBlockInfo(currentNode);
         neighbor.blockInfo     = mesh->GetBlockInfo(neighborNode);
         

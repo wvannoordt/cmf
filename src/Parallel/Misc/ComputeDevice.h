@@ -1,6 +1,6 @@
 #ifndef CMF_COMPUTE_DEVICE_H
 #define CMF_COMPUTE_DEVICE_H
-
+#include <iostream>
 namespace cmf
 {
     ///@brief Represents a generic computing device, including a CPU computing node, or a Nvidia GPU
@@ -60,7 +60,15 @@ namespace cmf
         {
             return (isGpu!=rhs.isGpu) || (rhs.id!=id);
         }
+        
     };
+    
+    ///@brief Allows streaming of ComputeDevice
+    static std::ostream & operator<<(std::ostream & os, const ComputeDevice & dev)
+    {
+        os << "{id:" << dev.id << ", devNum:" << dev.deviceNum << ", gpu:" << (dev.isGpu?"true":"false") << "}";
+        return os;
+    }
 }
 
 #endif

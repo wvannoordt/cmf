@@ -233,7 +233,7 @@ namespace cmf
                         char* cpuBuffer = hostEndpoint;
                         blockBytes.data = cpuBuffer;
                         int gpuId = 0;
-                        GpuMemTransfer((void*)gpuBuffer, (void*)cpuBuffer, array.GetArrayBytesPerBlock(), gpuId, DeviceTransferDirection::GpuToCpu);
+                        GpuMemTransfer<DeviceTransferDirection::GpuToCpu>((void*)gpuBuffer, (void*)cpuBuffer, array.GetArrayBytesPerBlock(), gpuId);
                     }
                     
                     myfile << spaces(12) << "<CellData Scalars=\"" << varsString << "\">" << std::endl;

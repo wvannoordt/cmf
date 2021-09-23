@@ -3,6 +3,7 @@
 
 #include "CmfGC.h"
 #include "ComputeDevice.h"
+#include "CmfCuda.h"
 
 namespace cmf
 {

@@ -76,10 +76,14 @@ namespace cmf
         for (const auto tr:transactions)
         {
             ComputeDevice currentRank = group->Rank(); //This call will never return a GPU device
-            if (tr->Sender() == currentRank)
+            if (tr->Sender().id == currentRank.id)
             {
-                tr->Pack(pointerIndices[tr->Receiver().id]);
-                pointerIndices[tr->Receiver().id] += tr->GetPackedSize();
+                int sendIndex = tr->Sender().id;
+                int recvIndex = tr->Receiver().id;
+                if (tr->Sender().isGpu)   sendIndex += group->Size();
+                if (tr->Receiver().isGpu) recvIndex += group->Size();
+                tr->Pack(pointerIndices[recvIndex]);
+                pointerIndices[recvIndex] += tr->GetPackedSize();
             }
         }
     }
@@ -95,10 +99,14 @@ namespace cmf
         for (const auto tr:transactions)
         {
             ComputeDevice currentRank = group->Rank(); //This call will never return a GPU device
-            if (tr->Receiver() == currentRank)
+            if (tr->Receiver().id == currentRank.id)
             {
-                tr->Unpack(pointerIndices[tr->Sender().id]);
-                pointerIndices[tr->Sender().id] += tr->GetPackedSize();
+                int sendIndex = tr->Sender().id;
+                int recvIndex = tr->Receiver().id;
+                if (tr->Sender().isGpu)   sendIndex += group->Size();
+                if (tr->Receiver().isGpu) recvIndex += group->Size();
+                tr->Unpack(pointerIndices[sendIndex]);
+                pointerIndices[sendIndex] += tr->GetPackedSize();
             }
         }
     }
@@ -114,6 +122,13 @@ namespace cmf
         
         //Aggregate the data
         Pack();
+        
+        int rankMin = group->Size();
+        int rankMax = sendBuffer.size();
+        for (int i = rankMin; i < rankMax; i++)
+        {
+            GpuMemTransfer<DeviceTransferDirection::GpuToGpu>((void*)sendBuffer[i], (void*)receiveBuffer[i], sendSizes[i], i-group->Size());
+        }
         
         //Count the number of send requests
         int numReceivesTotal = 0;
@@ -151,10 +166,12 @@ namespace cmf
         }
         
         group->AwaitAllAsynchronousOperations(numReceivesTotal, requestHandles.data(), statusHandles.data());
+        CMF_CUDA_CHECK(cudaDeviceSynchronize());
         
         //Distribute the data
         Unpack();
         group->Synchronize();
+        
     }
     
     //Considering using a predicate here...
@@ -162,27 +179,34 @@ namespace cmf
     {
         size_t totalSize = 0;
         std::vector<IDataTransaction*>& transactions = this->items;
-        for (const auto tr:transactions)
-        {
-            if (tr->Sender() == group->Rank()) totalSize += tr->GetPackedSize();
-        }
-        // Consider a wrapper for realloc() if downsizing, it is a lot faster!
-        bool isGpu = false;
+        
+        bool rankIsGpu = false;
         ComputeDevice device;
         if (rank >= group->Size())
         {
             device = gpus[rank-group->Size()];
-            isGpu = true;
+            rankIsGpu = true;
         }
-        if (isGpu)
+        
+        for (const auto tr:transactions)
+        {
+            if (tr->Sender().id == group->Rank().id)
+            {
+                if (rankIsGpu==tr->Sender().isGpu) totalSize += tr->GetPackedSize();
+            }
+        }
+        // Consider a wrapper for realloc() if downsizing, it is a lot faster!
+        if (rankIsGpu)
         {
             if (sendBufferIsAllocated[rank]) Cmf_GpuFree(sendBuffer[rank]);
             sendBuffer[rank] = (char*)Cmf_GpuAlloc(totalSize, device.deviceNum);
+            sendSizes[rank] = totalSize;
         }
         else
         {
             if (sendBufferIsAllocated[rank]) Cmf_Free(sendBuffer[rank]);
             sendBuffer[rank] = (char*)Cmf_Alloc(totalSize);
+            sendSizes[rank] = totalSize;
         }
         resizeOutBufferRequired[rank] = false;
         sendBufferIsAllocated[rank] = true;
@@ -192,27 +216,35 @@ namespace cmf
     {
         size_t totalSize = 0;
         std::vector<IDataTransaction*>& transactions = this->items;
-        for (const auto tr:transactions)
-        {
-            if (tr->Receiver() == group->Rank()) totalSize += tr->GetPackedSize();
-        }
-        // Consider a wrapper for realloc() if downsizing, it is a lot faster!
-        bool isGpu = false;
+        
+        bool rankIsGpu = false;
         ComputeDevice device;
         if (rank >= group->Size())
         {
             device = gpus[rank-group->Size()];
-            isGpu = true;
+            rankIsGpu = true;
         }
-        if (isGpu)
+        
+        for (const auto tr:transactions)
+        {
+            if (tr->Receiver().id == group->Rank().id)
+            {
+                if (rankIsGpu == tr->Receiver().isGpu) totalSize += tr->GetPackedSize();
+            }
+        }
+        
+        // Consider a wrapper for realloc() if downsizing, it is a lot faster!
+        if (rankIsGpu)
         {
             if (receiveBufferIsAllocated[rank]) Cmf_GpuFree(receiveBuffer[rank]);
             receiveBuffer[rank] = (char*)Cmf_GpuAlloc(totalSize, device.deviceNum);
+            receiveSizes[rank] = totalSize;
         }
         else
         {
             if (receiveBufferIsAllocated[rank]) Cmf_Free(receiveBuffer[rank]);
             receiveBuffer[rank] = (char*)Cmf_Alloc(totalSize);
+            receiveSizes[rank] = totalSize;
         }
         resizeInBufferRequired[rank] = false;
         receiveBufferIsAllocated[rank] = true;

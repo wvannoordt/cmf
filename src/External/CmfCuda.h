@@ -109,7 +109,8 @@ namespace cmf
         enum DeviceTransferDirection
         {
             GpuToCpu,
-            CpuToGpu
+            CpuToGpu,
+            GpuToGpu
         };
     }
     
@@ -120,16 +121,26 @@ namespace cmf
     /// @param gpuId the device to Transfer to (or from)
     /// @param direction the direction to copy (one of DeviceTransferDirection::GpuToCpu or DeviceTransferDirection::CpuToGpu)
     /// @author WVN
-    static void GpuMemTransfer(void* source, void* destination, size_t size, int gpuId, DeviceTransferDirection::DeviceTransferDirection direction)
+    template <const DeviceTransferDirection::DeviceTransferDirection direction> static inline void GpuMemTransfer(void* source, void* destination, size_t size, int gpuId)
     {
         CMF_CUDA_CHECK(cudaSetDevice(gpuId));
-        if (direction == DeviceTransferDirection::GpuToCpu)
+        switch (direction)
         {
-            CMF_CUDA_CHECK(cudaMemcpy(destination, source, size, cudaMemcpyDeviceToHost));
-        }
-        if (direction == DeviceTransferDirection::CpuToGpu)
-        {
-            CMF_CUDA_CHECK(cudaMemcpy(destination, source, size, cudaMemcpyHostToDevice));
+            case DeviceTransferDirection::GpuToCpu:
+            {
+                CMF_CUDA_CHECK(cudaMemcpy(destination, source, size, cudaMemcpyDeviceToHost));
+                break;
+            }
+            case DeviceTransferDirection::CpuToGpu:
+            {
+                CMF_CUDA_CHECK(cudaMemcpy(destination, source, size, cudaMemcpyHostToDevice));
+                break;
+            }
+            case DeviceTransferDirection::GpuToGpu:
+            {
+                CMF_CUDA_CHECK(cudaMemcpy(destination, source, size, cudaMemcpyDeviceToDevice));
+                break;
+            }
         }
     }
 }

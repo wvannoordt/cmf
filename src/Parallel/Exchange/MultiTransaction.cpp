@@ -50,7 +50,14 @@ namespace cmf
         int numOffsets = sendOffsets.size();
         for (int i = 0; i < numOffsets; i++)
         {
-            memcpy(copyTo, cTarget + sendOffsets[i], sendSizes[i]);
+            if (!this->Sender().isGpu)
+            {
+                memcpy(copyTo, cTarget + sendOffsets[i], sendSizes[i]);
+            }
+            else
+            {
+                GpuMemTransfer<DeviceTransferDirection::GpuToGpu>((void*)(cTarget + sendOffsets[i]), (void*)copyTo, sendSizes[i], this->Sender().deviceNum);
+            }
             copyTo += sendSizes[i];
         }
     }
@@ -62,7 +69,14 @@ namespace cmf
         int numOffsets = recvOffsets.size();
         for (int i = 0; i < numOffsets; i++)
         {
-            memcpy(cTarget + recvOffsets[i], copyFrom, recvSizes[i]);
+            if (!this->Receiver().isGpu)
+            {
+                memcpy(cTarget + recvOffsets[i], copyFrom, recvSizes[i]);
+            }
+            else
+            {
+                GpuMemTransfer<DeviceTransferDirection::GpuToGpu>((void*)copyFrom, (void*)(cTarget + recvOffsets[i]), recvSizes[i], this->Receiver().deviceNum);
+            }
             copyFrom += recvSizes[i];
         }
     }
