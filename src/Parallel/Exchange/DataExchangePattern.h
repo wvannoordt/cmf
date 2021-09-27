@@ -105,6 +105,9 @@ namespace cmf
             
             /// @brief The list of Gpu devices on the current machine
             std::vector<ComputeDevice> gpus;
+            
+            /// @brief A hash object for parallel synchronization
+            ICmfHashable hash;
     };
 }
 

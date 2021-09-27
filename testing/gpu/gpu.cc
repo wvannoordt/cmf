@@ -4,6 +4,7 @@
 #include "cmftestutils.h"
 #include <chrono>
 #include "kernel.h"
+#include "box.h"
 
 using cmf::print;
 using cmf::strformat;
@@ -15,7 +16,7 @@ using cmf::ZFill;
 
 const double ghostJunkValue = -10.0;
 
-void FillBlockCpu(cmf::BlockArray<double, 1>& arLb)
+void FillBlockCpu(cmf::BlockArray<double, 1>& arLb, const box& bx)
 {
     for (cmf::cell_t k = arLb.kmin; k < arLb.kmax; k++)
     {
@@ -26,6 +27,10 @@ void FillBlockCpu(cmf::BlockArray<double, 1>& arLb)
                 arLb(0, i, j, k) = i;
                 arLb(1, i, j, k) = j;
                 arLb(2, i, j, k) = k;
+                
+                arLb(3, i, j, k) = bx.xmin + bx.dx*((double)i+0.5);
+                arLb(4, i, j, k) = bx.ymin + bx.dy*((double)j+0.5);
+                arLb(5, i, j, k) = bx.zmin + bx.dz*((double)k+0.5);
             }
         }
     }
@@ -35,10 +40,18 @@ void FillArr(cmf::CartesianMeshArray& arr)
 {
     for (auto lb: arr)
     {
+        auto info = arr.GetBlockInfo(lb);
+        box bx;
+        bx.xmin = info.blockBounds[0];
+        bx.ymin = info.blockBounds[2];
+        bx.zmin = info.blockBounds[2*(CMF_DIM-1)];
+        bx.dx   = info.dx[0];
+        bx.dy   = info.dx[1];
+        bx.dz   = info.dx[CMF_DIM-1];
         auto device = arr.GetBlockDevice(lb);
         cmf::BlockArray<double, 1> arLb = arr[lb];
-        if (device.isGpu) { FillBlockGpu(arLb); }
-        else { FillBlockCpu(arLb); }
+        if (device.isGpu) { FillBlockGpu(arLb, bx); }
+        else { FillBlockCpu(arLb, bx); }
     }
     CMF_CUDA_CHECK(cudaDeviceSynchronize());
 }
@@ -55,23 +68,28 @@ int main(int argc, char** argv)
     cmf::CartesianMeshInputInfo inputInfo(localTree["Domain"]);
     cmf::CartesianMesh domain(inputInfo);
     
-    auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble, {3});
+    auto& var = domain.DefineVariable("preData", cmf::CmfArrayType::CmfDouble, {6});
     
-    var.ComponentName({0}) = "i";
-    var.ComponentName({1}) = "j";
-    var.ComponentName({2}) = "k";
+    var.ComponentName(0) = "i";
+    var.ComponentName(1) = "j";
+    var.ComponentName(2) = "k";
+    var.ComponentName(3) = "x";
+    var.ComponentName(4) = "y";
+    var.ComponentName(5) = "z";
     
     // cmf::Vec3<> x(0.01, 0.01, 0.01);
     // domain.Blocks()->RefineAt(x, 7);
     
     FillArr(var);
     
-    // var.Exchange();
-    // var.ExportFile("output", "test");
+    var.Exchange();
+    var.ExportFile("output", "test");
     
     auto exchange = var.GetExchangePattern();
-    exchange->ForceResizeBuffers();
+    // exchange->ForceResizeBuffers();
     exchange->DebugPrint();
+    
+    // domain.GetPartition()->OutputPartitionToVtk("partition.vtk");
     
     return 0;
 }

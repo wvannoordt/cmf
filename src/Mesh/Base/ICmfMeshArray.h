@@ -76,7 +76,12 @@ namespace cmf
             /// @brief Returns the name of a given sub-component
             /// @param The indices of the sub-component
             /// @author WVN
-            std::string& ComponentName(std::initializer_list<int> index);            
+            std::string& ComponentName(std::initializer_list<int> index);
+            
+            /// @brief Returns the name of a given sub-component
+            /// @param The index of the sub-component
+            /// @author WVN
+            std::string& ComponentName(int index) {return variableComponentNames[index];}
             
             /// @brief Returns the name of a given sub-component in the rank-zero case
             /// @author WVN0

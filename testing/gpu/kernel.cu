@@ -1,9 +1,10 @@
 #include <iostream>
 #include "cmf.h"
+#include "box.h"
 
 using cmf::print;
 
-__global__ void K_FillBlock(cmf::BlockArray<double, 1> arLb)
+__global__ void K_FillBlock(cmf::BlockArray<double, 1> arLb, box bx)
 {
     int i = blockIdx.x*blockDim.x+threadIdx.x;
     int j = blockIdx.y*blockDim.y+threadIdx.y;
@@ -13,10 +14,14 @@ __global__ void K_FillBlock(cmf::BlockArray<double, 1> arLb)
         arLb(0, i, j, k) = i;
         arLb(1, i, j, k) = j;
         arLb(2, i, j, k) = k;
+        
+        arLb(3, i, j, k) = bx.xmin + bx.dx*((double)i+0.5);
+        arLb(4, i, j, k) = bx.ymin + bx.dy*((double)j+0.5);
+        arLb(5, i, j, k) = bx.zmin + bx.dz*((double)k+0.5);
     }
 }
 
-void FillBlockGpu(cmf::BlockArray<double, 1>& arLb)
+void FillBlockGpu(cmf::BlockArray<double, 1>& arLb, const box& bx)
 {
     int nx = arLb.imax-arLb.imin;
     int ny = arLb.jmax-arLb.jmin;
@@ -26,5 +31,5 @@ void FillBlockGpu(cmf::BlockArray<double, 1>& arLb)
     grid.x = (nx + block.x - 1)/block.x;
     grid.y = (ny + block.y - 1)/block.y;
     grid.z = (nz + block.z - 1)/block.z;
-    K_FillBlock<<<grid, block>>>(arLb);
+    K_FillBlock<<<grid, block>>>(arLb, bx);
 }

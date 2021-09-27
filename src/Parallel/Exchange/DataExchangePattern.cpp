@@ -69,6 +69,7 @@ namespace cmf
         if (receiver.id == currentRank.id) resizeInBufferRequired [sender.id]   = true;
         if (sender.id   == currentRank.id && sender.isGpu)   resizeOutBufferRequired[group->Size()+sender.deviceNum] = true;
         if (receiver.id == currentRank.id && receiver.isGpu) resizeInBufferRequired[group->Size()+sender.deviceNum] = true;
+        
     }
     
     void DataExchangePattern::Pack(void)
@@ -192,11 +193,12 @@ namespace cmf
         
         for (const auto tr:transactions)
         {
-            if (tr->Sender().id == group->Rank().id)
+            if ((tr->Sender().id == group->Rank().id) && (tr->Receiver().id==rank))
             {
                 if (rankIsGpu==tr->Sender().isGpu) totalSize += tr->GetPackedSize();
             }
         }
+
         // Consider a wrapper for realloc() if downsizing, it is a lot faster!
         if (rankIsGpu)
         {
@@ -229,11 +231,12 @@ namespace cmf
         
         for (const auto tr:transactions)
         {
-            if (tr->Receiver().id == group->Rank().id)
+            if ((tr->Receiver().id == group->Rank().id) && (tr->Sender().id==rank))
             {
                 if (rankIsGpu == tr->Receiver().isGpu) totalSize += tr->GetPackedSize();
             }
         }
+        
         
         // Consider a wrapper for realloc() if downsizing, it is a lot faster!
         if (rankIsGpu)
@@ -287,7 +290,10 @@ namespace cmf
                 std::vector<IDataTransaction*>& transactions = this->items;
                 for (auto tr: transactions)
                 {
-                    print(tr->Sender(), tr->Receiver(), tr->GetPackedSize());
+                    if (tr->Sender().id==1 && tr->Receiver().id==0)
+                    {
+                        print(tr->Sender().id, "->", tr->Receiver().id, tr->GetPackedSize());
+                    }
                 }
                 print("---------------------------------");
             }
