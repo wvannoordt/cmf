@@ -30,11 +30,8 @@ namespace cmf
     void ParallelGroup::CreateGroup(void)
     {
         CreateGroup(defaultCommunicator);
-        if (CUDA_ENABLE)
-        {
-            deleteCudaDeviceHandler = true;
-            deviceHandler = new CudaDeviceHandler();
-        }
+        deleteCudaDeviceHandler = true;
+        deviceHandler = new CudaDeviceHandler();
     }
     
     void ParallelGroup::CreateGroup(CmfParallelCommunicator comm)

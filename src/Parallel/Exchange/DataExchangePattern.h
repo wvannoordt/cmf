@@ -40,15 +40,23 @@ namespace cmf
         	/// @author WVN
             void SortByPriority(void);
             
+            /// @brief Prints some debugging information
+        	/// @author WVN
+            void DebugPrint(void);
+            
+            /// @brief Forcibly reallocates send and receive buffers
+        	/// @author WVN
+            void ForceResizeBuffers(void);
+            
         private:
             /// @brief Computes the size of the outgoing buffer for the given rank and allocates it accordingly
             /// @param rank The rank that the outgoing data will eventually go to
-        	/// @author WVN
+            /// @author WVN
             void ResizeOutBuffer(int rank);
             
             /// @brief Computes the size of the incoming buffer for the given rank and allocates it accordingly
             /// @param rank The rank that the incoming data will eventually come from
-        	/// @author WVN
+            /// @author WVN
             void ResizeInBuffer(int rank);
             
             /// @brief Aggregates the information to be broadcasted using this exchange pattern and places it in a single data array per rank

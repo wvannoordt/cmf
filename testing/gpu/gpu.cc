@@ -66,8 +66,12 @@ int main(int argc, char** argv)
     
     FillArr(var);
     
-    var.Exchange();
-    var.ExportFile("output", "test");
+    // var.Exchange();
+    // var.ExportFile("output", "test");
+    
+    auto exchange = var.GetExchangePattern();
+    exchange->ForceResizeBuffers();
+    exchange->DebugPrint();
     
     return 0;
 }

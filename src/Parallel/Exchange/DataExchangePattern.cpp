@@ -1,7 +1,9 @@
 #include "DataExchangePattern.h"
 #include "CmfScreen.h"
+#include "CmfPrint.h"
 #include "CmfGC.h"
 #include <algorithm>
+#include <unistd.h>
 namespace cmf
 {
     DataExchangePattern::DataExchangePattern(ParallelGroup* group_in)
@@ -154,7 +156,7 @@ namespace cmf
                 group->QueueReceive(receiveBuffer[rank], receiveSizes[rank], parallelChar, rank, &requestHandles[counter]);
                 counter++;
             }
-        }   
+        }
         
         for (int rank = 0; rank < group->Size(); rank++)
         {
@@ -248,5 +250,49 @@ namespace cmf
         }
         resizeInBufferRequired[rank] = false;
         receiveBufferIsAllocated[rank] = true;
+    }
+    
+    void DataExchangePattern::ForceResizeBuffers(void)
+    {
+        for (int rank = 0; rank < sendBuffer.size(); rank++)
+        {
+            this->ResizeInBuffer (rank);
+            this->ResizeOutBuffer(rank);
+        }
+    }
+    
+    void DataExchangePattern::DebugPrint(void)
+    {
+        if (group->IsRoot()) print("Data exchange pattern over parallel group of size", group->Size());
+        for (int p = 0; p < group->Size(); p++)
+        {
+            if (p == group->Rank().id)
+            {
+                print("---------------------------------");
+                print("Rank:", group->Rank());
+                print("Group size:", group->Size());
+                print("Send buffers:");
+                for (int i = 0; i < sendBuffer.size(); i++)
+                {
+                    if (i==group->Size()) print("*");
+                    print(i, sendSizes[i]);
+                }
+                print("Recv buffers:");
+                for (int i = 0; i < receiveBuffer.size(); i++)
+                {
+                    if (i==group->Size()) print("*");
+                    print(i, receiveSizes[i]);
+                }
+                print("Transactions:");
+                std::vector<IDataTransaction*>& transactions = this->items;
+                for (auto tr: transactions)
+                {
+                    print(tr->Sender(), tr->Receiver(), tr->GetPackedSize());
+                }
+                print("---------------------------------");
+            }
+            usleep(10000);
+            group->Synchronize();
+        }
     }
 }
