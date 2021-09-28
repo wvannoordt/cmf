@@ -62,11 +62,11 @@ namespace cmf
                 {
                     RefinementTreeNode* currentNode  = lb.Node();
                     RefinementTreeNode* neighborNode = neigh.Node();
-                    
                     CreateExchangeTransaction(pattern, meshArray, currentNode, neighborNode, neigh.Edge());
                 }
             }
         }
+        
         pattern->SortByPriority();
     }
     

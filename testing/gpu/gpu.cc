@@ -77,19 +77,10 @@ int main(int argc, char** argv)
     var.ComponentName(4) = "y";
     var.ComponentName(5) = "z";
     
-    // cmf::Vec3<> x(0.01, 0.01, 0.01);
-    // domain.Blocks()->RefineAt(x, 7);
-    
     FillArr(var);
     
     var.Exchange();
     var.ExportFile("output", "test");
-    
-    auto exchange = var.GetExchangePattern();
-    // exchange->ForceResizeBuffers();
-    exchange->DebugPrint();
-    
-    // domain.GetPartition()->OutputPartitionToVtk("partition.vtk");
     
     return 0;
 }

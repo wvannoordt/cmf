@@ -208,7 +208,7 @@ namespace cmf
         }
         output.exchangeI = exchangeDim[0];
         output.exchangeJ = exchangeDim[1];
-        output.exchangeK = (CMF_IS3D?exchangeDim[1+CMF_IS3D]:0);
+        output.exchangeK = CMF_IS3D*exchangeDim[CMF_DIM-1];
         output.imin = 0;
         output.imax = meshDataDim[0];
         output.jmin = 0;

@@ -56,7 +56,9 @@ namespace cmf
     {
         std::vector<IDataTransaction*>& transactions = this->items;
         auto sortRule = [](IDataTransaction* const& a, IDataTransaction* const& b) -> bool { return (a->Priority() > b->Priority()); };
-        std::sort(transactions.begin(), transactions.end(), sortRule);
+        
+        //note: std::sort does not preserve order of equivalent elements!!
+        std::stable_sort(transactions.begin(), transactions.end(), sortRule);
     }
     
     void DataExchangePattern::OnAdd(IDataTransaction* transaction)
@@ -285,15 +287,6 @@ namespace cmf
                 {
                     if (i==group->Size()) print("*");
                     print(i, receiveSizes[i]);
-                }
-                print("Transactions:");
-                std::vector<IDataTransaction*>& transactions = this->items;
-                for (auto tr: transactions)
-                {
-                    if (tr->Sender().id==1 && tr->Receiver().id==0)
-                    {
-                        print(tr->Sender().id, "->", tr->Receiver().id, tr->GetPackedSize());
-                    }
                 }
                 print("---------------------------------");
             }

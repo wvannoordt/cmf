@@ -217,7 +217,7 @@ namespace cmf
                     myfile << spaces(4) << strformat("<RectilinearGrid WholeExtent=\"0 {} 0 {} 0 {}\">", nTotali, nTotalj, nTotalk) << std::endl;
                     myfile << spaces(8) << "<FieldData>" << std::endl;
                     myfile << spaces(12) << "<DataArray type=\"Int32\" Name=\"avtRealDims\" NumberOfTuples=\"6\" format=\"ascii\">" << std::endl;
-                    myfile << spaces(16) << strformat("{} {} {} {} {} {}", nGuardi, nGuardj+nCellsi, nGuardj, nGuardj+nCellsj, nGuardk, CMF_IS3D?(nGuardk+nCellsk):0) << std::endl;
+                    myfile << spaces(16) << strformat("{} {} {} {} {} {}", nGuardi, nGuardi+nCellsi, nGuardj, nGuardj+nCellsj, nGuardk, CMF_IS3D?(nGuardk+nCellsk):0) << std::endl;
                     myfile << spaces(12) << "</DataArray>" << std::endl;
                     myfile << spaces(12) << "<DataArray type=\"Float64\" Name=\"avtOriginalBounds\" NumberOfTuples=\"6\" format=\"ascii\">" << std::endl;
                     myfile << spaces(16) << strformat("{} {} {} {} {} {}", bds[0], bds[1], bds[2], bds[3], bds[4], bds[5]) << std::endl;

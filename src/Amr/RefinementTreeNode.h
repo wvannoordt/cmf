@@ -56,6 +56,19 @@ namespace cmf
             return BadHash() < rhs.BadHash();
         }
     };
+    
+    ///@brief Allows streaming of NodeEdge
+    static std::ostream & operator<<(std::ostream & os, const NodeEdge & edge)
+    {
+        os << "{{";
+        for (int i = 0; i < CMF_DIM; i++)
+        {
+            os << edge.edgeVector[i];
+            if (i!=CMF_DIM-1) os << ", ";
+        }
+        os << "}}";
+        return os;
+    }
 
     class RefinementBlock;
     /// @brief Class that represents a "node" in the AMR refinement tree. Could also be called a "block". Typically is assigned some chunk of simulation data to be associated with it.
