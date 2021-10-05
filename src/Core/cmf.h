@@ -62,6 +62,13 @@ namespace cmf
         return CMF_DIM;
     }
     
+    /// @brief Returns true if CMF was configured in 3D
+    /// @author WVN
+    constexpr bool Is3D(void)
+    {
+        return CMF_DIM==3;
+    }
+    
     /// @brief Returns true if CMF was compiled with parallel MPI support
     /// @author WVN
     constexpr bool IsParallel(void)

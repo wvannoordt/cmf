@@ -311,6 +311,13 @@ namespace cmf
                 return host;
             }
             
+            /// @brief Returns the RefinementBlock that this node lies on
+            /// @author WVN
+            RefinementBlock* GetRootBlock(void)
+            {
+                return rootBlock;
+            }
+            
         private:
             /// @brief Locks the current node from being modified by recursive calls.
             /// \see Unlock
