@@ -1,4 +1,4 @@
+# cmd: 'TESTS=interLevelExchange make test'
 # cmd: 'touch /home/wvn/dirs/projects/cmf/src/Mesh/Cartesian/CartesianMeshExchangeHandler.cpp && TESTS=interLevelExchange make test'
 # cmd: 'touch /home/wvn/dirs/projects/cmf/src/Mesh/Cartesian/CartesianMeshExchangeHandler.cpp && TESTS=constraint3D make test'
-# cmd: 'TESTS=interLevelExchange make test'
 cmd: 'TESTS=gpu make test'

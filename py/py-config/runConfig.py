@@ -15,6 +15,7 @@ class UserInput:
         self.enableStackAllocation = self.GetArg(name="enableSimStack", default=False, description="Enables partial stack-allocation for large arrays (use \"false\" if unsure)")
         self.enableZlib = self.GetArg(name="zlib", default=True, description="Enables compilation with ZLIB (use \"true\" if unsure)")
         self.enableCuda = self.GetArg(name="cuda", default=True, description="Enables compilation with CUDA (use \"false\" if unsure)")
+        self.cudaArchString = self.GetArg(name="cuda-arch", default="native", description="Comma-separated list of CUDA architectures to compile for (use \"native\" if unsure, for native and e.g. 6.1 use \"native,61\")")
         self.optimizationLevel = self.GetArg(name="optimize", default=3, description="Optimization level for compilation")
         if (self.doHelp):
             print("------------------------------------------------------------")
@@ -42,6 +43,8 @@ class UserInput:
                 return val.lower() in ['true', '1', 't', 'y', 'yes']
             elif (type(kwargs["default"])==type(1)):
                 return int(val)
+            elif (type(kwargs["default"])==type("helloworld")):
+                return val
             else:
                 print("error: unsupported type of config arguement")
                 sys.exit(1)
