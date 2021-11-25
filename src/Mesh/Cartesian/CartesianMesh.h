@@ -226,6 +226,10 @@ namespace cmf
             /// @brief Returns the parallel partition object
             CartesianMeshParallelPartition* GetPartition(void);
             
+            /// @brief Returns the minimum grid spacing over the whole mesh
+            /// @author WVN
+            double GetMinimumSpacing(void);
+            
             /// @brief Reads the data from the parallel file
             /// @param file The file to read from
             /// @author WVN
@@ -235,6 +239,14 @@ namespace cmf
             /// @param file The file to write to
             /// @author WVN
             virtual void WriteToFile(ParallelFile& file) override final;
+            
+            /// @brief Returns the dimensions of each block in cells (without exchanges)
+            /// @author WVN
+            std::vector<int> GetMeshDataDim(void) { return meshDataDim; }
+            
+            /// @brief Returns the dimensions of exchange cells of each block
+            /// @author WVN
+            std::vector<int> GetExchangeDim(void) { return exchangeDim; }
 
         private:
             

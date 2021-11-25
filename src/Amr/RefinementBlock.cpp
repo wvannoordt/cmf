@@ -29,6 +29,7 @@ namespace cmf
         __dloop(this->AugmentHash(blockDim[d]));
         this->AugmentHash(totalNumTrunks);
         DefineTrunks();
+        maxLevel = 0;
     }
     
     size_t RefinementBlock::Size(void)
@@ -159,6 +160,11 @@ namespace cmf
         allNodes.push_back(newChild);
         this->AugmentHash(newChild->GetHashableValue());
         newChildNodes.push_back(newChild);
+        auto max = [] (int a, int b) -> int {return a<b?b:a;};
+        for (int d = 0; d < CMF_DIM; d++)
+        {
+            maxLevel[d] = max(maxLevel[d], newChild->directionLevels[d]);
+        }
     }
     
     void RefinementBlock::RegisterNewParentNode(RefinementTreeNode* newParent)
@@ -194,6 +200,18 @@ namespace cmf
         std::vector<char> vrefineTypes;
         vrefineTypes.resize(nodes.size(), refineType);
         this->RefineNodes(nodes, vrefineTypes);
+    }
+    
+    void RefinementBlock::RefineNodes(std::map<RefinementTreeNode*, char> pairs)
+    {
+        std::vector<RefinementTreeNode*> nodes;
+        std::vector<char> refs;
+        for (auto& it:pairs)
+        {
+            nodes.push_back(it.first);
+            refs.push_back(it.second);
+        }
+        this->RefineNodes(nodes, refs);
     }
     
     void RefinementBlock::RefineNodes(std::vector<RefinementTreeNode*>& nodes, std::vector<char>& refineTypes)

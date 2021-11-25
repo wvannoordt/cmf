@@ -74,6 +74,11 @@ namespace cmf
             void RefineAt(Vec3<double> coords, char refinementType);
             
             /// @brief Refines the list of the provided nodes and calls all post-refinement callback functions. This is the preferred way of refining large numbers of nodes.
+            /// @param pairs A map containing a list of nodes and the types of refinement to apply
+            /// @author WVN
+            void RefineNodes(std::map<RefinementTreeNode*, char> pairs);
+            
+            /// @brief Refines the list of the provided nodes and calls all post-refinement callback functions. This is the preferred way of refining large numbers of nodes.
             /// @param nodes A list of nodes to refine
             /// @param refineType the refinement type to use
             /// @author WVN
@@ -211,6 +216,13 @@ namespace cmf
             /// @author WVN
             void WriteToFile(ParallelFile& file);
             
+            /// @brief Returns the maximum grid level, by direction
+            /// @author WVN
+            Vec3<int> GetMaxLevel(void)
+            {
+                return maxLevel;
+            }
+            
         private:
             
             /// @brief Creates the initial grid of RefinementTreeNode objects
@@ -230,6 +242,9 @@ namespace cmf
             
             /// @brief An array of size 2*CMF_DIM the represents the block boundaries of the current refinement block as (xmin, xmax, ymin, ymax, [zmin, zmax])
             std::vector<double> blockBounds;
+            
+            /// @brief The maximum level (by direction) of any node in this collection
+            Vec3<int> maxLevel;
             
             /// @brief An array of size CMF_DIM that represent the size of a single initial node in each dimension
             double dx[CMF_DIM];

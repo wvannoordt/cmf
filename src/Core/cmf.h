@@ -31,6 +31,7 @@
 #include "StringUtils.h"
 #include "CmfDataBase.h"
 #include "CmfGlobalVariables.h"
+#include "LegacyRestartReader.h"
 
 namespace cmf
 {
