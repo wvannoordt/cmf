@@ -22,7 +22,7 @@ namespace cmf
         
         /// @brief empty Constructor
         /// @author WVN
-        CartesianMeshParallelPartitionInfo(void){}
+        CartesianMeshParallelPartitionInfo(void){partitionType = CartesianPartitionType::uniform;}
         
         /// @brief Constructor for the CartesianMeshInputInfo object.
         /// @param inputSection Section to be read from

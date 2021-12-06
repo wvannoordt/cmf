@@ -23,7 +23,7 @@ namespace cmf
         
         /// @brief empty Constructor
         /// @author WVN
-        CartesianMeshExchangeInfo(void){}
+        CartesianMeshExchangeInfo(void){interpolationOrder = 2;}
         
         /// @brief Constructor for the CartesianMeshInputInfo object.
         /// @param inputSection Section to be read from

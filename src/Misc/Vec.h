@@ -42,6 +42,16 @@ namespace cmf
         /// @author WVN
         Vec3(const Vec3& w) {v[0] = w.v[0]; v[1] = w.v[1]; v[2] = w.v[2];}
         
+        /// @brief Returns minimum element
+        /// @author WVN
+        numericType Min(void)
+        {
+            numericType output = v[0];
+            auto min = [](numericType a, numericType b) -> numericType {return a<b?a:b;};
+            for (int d = 0; d < 3; d++) output = min(output, v[d]);
+            return output;
+        }
+        
         /// @brief index operator
         /// @param i index
         /// @author WVN

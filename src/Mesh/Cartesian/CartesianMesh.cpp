@@ -33,6 +33,18 @@ namespace cmf
         CreateParallelPartition(input.partitionInfo);
         arrayHandler->CreateExchangeHandler(input.exchangeInfo);
     }
+    
+    double CartesianMesh::GetMinimumSpacing(void)
+    {
+        Vec3<double> mindx(0.0, 0.0, 0.0);
+        Vec3<int> maxLevel = this->Blocks()->GetMaxLevel();
+        for (int d = 0; d < CMF_DIM; d++)
+        {
+            mindx[d] = (blockBounds[2*d+1]-blockBounds[2*d])/(blockDim[d]*meshDataDim[d]);
+            mindx[d] *= pow(2.0, -maxLevel[d]);
+        }
+        double output = mindx.Min();
+    }
 
     RefinementBlock* CartesianMesh::Blocks(void)
     {

@@ -36,3 +36,4 @@ This is a place where items for development can be listed. It feels great to che
  - [x] Change rank-descriptor from integer value to device-descriptor struct
  - [ ] Reimplement DataExchangePattern to accommodate task-based paradigm
  - [ ] Optimize GPU exchanges
+ - [ ] Implement CUDA compute capability check and architecture flags
