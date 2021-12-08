@@ -85,10 +85,9 @@ namespace cmf
         public:
             /// @brief Constructor
             /// @param interpolationInfo_in File name for the gridInterpolationInfo_... file
-            /// @param flowData_in File name for the restart_block_arrangement_nt_... file
-            /// @param flowData_in File name for the restart_unk_nt_... file
+            /// @param blockInfo_in File name for the restart_block_arrangement_nt_... file
             /// @author WVN
-            LegacyRestartReader(std::string interpolationInfo_in, std::string blockInfo_in, std::string flowData_in);
+            LegacyRestartReader(std::string interpolationInfo_in, std::string blockInfo_in);
             
             /// @brief Returns a CartesianMeshInputInfo that can be used to create a CartesianMesh
             /// @author WVN
@@ -96,14 +95,12 @@ namespace cmf
             
             /// @brief Refines the provided mesh to conform to the written data, then loads the flowfield data to the mesh
             /// @param domain the mesh to apply refinement to/load the data to
+            /// @param flowData File name for the restart_unk_nt_... file
             /// @author WVN
-            CartesianMeshArray& LoadToMesh(CartesianMesh& domain);
+            CartesianMeshArray& LoadToMesh(CartesianMesh& domain, std::string flowData);
         private:
             /// @brief File name for the gridInterpolationInfo_... file
             std::string interpolationInfoFilename;
-            
-            /// @brief File name for the restart_unk_nt_... file
-            std::string flowDataFilename;
             
             /// @brief File name for the restart_block_arrangement_nt_... file
             std::string blockInfoFilename;

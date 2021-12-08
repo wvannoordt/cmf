@@ -18,7 +18,7 @@ namespace cmf
         flowDataFilename = flowData_in;
     }
     
-    CartesianMeshArray& LegacyRestartReader::LoadToMesh(CartesianMesh& domain)
+    CartesianMeshArray& LegacyRestartReader::LoadToMesh(CartesianMesh& domain, std::string flowData)
     {
         LegacyRestartBlockArrangement blocks(blockInfoFilename);
         for (int level = 1; level <= blocks.maxLevel; level++)
@@ -58,7 +58,7 @@ namespace cmf
         size_t numElementsPerBlock = arr.GetArraySizePerBlock();
         
         ParallelFile parFile(domain.GetGroup());
-        parFile.Open(flowDataFilename);
+        parFile.Open(flowData);
         ParallelDataBuffer dataBuf;
         for (auto& p:nodeToBlocks)
         {
