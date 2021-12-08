@@ -449,7 +449,14 @@ namespace cmf
                 for (auto e3:possibleEdges[2])
                 {
                     Vec3<int> newEdgeVec(e1, e2, e3);
-                    if ((e1!=0) || (e2!=0) || (e3!=0)) this->CreateNewNeighbor(candidate, &newEdgeVec[0], 0);
+                    char iDomainBoundary = 0;
+                    for (int dd = 0; dd < CMF_DIM; dd++)
+                    {
+                        bool val = false;
+                        val = (newEdgeVec[dd]==1 && this->isOnBoundary[2*dd+1]) || (newEdgeVec[dd]==-1 && this->isOnBoundary[2*dd]);
+                        SetCharBit(iDomainBoundary, dd, val);
+                    }
+                    if ((e1!=0) || (e2!=0) || (e3!=0)) this->CreateNewNeighbor(candidate, &newEdgeVec[0], iDomainBoundary);
                 }
             }
         }

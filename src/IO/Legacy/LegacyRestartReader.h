@@ -93,11 +93,16 @@ namespace cmf
             /// @author WVN
             CartesianMeshInputInfo ReadMeshInfo(void);
             
-            /// @brief Refines the provided mesh to conform to the written data, then loads the flowfield data to the mesh
+            /// @brief Refines the provided mesh to conform to the provided configuration
+            /// @param domain the mesh to apply refinement to/load the data to
+            /// @author WVN
+            void ConformMesh(CartesianMesh& domain);
+            
+            /// @brief Loads the provided data to the mesh. Should be called after ConformMesh()
             /// @param domain the mesh to apply refinement to/load the data to
             /// @param flowData File name for the restart_unk_nt_... file
             /// @author WVN
-            CartesianMeshArray& LoadToMesh(CartesianMesh& domain, std::string flowData);
+            CartesianMeshArray& LoadData(CartesianMesh& domain, std::string flowData);
         private:
             
             /// @brief File name for the gridInterpolationInfo_... file

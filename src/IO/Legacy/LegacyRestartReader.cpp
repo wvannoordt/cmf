@@ -17,7 +17,8 @@ namespace cmf
         blockInfoFilename = blockInfo_in;
     }
     
-    CartesianMeshArray& LegacyRestartReader::LoadToMesh(CartesianMesh& domain, std::string flowData)
+    
+    void LegacyRestartReader::ConformMesh(CartesianMesh& domain)
     {
         LegacyRestartBlockArrangement blocks(blockInfoFilename);
         for (int level = 1; level <= blocks.maxLevel; level++)
@@ -37,6 +38,11 @@ namespace cmf
             }
             if (!refines.empty()) domain.Blocks()->RefineNodes(refines);
         }
+    }
+    
+    CartesianMeshArray& LegacyRestartReader::LoadData(CartesianMesh& domain, std::string flowData)
+    {
+        LegacyRestartBlockArrangement blocks(blockInfoFilename);
         
         std::map<RefinementTreeNode*, int> nodeToBlocks;
         const double tolerance = 0.25*domain.GetMinimumSpacing();
