@@ -11,11 +11,10 @@
 
 namespace cmf
 {
-    LegacyRestartReader::LegacyRestartReader(std::string interpolationInfo_in,  std::string blockInfo_in, std::string flowData_in)
+    LegacyRestartReader::LegacyRestartReader(std::string interpolationInfo_in,  std::string blockInfo_in)
     {
         interpolationInfoFilename = interpolationInfo_in;
         blockInfoFilename = blockInfo_in;
-        flowDataFilename = flowData_in;
     }
     
     CartesianMeshArray& LegacyRestartReader::LoadToMesh(CartesianMesh& domain, std::string flowData)

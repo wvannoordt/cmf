@@ -99,6 +99,7 @@ namespace cmf
             /// @author WVN
             CartesianMeshArray& LoadToMesh(CartesianMesh& domain, std::string flowData);
         private:
+            
             /// @brief File name for the gridInterpolationInfo_... file
             std::string interpolationInfoFilename;
             
