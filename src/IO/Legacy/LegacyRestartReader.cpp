@@ -11,11 +11,10 @@
 #include "BlockArray.h"
 namespace cmf
 {
-    LegacyRestartReader::LegacyRestartReader(std::string interpolationInfo_in,  std::string blockInfo_in, std::string flowData_in)
+    LegacyRestartReader::LegacyRestartReader(std::string interpolationInfo_in,  std::string blockInfo_in)
     {
         interpolationInfoFilename = interpolationInfo_in;
         blockInfoFilename = blockInfo_in;
-        flowDataFilename = flowData_in;
     }
     
     void LegacyRestartReader::ConformMesh(CartesianMesh& domain)
@@ -40,7 +39,7 @@ namespace cmf
         }
     }
         
-    CartesianMeshArray& LegacyRestartReader::LoadData(CartesianMesh& domain)
+    CartesianMeshArray& LegacyRestartReader::LoadData(CartesianMesh& domain, std::string flowData)
     {
         LegacyRestartBlockArrangement blocks(blockInfoFilename);
         std::map<RefinementTreeNode*, int> nodeToBlocks;
@@ -68,7 +67,7 @@ namespace cmf
         size_t numElementsPerBlock = arr.GetArraySizePerBlock();
         
         ParallelFile parFile(domain.GetGroup());
-        parFile.Open(flowDataFilename);
+        parFile.Open(flowData);
         ParallelDataBuffer dataBuf;
         for (auto& p:nodeToBlocks)
         {

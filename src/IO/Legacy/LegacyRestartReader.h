@@ -85,31 +85,28 @@ namespace cmf
         public:
             /// @brief Constructor
             /// @param interpolationInfo_in File name for the gridInterpolationInfo_... file
-            /// @param flowData_in File name for the restart_block_arrangement_nt_... file
-            /// @param flowData_in File name for the restart_unk_nt_... file
+            /// @param blockInfo_in File name for the restart_block_arrangement_nt_... file
             /// @author WVN
-            LegacyRestartReader(std::string interpolationInfo_in, std::string blockInfo_in, std::string flowData_in);
+            LegacyRestartReader(std::string interpolationInfo_in, std::string blockInfo_in);
             
             /// @brief Returns a CartesianMeshInputInfo that can be used to create a CartesianMesh
             /// @author WVN
             CartesianMeshInputInfo ReadMeshInfo(void);
             
-            /// @brief Refines the provided mesh to conform to the given data
-            /// @param domain the mesh to apply refinement to
+            /// @brief Refines the provided mesh to conform to the provided configuration
+            /// @param domain the mesh to apply refinement to/load the data to
             /// @author WVN
             void ConformMesh(CartesianMesh& domain);
             
-            /// @brief Loads the data as an array on the given mesh
-            /// @param domain the mesh to load the data to
+            /// @brief Loads the provided data to the mesh. Should be called after ConformMesh()
+            /// @param domain the mesh to apply refinement to/load the data to
+            /// @param flowData File name for the restart_unk_nt_... file
             /// @author WVN
-            CartesianMeshArray& LoadData(CartesianMesh& domain);
-            
+            CartesianMeshArray& LoadData(CartesianMesh& domain, std::string flowData);
         private:
+            
             /// @brief File name for the gridInterpolationInfo_... file
             std::string interpolationInfoFilename;
-            
-            /// @brief File name for the restart_unk_nt_... file
-            std::string flowDataFilename;
             
             /// @brief File name for the restart_block_arrangement_nt_... file
             std::string blockInfoFilename;

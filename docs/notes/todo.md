@@ -33,7 +33,7 @@ This is a place where items for development can be listed. It feels great to che
  - [x] Change inter-level exchange model from 'Current gives to neighbor' to 'Current asks from neighbor'
  - [ ] Implement de-refinement
  - [ ] Implement means of looking up neighbor nodes by cell min/max/normal
- - [ ] Change rank-descriptor from integer value to device-descriptor struct
+ - [x] Change rank-descriptor from integer value to device-descriptor struct
  - [ ] Reimplement DataExchangePattern to accommodate task-based paradigm
  - [ ] Optimize GPU exchanges
  - [ ] Implement CUDA compute capability check and architecture flags
