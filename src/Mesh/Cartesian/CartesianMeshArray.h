@@ -178,6 +178,11 @@ namespace cmf
             /// @author WVN
             ComputeDevice GetBlockDevice(RefinementTreeNode* node);
             
+            /// @brief Interpolates an array from the mesh this array is defined over onto a provided one
+            /// @param destination The mesh to interpolate onto
+            /// @author WVN
+            CartesianMeshArray& InterpolateArray(CartesianMesh& destination);
+            
         private:
             
             /// @brief Populates the provided buffer object with the necessary information for parallel IO

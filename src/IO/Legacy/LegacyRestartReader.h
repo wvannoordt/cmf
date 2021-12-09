@@ -94,10 +94,16 @@ namespace cmf
             /// @author WVN
             CartesianMeshInputInfo ReadMeshInfo(void);
             
-            /// @brief Refines the provided mesh to conform to the written data, then loads the flowfield data to the mesh
-            /// @param domain the mesh to apply refinement to/load the data to
+            /// @brief Refines the provided mesh to conform to the given data
+            /// @param domain the mesh to apply refinement to
             /// @author WVN
-            CartesianMeshArray& LoadToMesh(CartesianMesh& domain);
+            void ConformMesh(CartesianMesh& domain);
+            
+            /// @brief Loads the data as an array on the given mesh
+            /// @param domain the mesh to load the data to
+            /// @author WVN
+            CartesianMeshArray& LoadData(CartesianMesh& domain);
+            
         private:
             /// @brief File name for the gridInterpolationInfo_... file
             std::string interpolationInfoFilename;

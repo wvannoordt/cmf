@@ -112,6 +112,21 @@ namespace cmf
         return DefineVariable(info, filter);
     }
     
+    CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, std::vector<int> arrayDimensions, NodeFilter_t filter)
+    {
+        ArrayInfo info;
+        info.name = name;
+        info.rank = arrayDimensions.size();
+        if (info.rank>MAX_RANK) CmfError("A mesh array \"" + name + "\" was initialized with rank " + std::to_string(info.rank) + ", exceeding maximum rank " + std::to_string(MAX_RANK));
+        int r = 0;
+        for (auto dim:arrayDimensions)
+        {
+            info.dimensions[r++] = dim;
+        }
+        info.elementType = elementType;
+        return DefineVariable(info, filter);
+    }
+    
     CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, std::initializer_list<int> arrayDimensions)
     {
         ArrayInfo info;

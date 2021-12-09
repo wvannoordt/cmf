@@ -8,7 +8,7 @@
 #include "BinaryFile.h"
 #include <math.h>
 #include <map>
-
+#include "BlockArray.h"
 namespace cmf
 {
     LegacyRestartReader::LegacyRestartReader(std::string interpolationInfo_in,  std::string blockInfo_in, std::string flowData_in)
@@ -18,7 +18,7 @@ namespace cmf
         flowDataFilename = flowData_in;
     }
     
-    CartesianMeshArray& LegacyRestartReader::LoadToMesh(CartesianMesh& domain)
+    void LegacyRestartReader::ConformMesh(CartesianMesh& domain)
     {
         LegacyRestartBlockArrangement blocks(blockInfoFilename);
         for (int level = 1; level <= blocks.maxLevel; level++)
@@ -38,7 +38,11 @@ namespace cmf
             }
             if (!refines.empty()) domain.Blocks()->RefineNodes(refines);
         }
+    }
         
+    CartesianMeshArray& LegacyRestartReader::LoadData(CartesianMesh& domain)
+    {
+        LegacyRestartBlockArrangement blocks(blockInfoFilename);
         std::map<RefinementTreeNode*, int> nodeToBlocks;
         const double tolerance = 0.25*domain.GetMinimumSpacing();
         for (size_t i = 0; i < blocks.numBlocks; i++)
@@ -53,7 +57,13 @@ namespace cmf
             }
         }
         
-        auto& arr = domain.DefineVariable("flow", cmf::CmfArrayType::CmfDouble, {5});
+        auto& arr = domain.DefineVariable("flow", cmf::CmfArrayType::CmfDouble, {2+blocks.dim});
+        
+        arr.ComponentName(blocks.dim)   = "W";
+        arr.ComponentName(0)            = "P";
+        arr.ComponentName(1)            = "U";
+        arr.ComponentName(2)            = "V";
+        arr.ComponentName(1+blocks.dim) = "T";
         
         size_t numElementsPerBlock = arr.GetArraySizePerBlock();
         
@@ -64,9 +74,9 @@ namespace cmf
         {
             RefinementTreeNode* node = p.first;
             double* rawPointer = (double*)arr[node].pointer;
-            dataBuf.Add(rawPointer, numElementsPerBlock, numElementsPerBlock*nodeToBlocks[node]);
+            //Offset data by 1 since the writeout from fortran is 1-based
+            dataBuf.Add(rawPointer, numElementsPerBlock, 1+numElementsPerBlock*nodeToBlocks[node]);
         }
-        
         parFile.ParallelRead(dataBuf);
         
         return arr;

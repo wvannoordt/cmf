@@ -136,6 +136,14 @@ namespace cmf
             /// @brief Defines a variable with the given name
             /// @param name The name of the variable
             /// @param elementType the type of a single element
+            /// @param arrayDimensions the dimensions of the array (per element)
+            /// @param filter A block filter determining whether the block lies in the domain of the variable
+            /// @author WVN
+            CartesianMeshArray& DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, std::vector<int> arrayDimensions, NodeFilter_t filter);
+            
+            /// @brief Defines a variable with the given name
+            /// @param name The name of the variable
+            /// @param elementType the type of a single element
             /// @author WVN
             CartesianMeshArray& DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType);
             

@@ -230,7 +230,7 @@ namespace cmf
     bool RefinementTreeNode::RefineRequiredFromRelationship(RefinementTreeNode* newChildNode, RefinementTreeNode* toBeRefined, NodeEdge relationship, char* newRefTypeOut)
     {
         *newRefTypeOut = 0;
-        auto periodicRefine = toBeRefined->rootBlock->periodicRefinement;
+        auto& periodicRefine = toBeRefined->rootBlock->periodicRefinement;
         bool noRefineBecauseOfPeriodicity = false;
         for (int d = 0; d < CMF_DIM; d++)
         {
@@ -449,7 +449,13 @@ namespace cmf
                 for (auto e3:possibleEdges[2])
                 {
                     Vec3<int> newEdgeVec(e1, e2, e3);
-                    if ((e1!=0) || (e2!=0) || (e3!=0)) this->CreateNewNeighbor(candidate, &newEdgeVec[0], 0);
+                    char isDomainEdgeVec = 0;
+                    for (int d = 0; d < CMF_DIM; d++)
+                    {
+                        bool directionIsEdge = isOnBoundary[2*d] || isOnBoundary[2*d+1];
+                        SetCharBit(isDomainEdgeVec, d, directionIsEdge);
+                    }
+                    if ((e1!=0) || (e2!=0) || (e3!=0)) this->CreateNewNeighbor(candidate, &newEdgeVec[0], isDomainEdgeVec);
                 }
             }
         }

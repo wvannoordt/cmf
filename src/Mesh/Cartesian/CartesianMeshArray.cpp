@@ -5,6 +5,7 @@
 #include "StringUtils.h"
 #include "BlockIterator.h"
 #include "CartesianMeshArrayParallelVtkWriter.h"
+#include "CartesianMeshInterpolationHandler.h"
 namespace cmf
 {
     CartesianMeshArray::CartesianMeshArray(ArrayInfo info, CartesianMeshArrayHandler* handler_in, NodeFilter_t filter_in) : ICmfMeshArray(info)
@@ -57,6 +58,15 @@ namespace cmf
     {
         WriteLine(7, "Exchange \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\"");
         exchangePattern->ExchangeData();
+    }
+    
+    CartesianMeshArray& CartesianMeshArray::InterpolateArray(CartesianMesh& destination)
+    {
+        // CartesianMeshArray& DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, std::initializer_list<int> arrayDimensions, NodeFilter_t filter);
+        CartesianMeshArray& output = destination.DefineVariable(this->variableName, this->elementType, this->dims, this->filter);
+        CartesianMeshInterpolationHandler interpHandle(*this, destination);
+        // interpHandle.Interpolate();
+        return output;
     }
     
     DataExchangePattern* CartesianMeshArray::GetExchangePattern(void)
