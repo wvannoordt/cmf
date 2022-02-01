@@ -33,7 +33,7 @@ namespace cmf
         CreateParallelPartition(input.partitionInfo);
         arrayHandler->CreateExchangeHandler(input.exchangeInfo);
     }
-    
+
     double CartesianMesh::GetMinimumSpacing(void)
     {
         Vec3<double> mindx(0.0, 0.0, 0.0);
@@ -44,6 +44,7 @@ namespace cmf
             mindx[d] *= pow(2.0, -maxLevel[d]);
         }
         double output = mindx.Min();
+        return output;
     }
 
     RefinementBlock* CartesianMesh::Blocks(void)
@@ -55,7 +56,7 @@ namespace cmf
     {
         return arrayHandler;
     }
-    
+
     CartesianMeshParallelPartition* CartesianMesh::GetPartition(void)
     {
         return partition;
@@ -69,7 +70,7 @@ namespace cmf
         info.elementType = CmfArrayType::CmfDouble;
         return DefineVariable(info, BlockFilters::Terminal);
     }
-    
+
     CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, NodeFilter_t filter)
     {
         ArrayInfo info;
@@ -78,7 +79,7 @@ namespace cmf
         info.elementType = CmfArrayType::CmfDouble;
         return DefineVariable(info, filter);
     }
-    
+
     CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, NodeFilter_t filter)
     {
         ArrayInfo info;
@@ -87,7 +88,7 @@ namespace cmf
         info.elementType = elementType;
         return DefineVariable(info, filter);
     }
-    
+
     CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType)
     {
         ArrayInfo info;
@@ -96,7 +97,7 @@ namespace cmf
         info.elementType = elementType;
         return DefineVariable(info, BlockFilters::Terminal);
     }
-    
+
     CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, std::initializer_list<int> arrayDimensions, NodeFilter_t filter)
     {
         ArrayInfo info;
@@ -111,7 +112,7 @@ namespace cmf
         info.elementType = elementType;
         return DefineVariable(info, filter);
     }
-    
+
     CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, std::vector<int> arrayDimensions, NodeFilter_t filter)
     {
         ArrayInfo info;
@@ -126,7 +127,7 @@ namespace cmf
         info.elementType = elementType;
         return DefineVariable(info, filter);
     }
-    
+
     CartesianMeshArray& CartesianMesh::DefineVariable(std::string name, CmfArrayType::CmfArrayType elementType, std::initializer_list<int> arrayDimensions)
     {
         ArrayInfo info;
@@ -141,17 +142,17 @@ namespace cmf
         info.elementType = elementType;
         return DefineVariable(info, BlockFilters::Terminal);
     }
-    
+
     CartesianMeshArray& CartesianMesh::DefineVariable(ArrayInfo info)
     {
         return DefineVariable(info, BlockFilters::Terminal);
     }
-    
+
     CartesianMeshArray& CartesianMesh::DefineVariable(ArrayInfo info, NodeFilter_t filter)
     {
         return *(arrayHandler->CreateNewVariable(info, filter));
     }
-    
+
     CartesianMeshArray& CartesianMesh::CreateCoordinateVariable(NodeFilter_t filter, int direction)
     {
         ArrayInfo info;
@@ -191,33 +192,33 @@ namespace cmf
         }
         return coordArray;
     }
-    
+
     CartesianMeshArray& CartesianMesh::CreateCoordinateVariable(int direction)
     {
         return CreateCoordinateVariable(BlockFilters::Terminal, direction);
     }
-    
+
     RefinementBlock* CartesianMesh::GetRefinementBlockObject(void)
     {
         return Blocks();
     }
-    
+
     std::vector<RefinementTreeNode*>::iterator CartesianMesh::begin() noexcept
     {
         return GetAllNodes()->begin();
     }
-    
+
     std::vector<RefinementTreeNode*>::iterator CartesianMesh::end() noexcept
     {
         return GetAllNodes()->end();
     }
-    
+
     bool CartesianMesh::ParallelPartitionContainsNode(RefinementTreeNode* node)
     {
         if (!partition) return true;
         return partition->Mine(node);
     }
-    
+
     BlockInfo CartesianMesh::GetBlockInfo(RefinementTreeNode* node)
     {
         BlockInfo output;
@@ -244,19 +245,19 @@ namespace cmf
         output.kmax = (1-CMF_IS3D) + CMF_IS3D*meshDataDim[1+CMF_IS3D];
         return output;
     }
-    
+
     CartesianMeshParallelPartition* CartesianMesh::CreateParallelPartition(CartesianMeshParallelPartitionInfo& partitionInfo)
     {
         hasParallelPartition = true;
         partition = new CartesianMeshParallelPartition(this, partitionInfo);
         return partition;
     }
-    
+
     CartesianMeshArray& CartesianMesh::operator [] (std::string name)
     {
         return *(arrayHandler->GetVariable(name));
     }
-    
+
     void CartesianMesh::AssertSynchronizeBlocks(void)
     {
         bool syncedHash = meshGroup->HasSameValue(blocks->GetHash());
@@ -266,12 +267,12 @@ namespace cmf
         }
         WriteLine(4, "Cartesian mesh \"" + title + "\" is sychronized");
     }
-    
+
     BlockInfo CartesianMesh::GetBlockInfo(BlockIterator& blockIter)
     {
         return GetBlockInfo(blockIter.Node());
     }
-    
+
     void CartesianMesh::ReadFromFile(ParallelFile& file)
     {
         std::string dummy = file.Read();
@@ -287,17 +288,17 @@ namespace cmf
         file.Write(strformat("numBlocks:{}", blocks->Size()));
         this->blocks->WriteToFile(file);
     }
-    
+
     size_t CartesianMesh::Size(void)
     {
         return blocks->Size();
     }
-    
+
     std::vector<RefinementTreeNode*>* CartesianMesh::GetAllNodes(void)
     {
         return blocks->GetAllNodes();
     }
-    
+
     std::string CartesianMesh::GetTitle(void)
     {
         return title;
