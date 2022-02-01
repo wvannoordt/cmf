@@ -124,6 +124,13 @@ void SillyRefine(cmf::CartesianMeshArray& ar)
     nodes2.clear();
     refs2.clear();
     
+    nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.3, 1.4, 0.0));
+    refs2.push_back(1);
+    
+    // ar.Mesh()->Blocks()->RefineNodes(nodes2, refs2);
+    // nodes2.clear();
+    // refs2.clear();
+    
     // nodes2.push_back(ar.Mesh()->Blocks()->GetNodeAt(1.4, 1.3, 0.0));
     // refs2.push_back(1);
     // 
