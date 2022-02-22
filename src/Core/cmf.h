@@ -32,6 +32,7 @@
 #include "CmfDataBase.h"
 #include "CmfGlobalVariables.h"
 #include "LegacyRestartReader.h"
+#include "CartesianMeshInterpolationOperator.h"
 
 namespace cmf
 {

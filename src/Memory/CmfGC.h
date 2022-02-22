@@ -3,6 +3,7 @@
 #include <map>
 #include "Config.h"
 #include "MemSpace.h"
+#include <cstddef>
 
 namespace cmf
 {
