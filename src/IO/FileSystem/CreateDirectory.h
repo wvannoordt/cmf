@@ -13,7 +13,7 @@
 
 //todo: do a better job of this
 namespace cmf
-{
+{    
     /// @brief Creates a directory with the given path, does not crash if directory exists
     /// @param directoryPath the path to create a directory to
     /// @author WVN
@@ -30,6 +30,15 @@ namespace cmf
             return false;
         }
         return true;
+    }
+    
+    /// @brief Creates a directory with the given path, does not crash if directory exists
+    /// @param directoryPath the path to create a directory to
+    /// @author WVN
+    static inline bool CreateDirectory(std::string directoryPath)
+    {
+        Path dp(directoryPath);
+        return CreateDirectory(dp);
     }
 }
 
