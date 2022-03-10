@@ -38,35 +38,26 @@ namespace cmf
             if (!refines.empty()) domain.Blocks()->RefineNodes(refines);
         }
     }
-        
-    CartesianMeshArray& LegacyRestartReader::LoadData(CartesianMesh& domain, std::string flowData)
+    CartesianMeshArray& LegacyRestartReader::LoadData(CartesianMeshArray& arr, std::string flowData)
     {
         LegacyRestartBlockArrangement blocks(blockInfoFilename);
         std::map<RefinementTreeNode*, int> nodeToBlocks;
-        const double tolerance = 0.25*domain.GetMinimumSpacing();
+        const double tolerance = 0.25*arr.Mesh()->GetMinimumSpacing();
         for (size_t i = 0; i < blocks.numBlocks; i++)
         {
             Vec3<double> blockCenter = blocks.blockCoords[i];
-            RefinementTreeNode* nodeAtCenter = domain.Blocks()->GetNodeAt(blockCenter);
+            RefinementTreeNode* nodeAtCenter = arr.Mesh()->Blocks()->GetNodeAt(blockCenter);
             Vec3<double> nodeCenter = nodeAtCenter->GetBlockCenter();
             double err = (blockCenter-nodeCenter).Norm();
-            if ((err<tolerance) && domain.ParallelPartitionContainsNode(nodeAtCenter) && (nodeToBlocks.find(nodeAtCenter)==nodeToBlocks.end()))
+            if ((err<tolerance) && arr.Mesh()->ParallelPartitionContainsNode(nodeAtCenter) && (nodeToBlocks.find(nodeAtCenter)==nodeToBlocks.end()))
             {
                 nodeToBlocks.insert({nodeAtCenter, i});
             }
         }
         
-        auto& arr = domain.DefineVariable("flow", cmf::CmfArrayType::CmfDouble, {2+blocks.dim});
-        
-        arr.ComponentName(blocks.dim)   = "W";
-        arr.ComponentName(0)            = "P";
-        arr.ComponentName(1)            = "U";
-        arr.ComponentName(2)            = "V";
-        arr.ComponentName(1+blocks.dim) = "T";
-        
         size_t numElementsPerBlock = arr.GetArraySizePerBlock();
         
-        ParallelFile parFile(domain.GetGroup());
+        ParallelFile parFile(arr.Mesh()->GetGroup());
         parFile.Open(flowData);
         ParallelDataBuffer dataBuf;
         for (auto& p:nodeToBlocks)
@@ -79,6 +70,17 @@ namespace cmf
         parFile.ParallelRead(dataBuf);
         
         return arr;
+    }
+    CartesianMeshArray& LegacyRestartReader::LoadData(CartesianMesh& domain, std::string flowData)
+    {
+        LegacyRestartBlockArrangement blocks(blockInfoFilename);
+        auto& arr = domain.DefineVariable("flow", cmf::CmfArrayType::CmfDouble, {2+blocks.dim});
+        arr.ComponentName(blocks.dim)   = "W";
+        arr.ComponentName(0)            = "P";
+        arr.ComponentName(1)            = "U";
+        arr.ComponentName(2)            = "V";
+        arr.ComponentName(1+blocks.dim) = "T";
+        return this->LoadData(arr, flowData);
     }
     
     CartesianMeshInputInfo LegacyRestartReader::ReadMeshInfo(void)

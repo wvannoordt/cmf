@@ -22,14 +22,9 @@ namespace cmf
         Vec3(numericType x, numericType y, numericType z) {v[0] = x; v[1] = y; v[2] = z;}
         
         /// @brief Constructor
-        /// @param x Pointer (of size > 3)
-        /// @author WVN
-        Vec3(numericType* x) {v[0] = x[0]; v[1] = x[1]; v[2] = x[2];}
-        
-        /// @brief Constructor
         /// @param x value to initialize all elements with
         /// @author WVN
-        template <typename othertype> Vec3(othertype x) {v[0] = (othertype)x; v[1] = (othertype)x; v[2] = (othertype)x;}
+        Vec3(const numericType& x) {v[0] = x; v[1] = x; v[2] = x;}
         
         /// @brief Constructor, using initial and final values
         /// @param ini Pointer (of size > 3) to the coordinates of initial point
@@ -56,6 +51,11 @@ namespace cmf
         /// @param i index
         /// @author WVN
         numericType & operator [] (int i) {return *(v+i);}
+        
+        /// @brief const index operator
+        /// @param i index
+        /// @author WVN
+        const numericType & operator [] (int i) const {return *(v+i);}
         
         ///@brief the data
         numericType v[3];

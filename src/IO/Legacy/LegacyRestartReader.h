@@ -98,11 +98,18 @@ namespace cmf
             /// @author WVN
             void ConformMesh(CartesianMesh& domain);
             
-            /// @brief Loads the provided data to the mesh. Should be called after ConformMesh()
+            /// @brief Loads the provided data to the mesh and creates a new variable. Should be called after ConformMesh()
             /// @param domain the mesh to apply refinement to/load the data to
             /// @param flowData File name for the restart_unk_nt_... file
             /// @author WVN
             CartesianMeshArray& LoadData(CartesianMesh& domain, std::string flowData);
+            
+            /// @brief Loads the provided data to an existing mesh array. Throws an exception if the data
+            /// and provided array are not compatible. Should be called after ConformMesh()
+            /// @param domain the mesh to apply refinement to/load the data to
+            /// @param flowData File name for the restart_unk_nt_... file
+            /// @author WVN
+            CartesianMeshArray& LoadData(CartesianMeshArray& domain, std::string flowData);
         private:
             
             /// @brief File name for the gridInterpolationInfo_... file
