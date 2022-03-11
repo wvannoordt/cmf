@@ -255,6 +255,10 @@ namespace cmf
             /// @brief Returns the dimensions of exchange cells of each block
             /// @author WVN
             std::vector<int> GetExchangeDim(void) { return exchangeDim; }
+            
+            /// @brief Returns the dimensions of the base block configuration
+            /// @author WVN
+            std::vector<int> GetBlockDim(void) { return blockDim; }
 
         private:
             

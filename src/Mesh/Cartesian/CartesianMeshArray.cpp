@@ -1,4 +1,5 @@
 #include "CartesianMeshArray.h"
+#include "CartesianDetail.h"
 #include "DebugTools.hx"
 #include "CartesianMeshArrayHandler.h"
 #include "CartesianMesh.h"
@@ -228,6 +229,36 @@ namespace cmf
             }
             pointerMap.insert({node, newPtr});
         }
+    }
+    
+    CartesianMeshArray& CartesianMeshArray::operator += (CartesianMeshArray& rhs)
+    {
+        if (!this->IsElementwiseConformalWith(rhs))
+        {
+            CmfError(strformat("Attempted to execute binary operation on non conformal arrays: \"{}\" and \"{}\"", this->GetFullName(), rhs.GetFullName()));
+        }
+        WriteLine(0, "WARNING: += operator only implemented for double arrays.");
+        detail::cartesian::inplace_elementwise_binary_op<double,double>(*this, rhs, [](double& a, double& b) -> void {a += b;});
+        return *this;
+    }
+    
+    template CartesianMeshArray& CartesianMeshArray::operator /= <std::size_t>(const std::size_t&);
+    template CartesianMeshArray& CartesianMeshArray::operator /= <float>      (const float&);
+    template CartesianMeshArray& CartesianMeshArray::operator /= <double>     (const double&);
+    template CartesianMeshArray& CartesianMeshArray::operator /= <int>        (const int&);
+    template <typename rhsType> CartesianMeshArray& CartesianMeshArray::operator /= (const rhsType& rhs)
+    {
+        WriteLine(0, "WARNING: /= operator only implemented for double arrays.");
+        detail::cartesian::inplace_elementwise_unary_op<double>(*this, [=](double& a) -> void {a /= rhs;});
+        return *this;
+    }
+    
+    bool CartesianMeshArray::IsElementwiseConformalWith(CartesianMeshArray& rhs)
+    {
+        bool output = true;
+        output = output && (this->Mesh()->Blocks()->GetHash() == rhs.Mesh()->Blocks()->GetHash());
+        WriteLine(0, "WARNING: CartesianMeshArray::IsElementwiseConformalWith not fully implemented!!!!!");
+        return output;
     }
     
     size_t CartesianMeshArray::Size(void)

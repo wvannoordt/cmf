@@ -89,7 +89,8 @@ namespace cmf
             {
                 auto neighNode = p.first;
                 auto neighEdge = p.second;
-                cmf::Vec3<int> edgeVec(neighEdge.edgeVector);
+                cmf::Vec3<int> edgeVec;
+                for (int i = 0; i < CMF_DIM; i++) edgeVec[i] = neighEdge.edgeVector[i];
                 myfile << edgeVec << std::endl;
             }
         }

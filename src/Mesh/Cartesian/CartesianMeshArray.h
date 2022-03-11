@@ -178,6 +178,21 @@ namespace cmf
             /// @author WVN
             ComputeDevice GetBlockDevice(RefinementTreeNode* node);
             
+            /// @brief Returns false if the mesh arrays do not have a one-to-oe correspondence between elements
+            /// @param rhs The array to test against
+            /// @author WVN
+            bool IsElementwiseConformalWith(CartesianMeshArray& rhs);
+            
+            /// @brief inplace addition operator: element-wise addition
+            /// @param rhs the array to add to the current one
+            /// @author WVN
+            CartesianMeshArray& operator += (CartesianMeshArray& rhs);
+            
+            /// @brief inplace division operator: element-wise division by a single element
+            /// @param rhs the element to divide the current array by
+            /// @author WVN
+            template <typename rhsType> CartesianMeshArray& operator /= (const rhsType& rhs);
+            
         private:
             
             /// @brief Populates the provided buffer object with the necessary information for parallel IO

@@ -25,10 +25,11 @@ namespace cmf
         int idxCoeff[TotalRank()] = {0};
         /// @brief The total index offset (accounting for exchange cells)
     	size_t idxOffset = 0;
+        
         /// @brief Conversion from CartesianMeshArrayPointerPair
         /// @author WVN
         /// @param pointerPair The pointer pair to create this object from
-        BlockArray<arType, elementRank> (const CartesianMeshArrayPointerPair& pointerPair)
+        BlockArray (const CartesianMeshArrayPointerPair& pointerPair)
         {
             data = (arType*)pointerPair.pointer;
             std::vector<int>& arDim = pointerPair.array->dims;
