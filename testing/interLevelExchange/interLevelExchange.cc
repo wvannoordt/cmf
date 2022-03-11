@@ -154,7 +154,7 @@ void EvalErr(cmf::CartesianMeshArray& ar, double& l2Err, double& linfErr)
         double blockMax = -1.0;
         auto max = [](double a, double b) -> double {return a<b?b:a;};
         auto abs = [](double a) -> double {return a<0?-a:a;};
-        auto iGhost = [&](int ii, int jj, int kk) -> bool 
+        auto iGhost = [&](int ii, int jj, int kk) -> bool
         {
             return (ii < arLb.imin)||(ii >= arLb.imax)||(kk < arLb.kmin)||(kk >= arLb.kmax)||(jj < arLb.jmin)||(jj >= arLb.jmax);
         };

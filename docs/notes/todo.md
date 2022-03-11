@@ -37,3 +37,4 @@ This is a place where items for development can be listed. It feels great to che
  - [ ] Reimplement DataExchangePattern to accommodate task-based paradigm
  - [ ] Optimize GPU exchanges
  - [ ] Implement CUDA compute capability check and architecture flags
+ - [ ] Implement different variable centering options

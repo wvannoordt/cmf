@@ -51,7 +51,7 @@ namespace cmf
             /// @author WVN
             void Write(std::string databaseTitle);
             
-            /// @brief Reads out the database with the given title. The title should not include a file extension or the directory
+            /// @brief Reads the database with the given title. The title should not include a file extension or the directory
             /// @param databaseTitle The title of the database
             /// @author WVN
             void Read(std::string databaseTitle);
