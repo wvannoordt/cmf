@@ -287,7 +287,7 @@ namespace cmf
                         myfile << csp20 << info.blockBounds[2] + j*info.dx[1] << "\n";
                     }
                     myfile << spaces(16) << "</DataArray>" << std::endl;
-                    myfile << spaces(16) << strformat("<DataArray type=\"Float64\" format=\"ascii\" RangeMin=\"{}\" RangeMax=\"{}\">", ghostBnds[4], ghostBnds[4]) << std::endl;
+                    myfile << spaces(16) << strformat("<DataArray type=\"Float64\" format=\"ascii\" RangeMin=\"{}\" RangeMax=\"{}\">", ghostBnds[4], ghostBnds[5]) << std::endl;
                     for (int k = -nGuardk; k <=nCellsk+nGuardk; k++)
                     {
 #if(CMF_IS3D)
