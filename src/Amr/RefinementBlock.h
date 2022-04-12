@@ -196,6 +196,11 @@ namespace cmf
             /// @author WVN
             void PostRefinementCallbacks(void);
             
+            /// @brief Call all pre-refinement callbacks
+            /// @param toBeRefined List of nodes that are about to be refined
+            /// @author WVN
+            void PreRefinementCallbacks(const std::vector<cmf::RefinementTreeNode*>& toBeRefined) const;
+            
             /// @brief Adds a IPostRefinementCallback object to the post-refinement call list. Returns the
             /// index/position of the added object in the list
             /// @param obj The object to add

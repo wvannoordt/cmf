@@ -24,6 +24,11 @@ namespace cmf
             /// @author WVN
             virtual void OnPostRefinementCallback(std::vector<RefinementTreeNode*>& newChildNodes, std::vector<RefinementTreeNode*> newParentNodes)=0;
             
+            /// @brief The callback function for old nodes (about to be refined)
+            /// @param toBeRefined Node about to be refined
+            /// @author WVN
+            virtual void OnPreRefinementCallback(const std::vector<cmf::RefinementTreeNode*>& toBeRefined){}
+            
             /// @brief Adds the current object as a post-refinement callback object to the provided AMR block
             /// @param blocks The blocks to register this object to
             /// @author WVN
