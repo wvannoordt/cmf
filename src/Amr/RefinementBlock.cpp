@@ -1,4 +1,5 @@
 #include <string>
+#include <set>
 #include <iostream>
 #include "PTL.h"
 #include "cmf.h"
@@ -190,7 +191,10 @@ namespace cmf
         WriteLine(3, strformat("Calling pre-refinement callbacks on {} objects: {} new child nodes, {} new parent nodes", postRefinementCallbackObjects.size(), newChildNodes.size(), newParentNodes.size()));
         for (int i = 0; i < postRefinementCallbackObjects.size(); i++)
         {
-            postRefinementCallbackObjects[i]->OnPreRefinementCallback(toBeRefined);
+            if (postRefinementCallbackObjects[i]->GetCallbackEnabled())
+            {
+                postRefinementCallbackObjects[i]->OnPreRefinementCallback(toBeRefined);
+            }
         }
     }
     
@@ -199,7 +203,10 @@ namespace cmf
         WriteLine(3, strformat("Calling post-refinement callbacks on {} objects: {} new child nodes, {} new parent nodes", postRefinementCallbackObjects.size(), newChildNodes.size(), newParentNodes.size()));
         for (int i = 0; i < postRefinementCallbackObjects.size(); i++)
         {
-            postRefinementCallbackObjects[i]->OnPostRefinementCallback(newChildNodes, newParentNodes);
+            if (postRefinementCallbackObjects[i]->GetCallbackEnabled())
+            {
+                postRefinementCallbackObjects[i]->OnPostRefinementCallback(newChildNodes, newParentNodes);
+            }
         }
         newChildNodes.clear();
         newParentNodes.clear();
@@ -230,7 +237,6 @@ namespace cmf
         {
             CmfError(strformat("Attempted call to RefinementBlock::RefineNodes with inconsistent node list size ({}) and refine list size ({})", nodes.size(), refineTypes.size()));
         }
-        this->PreRefinementCallbacks(nodes);
         int i = 0;
         for (auto& n:nodes)
         {
@@ -239,6 +245,7 @@ namespace cmf
                 n->Refine(refineTypes[i++]);
             }
         }
+        this->PreRefinementCallbacks(newParentNodes);
         this->PostRefinementCallbacks();
     }
     

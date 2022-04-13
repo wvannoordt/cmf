@@ -36,11 +36,20 @@ namespace cmf
             {
                 callbackOrder = blocks->AddPostRefinementCallbackObject(this);
             }
+            
+            /// @brief Sets whether or not this callback is enabled
+            void SetCallbackEnabled(const bool& val) {callbackIsEnabled = val;}
+            
+            /// @brief gets whether or not this callback is enabled
+            bool GetCallbackEnabled(void) const {return callbackIsEnabled;}
         
         protected:
             
             /// @brief The callback order of the current object
             int callbackOrder;
+            
+            /// @brief If false, the callback is skipped. Should only be used wehn debugging
+            bool callbackIsEnabled = true;
     };
 }
 

@@ -262,6 +262,9 @@ namespace cmf
             /// of definedNodes.
             std::vector<RefinementTreeNode*> allocatedNodes;
             
+            /// @brief if set to true, this array will only create an exchange pattern when needed
+            bool lazyExchangeCreation = true;
+            
             template <typename arType, const int elementRank> friend struct BlockArray;
             friend struct RawUnwrappedBlockArray;
             friend class CartesianMeshExchangeHandler;

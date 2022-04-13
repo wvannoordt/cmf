@@ -105,7 +105,7 @@ namespace cmf
 
             /// @brief Returns the mesh array handler
             /// @author WVN
-            ICmfMeshArrayHandler* GetArrayHandler(void);
+            CartesianMeshArrayHandler* GetArrayHandler(void);
 
             /// @brief Defines a variable with the given name
             /// @param name The name of the variable

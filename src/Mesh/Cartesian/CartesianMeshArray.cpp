@@ -57,6 +57,7 @@ namespace cmf
     void CartesianMeshArray::Exchange(void)
     {
         WriteLine(7, "Exchange \"" + variableName + "\" on mesh \"" + handler->mesh->title + "\"");
+        if (exchangePattern==NULL) this->CreateExchangePattern();
         exchangePattern->ExchangeData();
     }
     
@@ -129,7 +130,11 @@ namespace cmf
         meshBuffer->ClearVacantChunks();
         
         //Redefine the exchange pattern (there is definitely a better way to do this)
-        exchangePattern = this->handler->defaultExchangeHandler->CreateMeshArrayExchangePattern(this);
+        exchangePattern = NULL;
+        if (!lazyExchangeCreation)
+        {
+            exchangePattern = this->handler->defaultExchangeHandler->CreateMeshArrayExchangePattern(this);
+        }
     }
     
     void* CartesianMeshArray::GetNodePointerWithNullDefault(RefinementTreeNode* node)

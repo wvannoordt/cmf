@@ -2,6 +2,7 @@
 #define RefinementTreeNode_H
 
 #include <string>
+#include <set>
 #include "AmrFcnTypes.h"
 #include "Config.h"
 #include "TikzObject.h"
@@ -310,6 +311,11 @@ namespace cmf
             {
                 return host;
             }
+            
+            /// @brief Returns the RefinementBlock that this node lies on
+            /// @param refs The set of nodes to be refined
+            /// @author WVN
+            void GetFloodRefinementNodes(std::set<RefinementTreeNode*>& refs) const;
             
             /// @brief Returns the RefinementBlock that this node lies on
             /// @author WVN

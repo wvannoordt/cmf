@@ -52,7 +52,7 @@ namespace cmf
         return blocks;
     }
 
-    ICmfMeshArrayHandler* CartesianMesh::GetArrayHandler(void)
+    CartesianMeshArrayHandler* CartesianMesh::GetArrayHandler(void)
     {
         return arrayHandler;
     }

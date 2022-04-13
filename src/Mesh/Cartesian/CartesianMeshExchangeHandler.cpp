@@ -463,10 +463,6 @@ namespace cmf
         Vec3<int> currentLevels  = currentInfo.node->GetDirectionLevels();
         Vec3<int> refineLevelDifference = neighborLevels - currentLevels;
         
-        bool debug = ((currentInfo.node->GetBlockCenter() - Vec3<double>(0.2, 1.5, 0.0)).Norm()<1e-4);
-        debug = debug && ((neighborInfo.node->GetBlockCenter() - Vec3<double>(0.3, 1.7, 0.0)).Norm()<1e-4);
-        
-        
         for (int i = 0; i < CMF_DIM; i++)
         {
             int currentExchangeSize = currentInfo.exchangeSize[i];

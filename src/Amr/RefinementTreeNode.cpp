@@ -360,6 +360,7 @@ namespace cmf
             //Add the node to the list of all nodes in the base tree
             rootBlock->RegisterNewChildNode(subNodes[i]);
         }
+
         rootBlock->RegisterNewParentNode(this);
 
         this->UpdateNeighborsAfterRefinement();
