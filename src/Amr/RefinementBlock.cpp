@@ -345,11 +345,13 @@ namespace cmf
     {
         for (int i = 0; i < totalNumTrunks; i++)
         {
-            if (RandomInt(5)<4)
+            if (RandomInt(9)<4)
             {
                 trunks[i]->RefineRandom();
             }
         }
+        this->PreRefinementCallbacks(newParentNodes);
+        this->PostRefinementCallbacks();
     }
 
     void RefinementBlock::Destroy(void)
