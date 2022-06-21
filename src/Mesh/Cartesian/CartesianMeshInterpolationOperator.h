@@ -2,6 +2,10 @@
 #define CMF_CARTESIAN_MESH_INTERPOLATION_OPERATOR_H
 #include "CartesianMesh.h"
 #include "CartesianMeshArray.h"
+
+#include <map>
+#include <vector>
+
 namespace cmf
 {
     /// @brief A class that interpolates between two arrays on separate meshes
@@ -28,6 +32,9 @@ namespace cmf
             
             /// @brief The recipient mesh
             CartesianMesh* destination;
+            
+            /// @brief For each block on the recipient mesh, gets the list of nodes on the donor mesh that donate to it
+            std::map<RefinementTreeNode*, std::vector<RefinementTreeNode*>> dataDonors;
             
     };
 }

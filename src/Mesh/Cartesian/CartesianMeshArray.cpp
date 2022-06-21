@@ -20,7 +20,7 @@ namespace cmf
         elementType = info.elementType;
         GetDefinedNodesAndAllocatedNodes();
         AllocateInitialBlocks();
-        CreateExchangePattern();
+        if(!lazyExchangeCreation) CreateExchangePattern();
         this->RegisterToBlocks(handler->mesh->Blocks());
     }
     
