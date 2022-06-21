@@ -1,5 +1,6 @@
 #ifndef CMF_PARALLEL_FILE_H
 #define CMF_PARALLEL_FILE_H
+
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -8,6 +9,7 @@
 #include "ParallelGroup.h"
 #include "ParallelTypes.h"
 #include "ParallelDataBuffer.h"
+
 namespace cmf
 {
     ///@brief A class that is used for parallel file input and output.
